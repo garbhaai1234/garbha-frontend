@@ -1,0 +1,189 @@
+/*
+  Glowing coverflow carousel — mobile only (rendered under `md:hidden`).
+  Card positions are tuned for phone widths so the neighbours peek at the
+  edges instead of sitting fully off-screen. Colours use the site brand coral.
+*/
+
+.wrapper {
+  position: relative;
+  width: 100%;
+  height: 440px;
+  margin: 0 auto;
+}
+
+.track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: 200px;
+  height: 300px;
+  padding: 0;
+  border: none;
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  text-align: left;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+.center {
+  width: 240px;
+  height: 360px;
+  transform: translate(-50%, -50%) scale(1);
+  z-index: 50;
+  opacity: 1;
+  cursor: default;
+  border: 3px solid rgba(241, 87, 94, 0.85);
+  box-shadow:
+    0 0 45px rgba(241, 87, 94, 0.55),
+    0 0 90px rgba(241, 87, 94, 0.28),
+    0 18px 45px rgba(0, 0, 0, 0.28);
+}
+
+.left {
+  transform: translate(-95%, -50%) scale(0.85);
+  z-index: 30;
+  opacity: 0.55;
+}
+
+.right {
+  transform: translate(-5%, -50%) scale(0.85);
+  z-index: 30;
+  opacity: 0.55;
+}
+
+.farLeft {
+  width: 170px;
+  height: 250px;
+  transform: translate(-135%, -50%) scale(0.7);
+  z-index: 10;
+  opacity: 0.25;
+}
+
+.farRight {
+  width: 170px;
+  height: 250px;
+  transform: translate(35%, -50%) scale(0.7);
+  z-index: 10;
+  opacity: 0.25;
+}
+
+.cardImage {
+  position: relative;
+  width: 100%;
+  height: 62%;
+  overflow: hidden;
+}
+
+.cardImage img {
+  object-fit: cover;
+  object-position: top;
+}
+
+.cardImage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.32), transparent);
+}
+
+.cardContent {
+  height: 38%;
+  padding: 0.9rem 1.05rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cardTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #22262e;
+}
+
+.cardDesignation {
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #f1575e;
+}
+
+.cardDescription {
+  margin-top: 0.5rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #4a566b;
+  display: none;
+}
+
+.center .cardDescription {
+  display: block;
+}
+
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: #f1575e;
+  color: #fff;
+  cursor: pointer;
+  z-index: 60;
+  transition: background 0.3s;
+}
+
+.nav:hover {
+  background: #d84850;
+}
+
+.nav svg {
+  width: 16px;
+  height: 16px;
+}
+
+.navPrev {
+  left: 0.25rem;
+}
+
+.navNext {
+  right: 0.25rem;
+}
+
+/* A touch larger on wider phones / small tablets (still < md). */
+@media (min-width: 480px) {
+  .wrapper {
+    height: 470px;
+  }
+  .center {
+    width: 270px;
+    height: 400px;
+  }
+  .left,
+  .right {
+    width: 220px;
+    height: 320px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+}

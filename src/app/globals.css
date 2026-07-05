@@ -285,6 +285,45 @@ body {
   transform: none;
 }
 
+/*
+  Mobile-only (< sm): slide-in-from-left entrance, applied only to sections
+  carrying the `.mobile-slide-left` marker class (currently the About page's
+  Team + CTA sections). Scroll-driven so each section animates as it enters the
+  viewport. Where `animation-timeline` is unsupported, sections render normally
+  — no flash, never stuck hidden. Desktop (>= 640px) is unaffected.
+*/
+@keyframes mobile-slide-in-left {
+  from {
+    opacity: 0;
+    /* Kept within the container's mobile padding (px-5 = 20px) so the card
+       image + name are never clipped by the viewport edge as it slides in. */
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 639px) {
+  /* The slide never produces a horizontal scrollbar; overflow-y stays scrollable
+     (`clip` is single-axis and doesn't force the other axis to auto). */
+  body {
+    overflow-x: clip;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .mobile-slide-left {
+        animation: mobile-slide-in-left linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 45%;
+        will-change: opacity, transform;
+      }
+    }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-float,
   .animate-hero-float,

@@ -5,6 +5,7 @@ import { Reveal } from "@/components/Reveal";
 import { Button } from "@/components/Button";
 import { Callout } from "@/components/Callout";
 import { TeamAccordion } from "@/components/TeamAccordion";
+import { TeamCarousel } from "@/components/TeamCarousel";
 import { ValuesShowcase } from "@/components/ValuesShowcase";
 import { CountUp } from "@/components/CountUp";
 import { ArrowRight, Check } from "@/components/Icons";
@@ -186,7 +187,7 @@ export default function AboutPage() {
       </section>
 
       {/* Team */}
-      <section className="border-t border-ink-100 py-14 sm:py-20">
+      <section className="mobile-slide-left border-t border-ink-100 py-14 sm:py-20">
         <Container>
           <Reveal>
             <Kicker index="03">Our People</Kicker>
@@ -200,13 +201,19 @@ export default function AboutPage() {
           </Reveal>
 
           <Reveal className="mt-12">
-            <TeamAccordion members={orderedTeam} />
+            {/* Desktop keeps the accordion; mobile shows the coverflow carousel. */}
+            <div className="hidden md:block">
+              <TeamAccordion members={orderedTeam} />
+            </div>
+            <div className="md:hidden">
+              <TeamCarousel members={orderedTeam} />
+            </div>
           </Reveal>
         </Container>
       </section>
 
       {/* CTA */}
-      <section className="border-t border-ink-100 py-14 sm:py-20">
+      <section className="mobile-slide-left border-t border-ink-100 py-14 sm:py-20">
         <Container>
           <Reveal>
             <Callout
