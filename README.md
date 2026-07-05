@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Garbha.ai website
 
-## Getting Started
+Modern rebuild of [garbha.ai](https://garbha.ai) — the WordPress marketing site
+re-implemented on a current stack.
 
-First, run the development server:
+**Stack:** Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 ·
+MDX blog.
+
+## Run it locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install        # first time only
+npm run dev        # start the dev server → http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Other commands:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build      # production build
+npm run start      # run the production build locally
+npm run lint       # check code style
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Where things live
 
-## Learn More
+```
+src/
+  app/                      # pages (each folder = a URL)
+    page.tsx                #   /            homepage
+    solutions/              #   /solutions   + /solutions/[slug] detail pages
+    blog/                   #   /blog        + /blog/[slug] posts
+    about/  partnership/    #   /about, /partnership
+    contact/                #   /contact     (appointment form)
+    api/contact/route.ts    #   form submission handler
+    privacy/                #   /privacy
+  components/               # reusable UI (Header, Footer, cards, form…)
+  content/
+    solutions.ts            # the 6 AI solutions (edit text here)
+    blog/*.mdx              # blog posts (one file per post)
+  lib/
+    site.ts                # site name, nav, contact details, social links
+    blog.ts                # loads blog posts
+  app/globals.css          # brand colours & fonts (design system)
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Editing content (no deep coding needed)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Site name, nav, email, social links, headline stats:** `src/lib/site.ts`
+- **Solutions (names, summaries, benefits, steps):** `src/content/solutions.ts`
+- **Brand colours & fonts:** `src/app/globals.css` (the `@theme` block)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Add a blog post
 
-## Deploy on Vercel
+1. Create a new file in `src/content/blog/`, e.g. `my-post.mdx`.
+2. Start it with this frontmatter, then write the article in Markdown below:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```mdx
+---
+title: "My post title"
+description: "One-line summary shown in listings and search."
+date: "2026-07-02"
+author: "Garbha.ai Team"
+tags: ["AI", "IVF"]
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Your article content here. Use ## for headings, **bold**, lists, > quotes, etc.
+```
+
+The post automatically appears at `/blog` and `/blog/my-post`.
+
+## Contact form
+
+The appointment form posts to `src/app/api/contact/route.ts`, which currently
+validates the input and logs it server-side. Before going live, connect it to
+your email/CRM provider (e.g. Resend, SendGrid, or HubSpot) — see the `TODO`
+comment in that file.
+
+## Deploying
+
+This is a standard Next.js app. The simplest path is
+[Vercel](https://vercel.com) (creators of Next.js): push this repo to
+GitHub/GitLab and import it — no configuration required. It also runs on
+Netlify, AWS Amplify, or any Node host via `npm run build && npm run start`.
+
+Set the production URL in `src/lib/site.ts` (`url`) so metadata, the sitemap,
+and robots.txt point to the right domain.

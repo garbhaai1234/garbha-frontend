@@ -1,26 +1,306 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/*
+  Garbha.ai design system — matched to the live garbha.ai brand.
+  Brand: coral/rose (#f1575e) with slate-blue text and Dosis + Open Sans type.
+*/
+@theme {
+  --color-brand-50: #fef4f4;
+  --color-brand-100: #fde3e4;
+  --color-brand-200: #fbc9cb;
+  --color-brand-300: #f8a3a7;
+  --color-brand-400: #f47d82;
+  --color-brand-500: #f1575e;
+  --color-brand-600: #e0464d;
+  --color-brand-700: #cf2e2e;
+  --color-brand-800: #a82525;
+  --color-brand-900: #8a2020;
+  --color-brand-950: #4c1111;
+
+  --color-accent-400: #ff7a3c;
+  --color-accent-500: #ff4800;
+  --color-accent-600: #e04000;
+
+  --color-ink-50: #f7f8fa;
+  --color-ink-100: #eef1f5;
+  --color-ink-200: #e0e5ec;
+  --color-ink-300: #c3ccd8;
+  --color-ink-400: #8f9bb0;
+  --color-ink-500: #57647c;
+  --color-ink-600: #4a566b;
+  --color-ink-700: #3a4356;
+  --color-ink-900: #22262e;
+
+  --font-sans: var(--font-open-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Editorial serif for headings; Dosis kept as a fallback + for kickers. */
+  --font-display: var(--font-fraunces), ui-serif, Georgia, "Times New Roman", serif;
+  --font-dosis: var(--font-dosis), ui-sans-serif, system-ui, sans-serif;
+}
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #32373c;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle radial brand glow helper used on hero/CTA sections */
+.bg-radial-brand {
+  background-image: radial-gradient(
+    60% 60% at 50% 0%,
+    color-mix(in oklab, var(--color-brand-100) 70%, transparent) 0%,
+    transparent 70%
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ * Motion — ported from the live garbha.ai (Albion/Elementor) theme.
+ * ------------------------------------------------------------------ */
+
+/* Floating up/down (theme: moveBounce) — used on hero imagery */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Richer levitation — floats, gently sways, and breathes. Used on hero art. */
+@keyframes hero-float {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translateY(-16px) rotate(1.6deg) scale(1.02);
+  }
+  50% {
+    transform: translateY(-4px) rotate(0deg) scale(1);
+  }
+  75% {
+    transform: translateY(-20px) rotate(-1.6deg) scale(1.02);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+}
+.animate-hero-float {
+  animation: hero-float 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Gentle bob + wiggle for the capability icons — makes them feel alive */
+@keyframes icon-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(4deg);
+  }
+}
+.animate-icon-bob {
+  animation: icon-bob 3s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Heartbeat pulse for the hero illustration */
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.055);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.035);
+  }
+  56% {
+    transform: scale(1);
+  }
+}
+.animate-heartbeat {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: heartbeat 2.6s ease-in-out infinite;
+}
+
+/* Slow continuous rotation (theme: rotateMe) — decorative rings */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-spin-slow {
+  animation: spin-slow 22s linear infinite;
+}
+
+/* Organic drifting blobs used behind hero / CTA sections */
+@keyframes blob {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(24px, -32px) scale(1.08);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.94);
+  }
+}
+.animate-blob {
+  animation: blob 16s ease-in-out infinite;
+}
+
+/* Coral → orange brand gradient text */
+.text-gradient-brand {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-brand-500),
+    var(--color-accent-500)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Subtle dotted grid backdrop for hero sections */
+.bg-dot-grid {
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--color-brand-500) 22%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+}
+
+/* Animated gradient sweep for the CTA band */
+@keyframes sheen {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+.bg-brand-sheen {
+  background-image: linear-gradient(
+    110deg,
+    var(--color-brand-600),
+    var(--color-brand-500),
+    var(--color-accent-500),
+    var(--color-brand-500),
+    var(--color-brand-600)
+  );
+  background-size: 200% 100%;
+  animation: sheen 12s linear infinite;
+}
+
+/* Gentle continuous float for featured cards */
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.animate-float-slow {
+  animation: float-slow 5s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Pulsing aura behind featured cards */
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.06);
+  }
+}
+.animate-glow {
+  animation: glow-pulse 4.5s ease-in-out infinite;
+}
+
+/* Infinite horizontal marquee (duplicated track scrolls one full set) */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee 34s linear infinite;
+}
+
+/* Entrance scale (theme: scaleup) */
+@keyframes scale-up {
+  from {
+    transform: scale(1.15);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Scroll-reveal entrance (Elementor fade-in-up feel) */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-hero-float,
+  .animate-heartbeat,
+  .animate-icon-bob,
+  .animate-spin-slow,
+  .animate-blob,
+  .animate-marquee,
+  .animate-float-slow,
+  .animate-glow,
+  .bg-brand-sheen {
+    animation: none;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
