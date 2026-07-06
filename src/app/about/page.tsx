@@ -90,10 +90,22 @@ const team = [
     img: "/brand/team/buvaneswari.webp",
   },
   {
+    name: "Himabindu G S",
+    role: "Co-Founder",
+    desc: "People, Operations & Compliance",
+    img: "/brand/team/himabindu.png",
+  },
+  {
     name: "Alekya Vuppu",
     role: "Co-Founder",
     desc: "Director – Finance & General Administration",
     img: "/brand/team/alekya.png",
+  },
+  {
+    name: "Dr. Deepak Vuppu",
+    role: "Co-Founder",
+    desc: "MBBS MD, ISB PGPMAX – B2LSPRY",
+    img: "/brand/team/deepak.png",
   },
   {
     name: "Ajeeth Dumpala",
