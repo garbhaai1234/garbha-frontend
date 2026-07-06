@@ -11,6 +11,7 @@ import { FeatureIcon } from "@/components/FeatureIcons";
 import { Kicker } from "@/components/Kicker";
 import { Callout } from "@/components/Callout";
 import { SolutionMark } from "@/components/SolutionMark";
+import { TmName } from "@/components/TmName";
 import { stats } from "@/lib/site";
 import { credibilityBadges } from "@/content/technology";
 
@@ -140,7 +141,7 @@ const features = [
   },
   {
     title: "Precision Implantation",
-    description: "Garbha AI™ – ERA identifies the optimal embryo transfer window.",
+    description: "Garbha AI – ERA identifies the optimal embryo transfer window.",
     icon: "implant",
   },
   {
@@ -228,35 +229,35 @@ function Capabilities() {
 const serviceCards = [
   {
     href: "/solutions/embryo-scoring",
-    name: "Garbha AI™ – EmbryoScore",
+    name: "Garbha AI – EmbryoScore™",
     description:
       "India's first AI-powered scoring platform, supporting clinical decision-making with consistent grading.",
     mark: "embryo" as const,
   },
   {
     href: "/solutions/oocyte-selection",
-    name: "Garbha AI™ – Oocyte Quality & Selection",
+    name: "Garbha AI – Oocyte Quality & Selection",
     description:
       "An advanced AI-powered assessment that evaluates oocyte morphology and vitality before fertilisation.",
     mark: "oocyte" as const,
   },
   {
     href: "/solutions/sperm-selection",
-    name: "Garbha AI™ – Sperm Quality & Selection",
+    name: "Garbha AI – Sperm Quality & Selection",
     description:
       "An advanced AI-driven platform that identifies and selects the most viable sperm for ICSI.",
     mark: "sperm" as const,
   },
   {
     href: "/solutions/endometrial-receptivity",
-    name: "Garbha AI™ – ERA",
+    name: "Garbha AI – ERA",
     description:
       "Gene-expression mapping and AI optimization reveal your unique implantation window.",
     mark: "era" as const,
   },
   {
     href: "/solutions/smart-ivf",
-    name: "Garbha AI™ – Smart IVF",
+    name: "Garbha AI – Smart IVF",
     description:
       "Turning real-time data and intelligent communication into smoother, more coordinated treatments.",
     mark: "smart" as const,
@@ -294,7 +295,7 @@ function SolutionsIndex() {
                   />
                 </div>
                 <h3 className="mt-6 font-display text-xl font-bold text-ink-900 transition-colors duration-300 group-hover:text-brand-600">
-                  {s.name}
+                  <TmName name={s.name} />
                 </h3>
                 <p className="mt-3 flex-1 text-sm leading-6 text-ink-500">
                   {s.description}
@@ -413,9 +414,9 @@ function WhyTrust() {
         </Reveal>
 
         <Reveal delay={120} className="lg:sticky lg:top-24">
-          <div className="aspect-[4/3] overflow-hidden rounded-2xl border border-ink-100 shadow-lg">
+          <div className="overflow-hidden rounded-2xl border border-ink-100 shadow-lg">
             <video
-              className="h-full w-full object-cover"
+              className="h-auto w-full"
               controls
               muted
               playsInline
@@ -449,10 +450,10 @@ function ProudMoment() {
         <Reveal className="order-1 lg:order-2" delay={100}>
           <Kicker index="04">Recognition</Kicker>
           <h2 className="mt-8 font-display text-4xl font-bold tracking-tight text-ink-900 sm:text-5xl">
-            A proud moment for Garbha.ai™
+            A proud moment for Garbha.ai
           </h2>
           <p className="mt-8 text-lg leading-8 text-ink-500">
-            Garbha.ai™ emerged as the winner at the 32<sup>nd</sup> HYSEA
+            Garbha.ai emerged as the winner at the 32<sup>nd</sup> HYSEA
             National Summit &amp; Awards 2025, standing tall among 250+ startups.
             This recognition by Telangana&rsquo;s IT Minister, Sridhar Babu, is a
             proud milestone in our mission to redefine IVF success through

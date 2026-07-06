@@ -10,6 +10,7 @@ import { Check, ArrowRight } from "@/components/Icons";
 import { Accordion } from "@/components/Accordion";
 import { JsonLd } from "@/components/JsonLd";
 import { solutions, getSolution } from "@/content/solutions";
+import { TmName } from "@/components/TmName";
 import { breadcrumbSchema, faqSchema, absoluteUrl } from "@/lib/seo";
 import { site } from "@/lib/site";
 
@@ -132,7 +133,7 @@ export default async function SolutionDetailPage({
                 </p>
               </div>
               <h1 className="mt-8 font-display text-4xl font-bold leading-[1.05] tracking-tight text-ink-900 sm:text-6xl">
-                {solution.name}
+                <TmName name={solution.name} />
               </h1>
             </Reveal>
 
@@ -233,7 +234,7 @@ export default async function SolutionDetailPage({
                   </span>
                   <div className="min-w-0">
                     <h3 className="font-display text-xl font-bold text-ink-900 transition-colors group-hover:text-brand-600 sm:text-2xl">
-                      {s.shortName}
+                      <TmName name={s.shortName} />
                     </h3>
                     <p className="mt-1 line-clamp-2 max-w-2xl text-sm leading-6 text-ink-500 sm:mt-2">
                       {s.summary}

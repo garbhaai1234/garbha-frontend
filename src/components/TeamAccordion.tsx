@@ -74,7 +74,7 @@ export function TeamAccordion({ members }: { members: Member[] }) {
                     : "w-0 px-0 opacity-0",
                 )}
               >
-                <div className="min-w-[12rem] sm:min-w-[15rem]">
+                <div className="min-w-[10rem] sm:min-w-[12rem]">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-600">
                     {member.role}
                   </p>

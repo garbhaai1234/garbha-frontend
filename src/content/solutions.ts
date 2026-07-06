@@ -16,8 +16,8 @@ export type Solution = {
 export const solutions: Solution[] = [
   {
     slug: "embryo-scoring",
-    name: "Garbha AI™ – EmbryoScore",
-    shortName: "Garbha AI™ – EmbryoScore",
+    name: "Garbha AI – EmbryoScore™",
+    shortName: "Garbha AI – EmbryoScore™",
     tagline: "Smarter embryo selection",
     summary:
       "AI-driven grading identifies the best embryos, enhancing IVF success. India's first AI-powered scoring platform supporting clinical decision-making.",
@@ -38,14 +38,14 @@ export const solutions: Solution[] = [
   },
   {
     slug: "sperm-selection",
-    name: "Garbha AI™ – Sperm Quality & Selection",
-    shortName: "Garbha AI™ – Sperm",
+    name: "Garbha AI – Sperm Quality & Selection",
+    shortName: "Garbha AI – Sperm",
     tagline: "Identify the most viable sperm",
     summary:
       "AI-powered analysis identifies the healthiest sperm, improving fertilization outcomes for ICSI.",
     image: "/brand/Garbha-website-Icons-01-1.png",
     overview:
-      "Garbha AI™ – Sperm Quality & Selection is an advanced AI-driven platform that identifies and selects the most viable sperm. It evaluates motility, morphology, and vitality in real time, helping embryologists make faster, more objective selections for intracytoplasmic sperm injection (ICSI).",
+      "Garbha AI – Sperm Quality & Selection is an advanced AI-driven platform that identifies and selects the most viable sperm. It evaluates motility, morphology, and vitality in real time, helping embryologists make faster, more objective selections for intracytoplasmic sperm injection (ICSI).",
     benefits: [
       "Objective motility and morphology assessment",
       "Faster candidate identification during ICSI",
@@ -59,11 +59,11 @@ export const solutions: Solution[] = [
     ],
     faqs: [
       {
-        q: "What is the Garbha AI™ – Sperm Quality & Selection test?",
-        a: "Garbha AI™ – Sperm Quality & Selection is an advanced AI-powered system that evaluates sperm morphology, motility, and DNA integrity to identify the healthiest sperm for fertilization, enhancing IVF success rates through intelligent, data-driven analysis.",
+        q: "What is the Garbha AI – Sperm Quality & Selection test?",
+        a: "Garbha AI – Sperm Quality & Selection is an advanced AI-powered system that evaluates sperm morphology, motility, and DNA integrity to identify the healthiest sperm for fertilization, enhancing IVF success rates through intelligent, data-driven analysis.",
       },
       {
-        q: "How does Garbha AI™ – Sperm Quality & Selection improve IVF outcomes?",
+        q: "How does Garbha AI – Sperm Quality & Selection improve IVF outcomes?",
         a: "By identifying and ranking the most viable sperm, the platform ensures optimal fertilization potential, resulting in improved embryo quality, higher implantation rates, and better overall IVF outcomes.",
       },
       {
@@ -71,7 +71,7 @@ export const solutions: Solution[] = [
         a: "The system utilizes high-resolution imaging, deep learning algorithms, and morphokinetic pattern recognition to assess sperm characteristics objectively and accurately in real time.",
       },
       {
-        q: "How is AI used in Garbha AI™ – Sperm Quality & Selection?",
+        q: "How is AI used in Garbha AI – Sperm Quality & Selection?",
         a: "Artificial Intelligence analyzes each sperm's motility, structure, and genetic integrity to generate a comprehensive sperm quality score, assisting embryologists in making precise and objective selections during ICSI or IVF.",
       },
       {
@@ -82,14 +82,14 @@ export const solutions: Solution[] = [
   },
   {
     slug: "oocyte-selection",
-    name: "Garbha AI™ – Oocyte Quality & Selection",
-    shortName: "Garbha AI™ – Oocyte",
+    name: "Garbha AI – Oocyte Quality & Selection",
+    shortName: "Garbha AI – Oocyte",
     tagline: "Quality insight before fertilisation",
     summary:
       "AI-based evaluation pinpoints the most viable oocytes, boosting embryo development potential.",
     image: "/brand/Garbha-website-Icons-02.png",
     overview:
-      "Garbha AI™ – Oocyte Quality & Selection is an advanced AI-powered assessment that evaluates oocyte morphology and vitality. It gives clinics an additional, objective data point when planning fertilisation and cryopreservation strategies.",
+      "Garbha AI – Oocyte Quality & Selection is an advanced AI-powered assessment that evaluates oocyte morphology and vitality. It gives clinics an additional, objective data point when planning fertilisation and cryopreservation strategies.",
     benefits: [
       "Non-invasive, image-based quality indicators",
       "Supports fertilisation and freezing decisions",
@@ -104,14 +104,14 @@ export const solutions: Solution[] = [
   },
   {
     slug: "endometrial-receptivity",
-    name: "Garbha AI™ – ERA",
-    shortName: "Garbha AI™ – ERA",
+    name: "Garbha AI – ERA",
+    shortName: "Garbha AI – ERA",
     tagline: "Precision implantation timing",
     summary:
-      "Garbha AI™ – ERA identifies the optimal embryo transfer window using gene expression mapping and AI optimization.",
+      "Garbha AI – ERA identifies the optimal embryo transfer window using gene expression mapping and AI optimization.",
     image: "/brand/Garbha-website-Icons-04.png",
     overview:
-      "Garbha AI™ – ERA employs sophisticated gene expression mapping and Artificial Intelligence optimization to accurately reveal your unique implantation window, helping clinicians personalise the timing of frozen embryo transfer and improve the chances of successful implantation.",
+      "Garbha AI – ERA employs sophisticated gene expression mapping and Artificial Intelligence optimization to accurately reveal your unique implantation window, helping clinicians personalise the timing of frozen embryo transfer and improve the chances of successful implantation.",
     benefits: [
       "Personalised window-of-implantation guidance",
       "Reduces guesswork in transfer scheduling",
@@ -126,14 +126,14 @@ export const solutions: Solution[] = [
   },
   {
     slug: "smart-ivf",
-    name: "Garbha AI™ – Smart IVF",
-    shortName: "Garbha AI™ – Smart IVF",
+    name: "Garbha AI – Smart IVF",
+    shortName: "Garbha AI – Smart IVF",
     tagline: "Real-time IVF analytics",
     summary:
       "Turning real-time data and intelligent communication into smoother, more coordinated IVF treatments.",
     image: "/brand/ivf-2.png",
     overview:
-      "Garbha AI™ – Smart IVF turns real-time data and intelligent communication into smoother treatments. It connects lab and clinic workflows with live analytics, keeping every step of the IVF journey coordinated, transparent, and data-driven for clinicians and patients alike.",
+      "Garbha AI – Smart IVF turns real-time data and intelligent communication into smoother treatments. It connects lab and clinic workflows with live analytics, keeping every step of the IVF journey coordinated, transparent, and data-driven for clinicians and patients alike.",
     benefits: [
       "Real-time analytics across the treatment cycle",
       "Smoother, clearer patient communication",

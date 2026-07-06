@@ -5,6 +5,7 @@ import { Kicker } from "@/components/Kicker";
 import { Reveal } from "@/components/Reveal";
 import { ArrowRight } from "@/components/Icons";
 import { solutions } from "@/content/solutions";
+import { TmName } from "@/components/TmName";
 
 export const metadata: Metadata = {
   title: "AI IVF Solutions — Embryo, Sperm & Oocyte Selection",
@@ -59,7 +60,7 @@ export default function SolutionsPage() {
                   </span>
                   <div className="min-w-0">
                     <h2 className="font-display text-xl font-bold text-ink-900 transition-colors group-hover:text-brand-600 sm:text-2xl">
-                      {s.shortName}
+                      <TmName name={s.shortName} />
                     </h2>
                     <p className="mt-1 line-clamp-2 max-w-2xl text-sm leading-6 text-ink-500 sm:mt-2">
                       {s.summary}

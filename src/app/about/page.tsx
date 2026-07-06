@@ -7,6 +7,7 @@ import { Callout } from "@/components/Callout";
 import { TeamAccordion } from "@/components/TeamAccordion";
 import { TeamCarousel } from "@/components/TeamCarousel";
 import { ValuesShowcase } from "@/components/ValuesShowcase";
+import { TmName } from "@/components/TmName";
 import { CountUp } from "@/components/CountUp";
 import { ArrowRight, Check } from "@/components/Icons";
 import { credibilityBadges, credibilityPoints } from "@/content/technology";
@@ -14,7 +15,7 @@ import { credibilityBadges, credibilityPoints } from "@/content/technology";
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "Garbha AI™ EmbryoScore, founded by alumni of the Indian School of Business (ISB), is revolutionizing reproductive healthcare with AI-powered fertility solutions.",
+    "Garbha AI EmbryoScore™, founded by alumni of the Indian School of Business (ISB), is revolutionizing reproductive healthcare with AI-powered fertility solutions.",
   alternates: { canonical: "/about" },
 };
 
@@ -35,7 +36,7 @@ const values = [
     icon: "cpu" as const,
     title: "What We Do",
     description:
-      "We build AI-powered tools like Garbha AI™ – EmbryoScore that support embryologists making data-driven decisions during IVF treatment.",
+      "We build AI-powered tools like Garbha AI – EmbryoScore™ that support embryologists making data-driven decisions during IVF treatment.",
   },
   {
     icon: "chart" as const,
@@ -97,7 +98,7 @@ const team = [
   {
     name: "Ajeeth Dumpala",
     role: "Advisor – Garbha.ai",
-    desc: "Director – Aispry and 360DigiTMG",
+    desc: "Director – AiSPRY and 360DigiTMG",
     img: "/brand/team/ajeeth.png",
   },
 ];
@@ -247,7 +248,7 @@ export default function AboutPage() {
 const glanceFacts = [
   { label: "Founded by", value: "Alumni of ISB" },
   { label: "Headquarters", value: "Hyderabad, India" },
-  { label: "Flagship", value: "Garbha AI™ – EmbryoScore" },
+  { label: "Flagship", value: "Garbha AI – EmbryoScore™" },
   { label: "Regulatory", value: "CDSCO licence · ISO 13485" },
   { label: "Recognition", value: "HYSEA National Award, 2025" },
   { label: "Deployment", value: "Live in 11 partner clinics" },
@@ -281,7 +282,7 @@ function AboutHero() {
             </h1>
 
             <p className="mt-6 max-w-xl text-lg leading-8 text-ink-500">
-              Garbha AI™ EmbryoScore, founded by alumni of the Indian School of
+              Garbha AI EmbryoScore<sup className="align-super text-[0.55em] font-semibold">™</sup>, founded by alumni of the Indian School of
               Business (ISB), is revolutionising reproductive healthcare with
               explainable AI — built alongside embryologists and clinicians.
             </p>
@@ -315,7 +316,7 @@ function AboutHero() {
                     >
                       <dt className="text-sm text-ink-400">{f.label}</dt>
                       <dd className="max-w-[62%] text-right text-sm font-semibold text-ink-800">
-                        {f.value}
+                        <TmName name={f.value} />
                       </dd>
                     </div>
                   ))}
