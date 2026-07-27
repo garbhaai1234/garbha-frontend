@@ -182,40 +182,26 @@ export function FeatureIcon({
         </Svg>
       );
 
-    /* ---- Tailored Hormone Therapy: syringe + pulsing/rotating pathogen, no-symbol ---- */
+    /* ---- Tailored Hormone Therapy: syringe with pulsing hormone droplets ---- */
     case "hormone":
       return (
         <Svg className={className}>
           <circle cx="32" cy="32" r="29" />
-          {/* prohibition slash */}
-          <line x1="14" y1="50" x2="50" y2="14" strokeOpacity="0.9" />
-          {/* syringe pointing down-left toward the pathogen */}
+          {/* syringe angled down-left, matching the brand line-icon style */}
           <g transform="rotate(45 32 32)">
-            <line x1="32" y1="11" x2="32" y2="15" strokeWidth="2" />
-            <line x1="27.5" y1="15" x2="36.5" y2="15" />
-            <rect x="28.5" y="15" width="7" height="16" rx="1.6" />
-            <line x1="29.6" y1="19" x2="32.6" y2="19" strokeWidth="1.2" />
-            <line x1="29.6" y1="22" x2="32.6" y2="22" strokeWidth="1.2" />
-            <line x1="29.6" y1="25" x2="32.6" y2="25" strokeWidth="1.2" />
-            <line x1="32" y1="31" x2="32" y2="40" />
+            <line x1="32" y1="10" x2="32" y2="14" strokeWidth="2" />
+            <line x1="26.5" y1="14" x2="37.5" y2="14" />
+            <rect x="27.5" y="14" width="9" height="18" rx="1.8" />
+            <line x1="29" y1="19" x2="32.5" y2="19" strokeWidth="1.3" />
+            <line x1="29" y1="23" x2="32.5" y2="23" strokeWidth="1.3" />
+            <line x1="29" y1="27" x2="32.5" y2="27" strokeWidth="1.3" />
+            <line x1="29.5" y1="32" x2="34.5" y2="32" strokeWidth="1.6" />
+            <line x1="32" y1="32" x2="32" y2="42" />
           </g>
-          {/* pathogen */}
-          <g transform="translate(21 43)">
-            <g>
-              <animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="9s" repeatCount="indefinite" />
-              {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => {
-                const r = (a * Math.PI) / 180;
-                return (
-                  <line key={a} x1={Math.cos(r) * 5} y1={Math.sin(r) * 5} x2={Math.cos(r) * 8} y2={Math.sin(r) * 8} strokeWidth="1.4" />
-                );
-              })}
-            </g>
-            <circle cx="0" cy="0" r="5.5">
-              <animate attributeName="r" values="5;6.2;5" dur="2s" repeatCount="indefinite" />
-            </circle>
-            <circle cx="-1.4" cy="-0.8" r="1.1" fill={CORAL} stroke="none" />
-            <circle cx="1.5" cy="1.4" r="1.1" fill={CORAL} stroke="none" />
-          </g>
+          {/* hormone droplets pulsing away from the needle tip */}
+          <Dot cx={20} cy={45} r={1.8} delay={0} />
+          <Dot cx={15.5} cy={40.5} r={1.4} delay={0.8} />
+          <Dot cx={17} cy={49} r={1.4} delay={1.6} />
         </Svg>
       );
 

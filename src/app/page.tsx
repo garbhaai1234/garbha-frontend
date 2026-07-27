@@ -137,7 +137,7 @@ const features = [
   {
     title: "Tailored Hormone Therapy",
     description: "Genetic insights refine drug selection and dosing for improved outcomes.",
-    icon: "hormone",
+    icon: "/brand/Garbha-website-Icons-02.png",
   },
   {
     title: "Precision Implantation",
