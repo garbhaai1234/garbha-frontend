@@ -62,7 +62,7 @@ const team = [
   {
     name: "Dr. V. Shekar",
     role: "Advisor",
-    desc: "Medical Director – Ravi Children's Hospital",
+    desc: "MBBS, MD Pediatrics, Medical Director – Ravi Children's Hospital",
     img: "/brand/team/shekar.png",
   },
   {
@@ -103,8 +103,8 @@ const team = [
   },
   {
     name: "Dr. Deepak Vuppu",
-    role: "Co-Founder",
-    desc: "MBBS MD, ISB PGPMAX – B2LSPRY",
+    role: "Strategic Advisor",
+    desc: "MBBS MD, ISB PGPMAX",
     img: "/brand/team/deepak.png",
   },
   {
