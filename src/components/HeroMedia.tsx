@@ -19,6 +19,19 @@ const LENS_SIZE = (270 / 440) * 100; // ~61.4% — just inside the lens ring
 
 export function HeroMedia({ className }: { className?: string }) {
   const [showBaby, setShowBaby] = useState(false);
+  // The baby animation is hidden for the first ~3.4s, so fetch it only after
+  // the page has loaded — it must not compete with the hero text and fonts.
+  const [loadBaby, setLoadBaby] = useState(false);
+
+  useEffect(() => {
+    const load = () => setLoadBaby(true);
+    if (document.readyState === "complete") {
+      load();
+      return;
+    }
+    window.addEventListener("load", load, { once: true });
+    return () => window.removeEventListener("load", load);
+  }, []);
 
   useEffect(() => {
     let timer: number;
@@ -48,12 +61,19 @@ export function HeroMedia({ className }: { className?: string }) {
           opacity: showBaby ? 1 : 0,
         }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/brand/finalgif2.gif"
-          alt="Heart with baby — the outcome of a successful IVF journey"
-          className="h-full w-full scale-[1.5] object-cover"
-        />
+        {loadBaby && (
+          // Animated WebP (with alpha) — same animation as the original GIF
+          // at a fraction of the size.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src="/brand/finalgif2.webp"
+            alt="Heart with baby — the outcome of a successful IVF journey"
+            width={1108}
+            height={903}
+            decoding="async"
+            className="h-full w-full scale-[1.5] object-cover"
+          />
+        )}
       </div>
     </div>
   );

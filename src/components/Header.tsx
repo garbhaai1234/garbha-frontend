@@ -61,11 +61,11 @@ export function Header() {
       <Container className="flex h-16 items-center justify-between gap-4">
         <Link href="/" className="flex items-center" onClick={close}>
           <Image
-            src="/brand/garbhatm.svg"
+            src="/brand/garbhatm.png"
             alt={site.name}
             width={172}
             height={35}
-            priority
+            loading="eager"
             className="h-7 w-auto sm:h-8"
           />
         </Link>

@@ -42,9 +42,14 @@ function Hero() {
     <section className="relative overflow-hidden">
       {/* hero background image */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/brand/hero-bg.jpg')" }}
+        <Image
+          src="/brand/hero-bg.jpg"
+          alt=""
+          fill
+          loading="eager"
+          fetchPriority="high"
+          sizes="100vw"
+          className="object-cover object-center"
         />
         {/* coral brand wash to unify the clinical photo with the palette */}
         <div className="absolute inset-0 bg-brand-500/20 mix-blend-multiply" />
@@ -52,7 +57,7 @@ function Hero() {
         <div className="absolute inset-0 bg-gradient-to-r from-white/98 via-white/86 to-white/64" />
       </div>
       <Container className="pt-4 pb-16 sm:pt-6 sm:pb-24">
-        <Reveal>
+        <Reveal eager>
           <div className="flex items-center justify-between border-b border-ink-100 pb-6">
             <span className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">
               Precision AI for IVF Excellence
@@ -64,7 +69,7 @@ function Hero() {
         </Reveal>
 
         <div className="mt-10 grid items-center gap-12 sm:mt-14 lg:grid-cols-12 lg:gap-10">
-          <Reveal className="lg:col-span-7">
+          <Reveal eager className="lg:col-span-7">
             <h1 className="font-display text-[2.6rem] font-extrabold leading-[1.03] tracking-tight text-brand-500 sm:text-6xl lg:text-[4rem]">
               Transforming IVF outcomes with the{" "}
               <span className="text-ink-900">Power of AI</span>
@@ -88,7 +93,7 @@ function Hero() {
             </p>
           </Reveal>
 
-          <Reveal className="lg:col-span-5" delay={120}>
+          <Reveal eager className="lg:col-span-5" delay={120}>
             <div className="animate-hero-float relative mx-auto w-full max-w-[350px] lg:ml-auto lg:mr-0">
               {/* soft coral glow */}
               <div className="pointer-events-none absolute -inset-4 rounded-[2.75rem] bg-brand-400/20 blur-2xl" />
@@ -415,8 +420,9 @@ function WhyTrust() {
 
         <Reveal delay={120} className="lg:sticky lg:top-24">
           <div className="overflow-hidden rounded-2xl border border-ink-100 shadow-lg">
+            {/* aspect-video reserves the 16:9 box before metadata loads (no CLS) */}
             <video
-              className="h-auto w-full"
+              className="aspect-video h-auto w-full"
               controls
               muted
               playsInline
@@ -438,10 +444,11 @@ function ProudMoment() {
         <Reveal className="group order-2 lg:order-1">
           <div className="overflow-hidden rounded-2xl border border-ink-100 bg-ink-50 shadow-sm">
             <Image
-              src="/brand/ChatGPT-Image-Apr-25-2025-11_15_47-AM.svg"
+              src="/brand/hysea-award-2025.jpg"
               alt="Garbha.ai wins at the 32nd HYSEA National Summit & Awards 2025"
               width={640}
               height={520}
+              sizes="(min-width: 1024px) 600px, 100vw"
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
             />
           </div>

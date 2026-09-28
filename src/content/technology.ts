@@ -127,7 +127,7 @@ export const techBenefits = [
 /** Headline proof points, reused as badges on the homepage and About page. */
 export const credibilityBadges = [
   { value: "93%", label: "Embryo-selection accuracy" },
-  { value: "11", label: "Clinics live today" },
+  { value: "20", label: "Clinics live today" },
   { value: "36,000+", label: "Validated embryo dataset" },
   { value: "CDSCO", label: "Cleared · ISO 13485" },
 ];

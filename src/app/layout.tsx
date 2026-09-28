@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Open_Sans, Dosis, Fraunces } from "next/font/google";
+import { Open_Sans, Fraunces } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -8,17 +8,11 @@ import { JsonLd } from "@/components/JsonLd";
 import { site } from "@/lib/site";
 import { organizationSchema, websiteSchema } from "@/lib/seo";
 
+// Both families are variable fonts: omitting `weight` ships one file per
+// style covering every weight, instead of a separate @font-face per weight.
 const openSans = Open_Sans({
   variable: "--font-open-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "600", "700", "800"],
-  display: "swap",
-});
-
-const dosis = Dosis({
-  variable: "--font-dosis",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -26,7 +20,6 @@ const dosis = Dosis({
 const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
   style: ["normal", "italic"],
   display: "swap",
 });
@@ -91,7 +84,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${openSans.variable} ${dosis.variable} ${fraunces.variable} h-full`}
+      className={`${openSans.variable} ${fraunces.variable} h-full`}
     >
       <body className="flex min-h-full flex-col bg-white text-ink-900 antialiased">
         <a

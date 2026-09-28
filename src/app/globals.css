@@ -285,6 +285,18 @@ body {
   transform: none;
 }
 
+/* Same entrance for above-the-fold content, driven by CSS alone so it starts
+   on first paint rather than after hydration. */
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+.reveal-eager {
+  animation: reveal-in 0.6s ease both;
+}
+
 /*
   Mobile-only (< sm): slide-in-from-left entrance, applied only to sections
   carrying the `.mobile-slide-left` marker class (currently the About page's
@@ -341,5 +353,8 @@ body {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+  .reveal-eager {
+    animation: none;
   }
 }

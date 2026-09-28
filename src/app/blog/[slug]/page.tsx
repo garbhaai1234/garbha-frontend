@@ -172,7 +172,9 @@ export default async function BlogPostPage({
               alt={post.title}
               width={1024}
               height={576}
-              priority
+              loading="eager"
+              fetchPriority="high"
+              sizes="(min-width: 808px) 768px, 100vw"
               unoptimized={post.cover.endsWith(".svg")}
               className="h-auto w-full object-cover"
             />

@@ -16,6 +16,7 @@ export function PostCard({ post }: { post: PostMeta }) {
             alt={post.title}
             width={640}
             height={400}
+            sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
             unoptimized={post.cover.endsWith(".svg")}
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           />

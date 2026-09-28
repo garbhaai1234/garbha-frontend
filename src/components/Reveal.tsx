@@ -13,15 +13,22 @@ export function Reveal({
   children,
   className,
   delay = 0,
+  eager = false,
 }: {
   children: React.ReactNode;
   className?: string;
   delay?: number;
+  /**
+   * Above-the-fold content: play the same entrance as a pure CSS animation
+   * from first paint, so it never waits on hydration (keeps LCP fast).
+   */
+  eager?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    if (eager) return;
     const el = ref.current;
     if (!el) return;
 
@@ -52,7 +59,18 @@ export function Reveal({
       observer.disconnect();
       window.clearTimeout(fallback);
     };
-  }, []);
+  }, [eager]);
+
+  if (eager) {
+    return (
+      <div
+        className={clsx("reveal-eager", className)}
+        style={delay ? { animationDelay: `${delay}ms` } : undefined}
+      >
+        {children}
+      </div>
+    );
+  }
 
   return (
     <div
