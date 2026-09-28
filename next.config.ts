@@ -30,6 +30,8 @@ const securityHeaders = [
       "camera=(), microphone=(), geolocation=(), interest-cohort=(), browsing-topics=()",
   },
   { key: "X-DNS-Prefetch-Control", value: "on" },
+  // No CORP header: it would stop Google Images from loading full-size images.
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
   ...(isProd
     ? [
         {
@@ -41,6 +43,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   images: {
     // All images are first-party brand assets under /public/brand.
     // Allow next/image to serve SVGs (logo, award illustration).
