@@ -98,10 +98,10 @@ export default function PrivacyPage() {
 
             <h2>7. Cookies</h2>
             <p>
-              We use essential cookies to run the site and, with your consent,
-              may use analytics cookies to understand usage. You can accept or
-              decline non-essential cookies via the consent banner, and manage
-              cookies in your browser settings.
+              We only use essential cookies needed to run the site. We do not
+              use analytics or tracking cookies. The consent banner stores your
+              choice on your device, and you can manage cookies in your browser
+              settings.
             </p>
 
             <h2>8. Your rights</h2>

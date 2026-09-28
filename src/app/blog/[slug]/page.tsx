@@ -23,6 +23,10 @@ import {
 import { getAuthor } from "@/lib/authors";
 import { articleSchema, breadcrumbSchema } from "@/lib/seo";
 
+// Only prebuilt posts exist; any other slug is a 404 without rendering at
+// request time (previously an unknown slug surfaced as a 500 in production).
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return getAllPosts().map((p) => ({ slug: p.slug }));
 }
