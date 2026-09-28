@@ -51,6 +51,18 @@ const nextConfig: NextConfig = {
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
+  async redirects() {
+    // www serves a duplicate of the site; send each URL straight to the
+    // canonical apex host in one hop (301, path and query kept).
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.garbha.ai" }],
+        destination: "https://garbha.ai/:path*",
+        statusCode: 301,
+      },
+    ];
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
