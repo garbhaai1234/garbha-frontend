@@ -1,4 +1,5 @@
-import type { NextConfig } from "next";
+// Plain JS (not next.config.ts): the Hostinger build server has glibc < 2.29,
+// so Next falls back to WASM SWC, which cannot transpile a TS config there.
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -42,7 +43,8 @@ const securityHeaders = [
     : []),
 ];
 
-const nextConfig: NextConfig = {
+/** @type {import("next").NextConfig} */
+const nextConfig = {
   poweredByHeader: false,
   images: {
     // All images are first-party brand assets under /public/brand.
