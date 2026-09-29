@@ -13,7 +13,7 @@ import { AuthorCard, AuthorAvatar } from "@/components/AuthorCard";
 import { TableOfContents } from "@/components/TableOfContents";
 import { JsonLd } from "@/components/JsonLd";
 import {
-  getAllPosts,
+  getAllPostSlugs,
   getPost,
   getRelatedPosts,
   extractHeadings,
@@ -27,8 +27,12 @@ import { articleSchema, breadcrumbSchema } from "@/lib/seo";
 // request time (previously an unknown slug surfaced as a 500 in production).
 export const dynamicParams = false;
 
+// Scheduled posts are prebuilt as 404s and turn into the post after their
+// publish time (see isPublished in lib/blog).
+export const revalidate = 3600;
+
 export function generateStaticParams() {
-  return getAllPosts().map((p) => ({ slug: p.slug }));
+  return getAllPostSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({

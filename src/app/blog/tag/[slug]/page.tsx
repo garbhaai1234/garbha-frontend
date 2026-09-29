@@ -10,6 +10,9 @@ import { ArrowRight } from "@/components/Icons";
 import { getAllTags, getPostsByTag, getTagName } from "@/lib/blog";
 import { breadcrumbSchema } from "@/lib/seo";
 
+// Picks up scheduled posts (and their new tags) once they are published.
+export const revalidate = 3600;
+
 export function generateStaticParams() {
   return getAllTags().map((t) => ({ slug: t.slug }));
 }

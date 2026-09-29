@@ -3,6 +3,8 @@ import { site } from "@/lib/site";
 import { absoluteUrl } from "@/lib/seo";
 
 export const dynamic = "force-static";
+// Picks up scheduled blog posts once their publish time passes.
+export const revalidate = 3600;
 
 function escapeXml(value: string): string {
   return value

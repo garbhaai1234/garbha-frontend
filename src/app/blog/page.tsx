@@ -10,6 +10,9 @@ import { BlogHeroArt } from "@/components/BlogHeroArt";
 import { ArrowRight } from "@/components/Icons";
 import { getAllPosts, getAllTags } from "@/lib/blog";
 
+// Picks up scheduled posts once their publish time passes.
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Blog",
   description:

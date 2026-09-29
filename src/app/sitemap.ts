@@ -3,6 +3,9 @@ import { site } from "@/lib/site";
 import { solutions } from "@/content/solutions";
 import { getAllPosts, getAllTags } from "@/lib/blog";
 
+// Picks up scheduled blog posts once their publish time passes.
+export const revalidate = 3600;
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = site.url;
   const staticRoutes = [

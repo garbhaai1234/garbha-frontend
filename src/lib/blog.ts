@@ -42,7 +42,19 @@ function fileToPost(fileName: string): Post {
   };
 }
 
-export function getAllPosts(): PostMeta[] {
+/**
+ * Scheduled publishing: a post whose `date` is in the future stays hidden
+ * (404, and absent from lists, tags, sitemap and RSS) until 09:00 IST on that
+ * date. The blog index, post, tag, sitemap and RSS routes set
+ * `revalidate = 3600`, so it goes live on its own within the hour — no
+ * redeploy needed.
+ */
+export function isPublished(date: string, now = Date.now()): boolean {
+  const publishAt = Date.parse(`${date}T09:00:00+05:30`);
+  return Number.isNaN(publishAt) || publishAt <= now;
+}
+
+function readAllPosts(): PostMeta[] {
   if (!fs.existsSync(BLOG_DIR)) return [];
   return fs
     .readdirSync(BLOG_DIR)
@@ -55,12 +67,28 @@ export function getAllPosts(): PostMeta[] {
     .sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
+/** Published posts only, newest first. */
+export function getAllPosts(): PostMeta[] {
+  return readAllPosts().filter((p) => isPublished(p.date));
+}
+
+/**
+ * Every post slug, including scheduled ones. Blog post routes are prebuilt
+ * from this list (dynamicParams = false), so a scheduled post already has a
+ * route that renders 404 until its date, then revalidates into the post.
+ */
+export function getAllPostSlugs(): string[] {
+  return readAllPosts().map((p) => p.slug);
+}
+
+/** A published post, or undefined if missing or still scheduled. */
 export function getPost(slug: string): Post | undefined {
   const mdx = path.join(BLOG_DIR, `${slug}.mdx`);
   const md = path.join(BLOG_DIR, `${slug}.md`);
   const file = fs.existsSync(mdx) ? `${slug}.mdx` : fs.existsSync(md) ? `${slug}.md` : null;
   if (!file) return undefined;
-  return fileToPost(file);
+  const post = fileToPost(file);
+  return isPublished(post.date) ? post : undefined;
 }
 
 export function formatDate(iso: string): string {
