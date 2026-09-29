@@ -21,7 +21,7 @@ import {
   slugify,
 } from "@/lib/blog";
 import { getAuthor } from "@/lib/authors";
-import { articleSchema, breadcrumbSchema } from "@/lib/seo";
+import { articleSchema, breadcrumbSchema, shareImageUrl } from "@/lib/seo";
 
 // Only prebuilt posts exist; any other slug is a 404 without rendering at
 // request time (previously an unknown slug surfaced as a 500 in production).
@@ -57,7 +57,7 @@ export async function generateMetadata({
       publishedTime: post.date,
       authors: [post.author],
       tags: post.tags,
-      ...(post.cover ? { images: [{ url: post.cover }] } : {}),
+      ...(post.cover ? { images: [{ url: shareImageUrl(post.cover) }] } : {}),
     },
   };
 }
