@@ -7,6 +7,7 @@ import { Reveal } from "@/components/Reveal";
 import { CountUp } from "@/components/CountUp";
 import { ArrowRight } from "@/components/Icons";
 import { HeroMedia } from "@/components/HeroMedia";
+import { LazyVideo } from "@/components/LazyVideo";
 import { FeatureIcon } from "@/components/FeatureIcons";
 import { Kicker } from "@/components/Kicker";
 import { Callout } from "@/components/Callout";
@@ -398,21 +399,23 @@ function WhyTrust() {
 
           <dl className="mt-12">
             {trustPoints.map((point, i) => (
+              // A <dl> row may only hold <dt>/<dd>, so the number lives inside
+              // the <dt>; subgrid keeps it in its own column as before.
               <div
                 key={point.title}
-                className="grid grid-cols-[auto_1fr] gap-6 border-t border-ink-100 py-5"
+                className="grid grid-cols-[auto_1fr] gap-x-6 border-t border-ink-100 py-5"
               >
-                <span className="font-display text-sm font-bold text-brand-500">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <div>
-                  <dt className="font-display text-base font-bold text-ink-900">
+                <dt className="col-span-2 grid grid-cols-subgrid">
+                  <span className="font-display text-sm font-bold text-brand-500">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="font-display text-base font-bold text-ink-900">
                     {point.title}
-                  </dt>
-                  <dd className="mt-1 text-sm leading-6 text-ink-500">
-                    {point.description}
-                  </dd>
-                </div>
+                  </span>
+                </dt>
+                <dd className="col-start-2 mt-1 text-sm leading-6 text-ink-500">
+                  {point.description}
+                </dd>
               </div>
             ))}
           </dl>
@@ -421,15 +424,10 @@ function WhyTrust() {
         <Reveal delay={120} className="lg:sticky lg:top-24">
           <div className="overflow-hidden rounded-2xl border border-ink-100 shadow-lg">
             {/* aspect-video reserves the 16:9 box before metadata loads (no CLS) */}
-            <video
+            <LazyVideo
+              src="/brand/updated-garbha-ai.mp4"
               className="aspect-video h-auto w-full"
-              controls
-              muted
-              playsInline
-              preload="metadata"
-            >
-              <source src="/brand/updated-garbha-ai.mp4" type="video/mp4" />
-            </video>
+            />
           </div>
         </Reveal>
       </Container>
