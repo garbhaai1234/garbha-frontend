@@ -114,10 +114,23 @@ export function slugify(text: string): string {
 
 export type TagInfo = { name: string; slug: string; count: number };
 
-/** Every tag across all posts, with post counts, most-used first. */
+/** Every tag across published posts, with post counts, most-used first. */
 export function getAllTags(): TagInfo[] {
+  return tagsOf(getAllPosts());
+}
+
+/**
+ * Tag slugs across all posts, including scheduled ones. Tag routes are
+ * prebuilt from this list so a tag that only a scheduled post uses turns from
+ * 404 into its page after publishing (an on-demand 404 could stay cached).
+ */
+export function getAllTagSlugs(): string[] {
+  return tagsOf(readAllPosts()).map((t) => t.slug);
+}
+
+function tagsOf(posts: PostMeta[]): TagInfo[] {
   const map = new Map<string, { name: string; count: number }>();
-  for (const post of getAllPosts()) {
+  for (const post of posts) {
     for (const tag of post.tags) {
       const slug = slugify(tag);
       const existing = map.get(slug);
