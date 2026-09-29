@@ -13,7 +13,7 @@ import { AuthorCard, AuthorAvatar } from "@/components/AuthorCard";
 import { TableOfContents } from "@/components/TableOfContents";
 import { JsonLd } from "@/components/JsonLd";
 import {
-  getAllPosts,
+  getAllPostSlugs,
   getPost,
   getRelatedPosts,
   extractHeadings,
@@ -21,14 +21,18 @@ import {
   slugify,
 } from "@/lib/blog";
 import { getAuthor } from "@/lib/authors";
-import { articleSchema, breadcrumbSchema } from "@/lib/seo";
+import { articleSchema, breadcrumbSchema, shareImageUrl } from "@/lib/seo";
 
 // Only prebuilt posts exist; any other slug is a 404 without rendering at
 // request time (previously an unknown slug surfaced as a 500 in production).
 export const dynamicParams = false;
 
+// Scheduled posts are prebuilt as 404s and turn into the post after their
+// publish time (see isPublished in lib/blog).
+export const revalidate = 3600;
+
 export function generateStaticParams() {
-  return getAllPosts().map((p) => ({ slug: p.slug }));
+  return getAllPostSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -53,7 +57,7 @@ export async function generateMetadata({
       publishedTime: post.date,
       authors: [post.author],
       tags: post.tags,
-      ...(post.cover ? { images: [{ url: post.cover }] } : {}),
+      ...(post.cover ? { images: [{ url: shareImageUrl(post.cover) }] } : {}),
     },
   };
 }

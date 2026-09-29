@@ -7,6 +7,17 @@ export function absoluteUrl(path = "/"): string {
 }
 
 /**
+ * Absolute share URL (og:image, schema image) for a raster image under
+ * /public, served through the Next image route. Hostinger's web server
+ * 404s /brand files added after its static copy was made, but
+ * /_next/image serves them. SVGs keep their direct URL.
+ */
+export function shareImageUrl(path: string): string {
+  if (path.startsWith("http") || path.endsWith(".svg")) return absoluteUrl(path);
+  return absoluteUrl(`/_next/image?url=${encodeURIComponent(path)}&w=1200&q=75`);
+}
+
+/**
  * Organization / MedicalBusiness schema — describes the company itself so
  * search engines can build a knowledge-panel entity (logo, contact, socials).
  * Rendered once, sitewide, in the root layout.
@@ -111,7 +122,7 @@ export function articleSchema(
     description: post.description,
     datePublished: post.date,
     dateModified: post.date,
-    image: post.cover ? absoluteUrl(post.cover) : absoluteUrl("/brand/hero-bg.jpg"),
+    image: post.cover ? shareImageUrl(post.cover) : absoluteUrl("/brand/hero-bg.jpg"),
     author: authorNode,
     publisher: { "@id": `${site.url}/#organization` },
     mainEntityOfPage: absoluteUrl(`/blog/${post.slug}`),
