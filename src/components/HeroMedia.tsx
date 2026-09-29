@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { HeroArt } from "@/components/HeroArt";
 import { clsx } from "@/lib/clsx";
 
@@ -76,14 +77,16 @@ export function HeroMedia({ className }: { className?: string }) {
       >
         {loadBaby && (
           // Animated WebP (with alpha) — same animation as the original GIF
-          // at a fraction of the size.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          // at a fraction of the size. Served via next/image (animated files
+          // pass through unchanged) because the Hostinger web server does not
+          // serve /brand files added after its static copy was made.
+          <Image
             src="/brand/finalgif2.webp"
             alt="Heart with baby — the outcome of a successful IVF journey"
             width={1108}
             height={903}
-            decoding="async"
+            sizes="360px"
+            loading="eager"
             className="h-full w-full scale-[1.5] object-cover"
           />
         )}
