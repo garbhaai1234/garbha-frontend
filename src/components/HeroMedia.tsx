@@ -19,18 +19,31 @@ const LENS_SIZE = (270 / 440) * 100; // ~61.4% — just inside the lens ring
 
 export function HeroMedia({ className }: { className?: string }) {
   const [showBaby, setShowBaby] = useState(false);
-  // The baby animation is hidden for the first ~3.4s, so fetch it only after
-  // the page has loaded — it must not compete with the hero text and fonts.
+  // The baby animation (~660 KB) is hidden for the first ~3.4s, so fetch it
+  // after the page has loaded AND ~1s before it is first shown — it must not
+  // compete with the hero image, text and fonts on slow mobile connections.
   const [loadBaby, setLoadBaby] = useState(false);
 
   useEffect(() => {
-    const load = () => setLoadBaby(true);
-    if (document.readyState === "complete") {
-      load();
-      return;
-    }
-    window.addEventListener("load", load, { once: true });
-    return () => window.removeEventListener("load", load);
+    let pageLoaded = document.readyState === "complete";
+    let leadTimeUp = false;
+    const maybeLoad = () => {
+      if (pageLoaded && leadTimeUp) setLoadBaby(true);
+    };
+    const onLoad = () => {
+      pageLoaded = true;
+      maybeLoad();
+    };
+    // Same clock as the eggs → baby cycle below (baby first shown at 3.4s).
+    const timer = window.setTimeout(() => {
+      leadTimeUp = true;
+      maybeLoad();
+    }, 2400);
+    if (!pageLoaded) window.addEventListener("load", onLoad, { once: true });
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("load", onLoad);
+    };
   }, []);
 
   useEffect(() => {
