@@ -253,6 +253,146 @@ export const dpdpGuide = {
 };
 
 /**
+ * Presentation only: how the guide rows are grouped on the page, an icon per
+ * topic, and headline figures. Every figure is quoted from a row above.
+ */
+export type IconName =
+  | "building"
+  | "archive"
+  | "lock"
+  | "message"
+  | "users"
+  | "calendar"
+  | "chat"
+  | "pen"
+  | "cell"
+  | "heart"
+  | "dna"
+  | "ban"
+  | "megaphone"
+  | "scale"
+  | "doc"
+  | "check"
+  | "child"
+  | "inbox"
+  | "badge"
+  | "shield"
+  | "list"
+  | "link"
+  | "alert"
+  | "clock";
+
+export type GuideGroup = {
+  id: string;
+  title: string;
+  blurb: string;
+  topics: string[];
+};
+
+export type Highlight = { value: string; label: string };
+
+export const artPresentation = {
+  icons: {
+    Registration: "building",
+    Eligibility: "users",
+    "Age limits": "calendar",
+    "Embryo transfer": "cell",
+    Counselling: "chat",
+    Consent: "pen",
+    "Oocyte donors": "heart",
+    "Genetic testing": "dna",
+    "Sex selection": "ban",
+    Advertising: "megaphone",
+    Records: "archive",
+    Confidentiality: "lock",
+    Grievance: "message",
+    Penalties: "scale",
+  } satisfies Record<string, IconName>,
+  groups: [
+    {
+      id: "clinic",
+      title: "Running the clinic",
+      blurb: "Registration, records, confidentiality and a way to raise complaints.",
+      topics: ["Registration", "Records", "Confidentiality", "Grievance"],
+    },
+    {
+      id: "patients",
+      title: "Patients and consent",
+      blurb: "Who can be treated, and what they must be told and agree to.",
+      topics: ["Eligibility", "Age limits", "Counselling", "Consent"],
+    },
+    {
+      id: "lab",
+      title: "Treatment and the lab",
+      blurb: "Limits on transfers, donors and genetic testing.",
+      topics: ["Embryo transfer", "Oocyte donors", "Genetic testing", "Sex selection"],
+    },
+    {
+      id: "advertising",
+      title: "Advertising",
+      blurb: "What a clinic may never promote, online or offline.",
+      topics: ["Advertising"],
+    },
+  ] satisfies GuideGroup[],
+  highlights: [
+    { value: "5 years", label: "Registration validity" },
+    { value: "10 years", label: "Minimum record keeping" },
+    { value: "3", label: "Max oocytes or embryos per transfer" },
+    { value: "₹5–10 lakh", label: "Fine for a first contravention" },
+  ] satisfies Highlight[],
+};
+
+export const dpdpPresentation = {
+  icons: {
+    Notice: "doc",
+    Consent: "check",
+    Processors: "link",
+    Contact: "badge",
+    "Rights requests": "inbox",
+    Security: "shield",
+    Logs: "list",
+    Breach: "alert",
+    Children: "child",
+    Penalties: "scale",
+  } satisfies Record<string, IconName>,
+  groups: [
+    {
+      id: "notice-consent",
+      title: "Notice and consent",
+      blurb: "Tell patients what you collect and why, and record their choice.",
+      topics: ["Notice", "Consent", "Children"],
+    },
+    {
+      id: "rights",
+      title: "Rights and accountability",
+      blurb: "Someone to contact, and answers to requests on time.",
+      topics: ["Contact", "Rights requests", "Processors"],
+    },
+    {
+      id: "security",
+      title: "Security and breaches",
+      blurb: "Protect the data, keep logs, and act fast when something goes wrong.",
+      topics: ["Security", "Logs", "Breach"],
+    },
+  ] satisfies GuideGroup[],
+  highlights: [
+    { value: "72 hours", label: "To report a breach to the Board" },
+    { value: "90 days", label: "To answer rights requests" },
+    { value: "1 year", label: "Minimum log retention" },
+    { value: "₹250 crore", label: "Maximum penalty (security failure)" },
+  ] satisfies Highlight[],
+};
+
+/** Rows of a guide in the order of its groups. */
+export function rowsFor(rows: GuideRow[], topics: string[]): GuideRow[] {
+  return topics.map((t) => {
+    const row = rows.find((r) => r.topic === t);
+    if (!row) throw new Error(`Unknown compliance topic: ${t}`);
+    return row;
+  });
+}
+
+/**
  * Visible FAQ (and FAQPage schema) built only from the guide rows: the
  * question names the topic, the answer is the row's requirement unchanged.
  */

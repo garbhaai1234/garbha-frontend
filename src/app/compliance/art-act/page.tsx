@@ -1,16 +1,22 @@
 import type { Metadata } from "next";
-import { PageHeader } from "@/components/PageHeader";
 import { JsonLd } from "@/components/JsonLd";
 import {
+  GroupSection,
+  GuideCta,
   GuideFaqs,
-  GuideSection,
+  GuideHero,
+  HighlightStrip,
   HubFooter,
-  RequirementList,
-  ReviewedNote,
+  JumpNav,
+  PenaltyPanel,
   SourceList,
 } from "@/components/ComplianceGuide";
-import { Container } from "@/components/Container";
-import { artGuide, guideFaqs } from "@/content/compliance";
+import {
+  artGuide,
+  artPresentation,
+  guideFaqs,
+  rowsFor,
+} from "@/content/compliance";
 import { breadcrumbSchema, faqSchema } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -21,8 +27,10 @@ export const metadata: Metadata = {
 };
 
 const faqs = guideFaqs(artGuide.rows, "ART Act");
+const [penalties] = rowsFor(artGuide.rows, ["Penalties"]);
 
 export default function ArtActGuidePage() {
+  const { groups, icons, highlights } = artPresentation;
   return (
     <>
       <JsonLd
@@ -35,36 +43,40 @@ export default function ArtActGuidePage() {
           faqSchema(faqs),
         ]}
       />
-      <PageHeader
-        eyebrow="Compliance Hub · ART Act"
-        title="ART Act 2021 guide for IVF clinics"
+
+      <GuideHero
+        pill="Compliance Hub · ART Act"
+        title="ART Act 2021 guide for"
+        accent="IVF clinics"
         description="A plain-language summary of what the Assisted Reproductive Technology (Regulation) Act 2021 requires of clinics, with the section and source for every point."
+        chips={["14 requirements", "Section references", "Sources linked"]}
+        icon="building"
+      >
+        <JumpNav groups={groups} />
+      </GuideHero>
+
+      <HighlightStrip items={highlights} />
+
+      {groups.map((group, i) => (
+        <GroupSection
+          key={group.id}
+          group={group}
+          index={i}
+          rows={artGuide.rows}
+          icons={icons}
+          tinted={i % 2 === 1}
+        />
+      ))}
+
+      <PenaltyPanel row={penalties} />
+
+      <GuideFaqs faqs={faqs} />
+
+      <SourceList sources={artGuide.sources} />
+
+      <GuideCta
+        other={{ href: "/compliance/dpdp", title: "DPDP guide", icon: "shield" }}
       />
-      <Container className="pt-6">
-        <ReviewedNote />
-      </Container>
-
-      <GuideSection index="01" kicker="Requirements" title={artGuide.title}>
-        <RequirementList rows={artGuide.rows} />
-      </GuideSection>
-
-      <GuideSection
-        index="02"
-        kicker="Questions"
-        title="Common questions"
-        className="border-t border-ink-100 py-12 sm:py-16"
-      >
-        <GuideFaqs faqs={faqs} />
-      </GuideSection>
-
-      <GuideSection
-        index="03"
-        kicker="Sources"
-        title="Sources"
-        className="border-t border-ink-100 py-12 sm:py-16"
-      >
-        <SourceList sources={artGuide.sources} />
-      </GuideSection>
 
       <HubFooter />
     </>
