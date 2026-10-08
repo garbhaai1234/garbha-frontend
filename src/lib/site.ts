@@ -22,6 +22,7 @@ export const site = {
 
 export const mainNav = [
   { label: "Technology", href: "/technology" },
+  { label: "Compliance", href: "/compliance" },
   { label: "Blog", href: "/blog" },
   { label: "About Us", href: "/about" },
   { label: "Partner with Us", href: "/partnership" },

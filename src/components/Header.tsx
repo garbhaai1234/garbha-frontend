@@ -59,7 +59,13 @@ export function Header() {
       )}
     >
       <Container className="flex h-16 items-center justify-between gap-4">
-        <Link href="/" className="flex items-center" onClick={close}>
+        {/* Tablet (md–lg): tighter menu and a fixed-size logo so the menu
+            fits; from lg up the original spacing and logo behaviour apply. */}
+        <Link
+          href="/"
+          className="flex items-center md:shrink-0 lg:shrink"
+          onClick={close}
+        >
           <Image
             src="/brand/garbhatm.png"
             alt={site.name}
@@ -76,7 +82,7 @@ export function Header() {
             <Link
               href="/solutions"
               className={clsx(
-                "relative inline-flex items-center gap-1 px-4 py-2 text-base font-semibold tracking-tight transition-colors duration-200",
+                "relative inline-flex items-center gap-1 px-1.5 py-2 text-sm font-semibold lg:px-4 lg:text-base tracking-tight transition-colors duration-200",
                 isActive("/solutions")
                   ? "text-brand-600"
                   : "text-ink-700 group-hover:text-brand-600",
@@ -86,7 +92,7 @@ export function Header() {
               <ChevronDown className="h-4 w-4 transition-transform duration-300 group-hover:rotate-180" />
               <span
                 className={clsx(
-                  "absolute inset-x-4 bottom-1 h-0.5 origin-left rounded-full bg-brand-500 transition-transform duration-300",
+                  "absolute inset-x-1.5 bottom-1 lg:inset-x-4 h-0.5 origin-left rounded-full bg-brand-500 transition-transform duration-300",
                   isActive("/solutions")
                     ? "scale-x-100"
                     : "scale-x-0 group-hover:scale-x-100",
@@ -132,7 +138,7 @@ export function Header() {
               key={item.href}
               href={item.href}
               className={clsx(
-                "group relative px-4 py-2 text-base font-semibold tracking-tight transition-colors duration-200",
+                "group relative px-1.5 py-2 text-sm font-semibold lg:px-4 lg:text-base tracking-tight transition-colors duration-200",
                 isActive(item.href)
                   ? "text-brand-600"
                   : "text-ink-700 hover:text-brand-600",
@@ -141,7 +147,7 @@ export function Header() {
               {item.label}
               <span
                 className={clsx(
-                  "absolute inset-x-4 bottom-1 h-0.5 origin-left rounded-full bg-brand-500 transition-transform duration-300",
+                  "absolute inset-x-1.5 bottom-1 lg:inset-x-4 h-0.5 origin-left rounded-full bg-brand-500 transition-transform duration-300",
                   isActive(item.href)
                     ? "scale-x-100"
                     : "scale-x-0 group-hover:scale-x-100",
@@ -152,7 +158,11 @@ export function Header() {
         </nav>
 
         <div className="hidden md:block">
-          <Button href="/contact" variant="primary" className="group">
+          <Button
+            href="/contact"
+            variant="primary"
+            className="group md:px-4 lg:px-6"
+          >
             Book a demo
             <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Button>
