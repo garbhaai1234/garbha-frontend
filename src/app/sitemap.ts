@@ -17,6 +17,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/partnership",
     "/contact",
     "/privacy",
+    "/compliance",
+    "/compliance/art-act",
+    "/compliance/dpdp",
   ].map((route) => ({
     url: `${base}${route}`,
     changeFrequency: "monthly" as const,

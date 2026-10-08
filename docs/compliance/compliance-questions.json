@@ -1,0 +1,358 @@
+{
+  "version": "2026-09-29",
+  "disclaimer": "Educational self-assessment, not legal advice. Laws: ART (Regulation) Act 2021; DPDP Act 2023 and DPDP Rules 2025.",
+  "severity_weights": {
+    "critical": 3,
+    "high": 2,
+    "medium": 1
+  },
+  "answer_values": {
+    "yes": 1.0,
+    "partial": 0.5,
+    "no": 0.0,
+    "na": null
+  },
+  "questions": [
+    {
+      "id": "ART-01",
+      "area": "ART Act",
+      "severity": "critical",
+      "applies_to": "all",
+      "question": "Is the clinic registered on the National ART & Surrogacy Registry, with the registration number shown to patients and on the website?",
+      "legal_basis": "ART Act 2021, Sec 16 (registration; valid 5 years)",
+      "source_url": "https://indiankanoon.org/doc/61852499/",
+      "evidence": "Registration certificate; website footer showing the number",
+      "fix": "Apply or renew on the National ART & Surrogacy Registry portal before offering ART services."
+    },
+    {
+      "id": "ART-02",
+      "area": "ART Act",
+      "severity": "high",
+      "applies_to": "all",
+      "question": "Is the registration still within its 5-year validity, with the renewal date tracked?",
+      "legal_basis": "ART Act 2021, Sec 16",
+      "source_url": "https://indiankanoon.org/doc/61852499/",
+      "evidence": "Certificate date; renewal reminder",
+      "fix": "Record the expiry date and start renewal well before it."
+    },
+    {
+      "id": "ART-03",
+      "area": "ART Act",
+      "severity": "critical",
+      "applies_to": "all",
+      "question": "Before treatment, do you verify with ID that the woman is 21–50 and the man is 21–55?",
+      "legal_basis": "ART Act 2021, Sec 21",
+      "source_url": "https://indiankanoon.org/doc/61852499/",
+      "evidence": "Age-check step in intake form; ID copies on file",
+      "fix": "Add a mandatory age check with ID proof at registration."
+    },
+    {
+      "id": "ART-04",
+      "area": "ART Act",
+      "severity": "critical",
+      "applies_to": "all",
+      "question": "Do you take written informed consent from all parties before every ART procedure?",
+      "legal_basis": "ART Act 2021, Sec 22(1)",
+      "source_url": "https://indiankanoon.org/doc/147282120/",
+      "evidence": "Signed consent forms per procedure",
+      "fix": "Use procedure-specific written consent forms signed by every party."
+    },
+    {
+      "id": "ART-05",
+      "area": "ART Act",
+      "severity": "high",
+      "applies_to": "level2",
+      "question": "Does the cryopreservation consent record what should happen to embryos or gametes on death or incapacity?",
+      "legal_basis": "ART Act 2021, Sec 22(2)",
+      "source_url": "https://indiankanoon.org/doc/147282120/",
+      "evidence": "Cryopreservation consent form",
+      "fix": "Add a death/incapacity instruction section to the cryopreservation consent."
+    },
+    {
+      "id": "ART-06",
+      "area": "ART Act",
+      "severity": "high",
+      "applies_to": "all",
+      "question": "Is there a documented way for either partner to withdraw consent before embryo or gamete transfer?",
+      "legal_basis": "ART Act 2021, Sec 22(4)",
+      "source_url": "https://indiankanoon.org/doc/147282120/",
+      "evidence": "Withdrawal form and log",
+      "fix": "Create a withdrawal form and check it before every transfer."
+    },
+    {
+      "id": "ART-07",
+      "area": "ART Act",
+      "severity": "high",
+      "applies_to": "all",
+      "question": "Is professional counselling on implications and chances given and documented for every couple or woman?",
+      "legal_basis": "ART Act 2021, Sec 21",
+      "source_url": "https://indiankanoon.org/doc/61852499/",
+      "evidence": "Counselling notes in patient file",
+      "fix": "Schedule and document counselling before treatment starts."
+    },
+    {
+      "id": "ART-08",
+      "area": "ART Act",
+      "severity": "critical",
+      "applies_to": "level2",
+      "question": "Is it enforced that no more than three oocytes or embryos are placed in the uterus in a treatment cycle?",
+      "legal_basis": "ART Act 2021, Sec 21",
+      "source_url": "https://indiankanoon.org/doc/61852499/",
+      "evidence": "Embryo transfer records",
+      "fix": "Add a hard stop in lab/EMR records above three."
+    },
+    {
+      "id": "ART-09",
+      "area": "ART Act",
+      "severity": "critical",
+      "applies_to": "level2",
+      "question": "Are oocyte donors aged 23–35, donating only once in life, with no more than seven oocytes retrieved?",
+      "legal_basis": "ART Act 2021, Sec 27",
+      "source_url": "https://indiankanoon.org/doc/61852499/",
+      "evidence": "Donor file; retrieval record; registry check",
+      "fix": "Check donor age and prior donation before accepting; cap retrieval at seven."
+    },
+    {
+      "id": "ART-10",
+      "area": "ART Act",
+      "severity": "critical",
+      "applies_to": "level2",
+      "question": "Does every oocyte donor have insurance cover for 12 months before retrieval?",
+      "legal_basis": "ART Act 2021, Sec 22(1)",
+      "source_url": "https://indiankanoon.org/doc/147282120/",
+      "evidence": "Insurance policy per donor",
+      "fix": "Buy 12-month donor insurance before any retrieval."
+    },
+    {
+      "id": "ART-11",
+      "area": "ART Act",
+      "severity": "critical",
+      "applies_to": "level2",
+      "question": "Is pre-implantation genetic testing used only to screen for known, pre-existing, heritable or genetic diseases?",
+      "legal_basis": "ART Act 2021, Sec 25",
+      "source_url": "https://indiankanoon.org/doc/61852499/",
+      "evidence": "PGT indication recorded per case",
+      "fix": "Record the medical indication for every PGT request; refuse others."
+    },
+    {
+      "id": "ART-12",
+      "area": "ART Act",
+      "severity": "critical",
+      "applies_to": "all",
+      "question": "Does the clinic never offer a child of a pre-determined sex, and never advertise sex-selective ART anywhere, including the website and social media?",
+      "legal_basis": "ART Act 2021, Sec 26 and Sec 32",
+      "source_url": "https://indiankanoon.org/doc/61852499/",
+      "evidence": "Website and social media review; staff instructions",
+      "fix": "Remove any such wording; brief all staff and agencies."
+    },
+    {
+      "id": "ART-13",
+      "area": "ART Act",
+      "severity": "high",
+      "applies_to": "all",
+      "question": "Are detailed patient, donor and procedure records kept for at least 10 years?",
+      "legal_basis": "ART Act 2021, Sec 21",
+      "source_url": "https://indiankanoon.org/doc/61852499/",
+      "evidence": "Records policy; archive",
+      "fix": "Set a 10-year retention rule in EMR and paper archives."
+    },
+    {
+      "id": "ART-14",
+      "area": "ART Act",
+      "severity": "high",
+      "applies_to": "all",
+      "question": "Do you share enrolment, procedure and outcome information with the National Registry as required?",
+      "legal_basis": "ART Act 2021 (duty to report to the National Registry)",
+      "source_url": "https://prsindia.org/billtrack/prs-products/issues-for-consideration",
+      "evidence": "Registry submissions log",
+      "fix": "Assign an owner and a monthly reporting routine."
+    },
+    {
+      "id": "ART-15",
+      "area": "ART Act",
+      "severity": "high",
+      "applies_to": "all",
+      "question": "Is information about the couple, woman and donors kept confidential?",
+      "legal_basis": "ART Act 2021, Sec 21",
+      "source_url": "https://indiankanoon.org/doc/61852499/",
+      "evidence": "Confidentiality policy; access controls",
+      "fix": "Write a confidentiality policy and restrict access to records."
+    },
+    {
+      "id": "ART-16",
+      "area": "ART Act",
+      "severity": "medium",
+      "applies_to": "all",
+      "question": "Does the clinic have a grievance cell that patients know how to reach?",
+      "legal_basis": "ART Act 2021, Sec 21",
+      "source_url": "https://indiankanoon.org/doc/61852499/",
+      "evidence": "Grievance contact on website and reception",
+      "fix": "Set up a grievance cell and publish its contact."
+    },
+    {
+      "id": "ART-17",
+      "area": "ART Act",
+      "severity": "high",
+      "applies_to": "all",
+      "question": "Are gamete donors and commissioning parties screened for eligibility before procedures?",
+      "legal_basis": "ART Act 2021, Sec 21",
+      "source_url": "https://indiankanoon.org/doc/61852499/",
+      "evidence": "Screening checklist in files",
+      "fix": "Use a written eligibility checklist for every donor and couple."
+    },
+    {
+      "id": "DP-01",
+      "area": "DPDP",
+      "severity": "critical",
+      "applies_to": "all",
+      "question": "When collecting patient data, do you give a standalone notice listing the data collected, the purpose, and how to withdraw consent or complain to the Data Protection Board?",
+      "legal_basis": "DPDP Rules 2025 (notice)",
+      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2190655&reg=48&lang=2",
+      "evidence": "Notice text on forms and website",
+      "fix": "Publish a plain-language notice and show it before consent."
+    },
+    {
+      "id": "DP-02",
+      "area": "DPDP",
+      "severity": "high",
+      "applies_to": "all",
+      "question": "Is consent recorded per purpose, with date and time, and kept separate for marketing messages?",
+      "legal_basis": "DPDP Act 2023 and Rules 2025 (consent)",
+      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2190655&reg=48&lang=2",
+      "evidence": "Consent log",
+      "fix": "Log each consent with purpose, time and notice version."
+    },
+    {
+      "id": "DP-03",
+      "area": "DPDP",
+      "severity": "high",
+      "applies_to": "all",
+      "question": "Can a patient withdraw consent as easily as they gave it, and does processing then stop?",
+      "legal_basis": "DPDP Rules 2025 (withdrawal at any time)",
+      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2190655&reg=48&lang=2",
+      "evidence": "Withdrawal route; stop-processing procedure",
+      "fix": "Add a one-step withdrawal route and a procedure to act on it."
+    },
+    {
+      "id": "DP-04",
+      "area": "DPDP",
+      "severity": "high",
+      "applies_to": "all",
+      "question": "Is the contact of a designated officer or Data Protection Officer shown clearly for data questions?",
+      "legal_basis": "DPDP Act 2023, Sec 8(9); DPDP Rules 2025 (contact information)",
+      "source_url": "https://indiankanoon.org/doc/186118625/",
+      "evidence": "Contact on website and forms",
+      "fix": "Name an officer and publish their contact."
+    },
+    {
+      "id": "DP-05",
+      "area": "DPDP",
+      "severity": "high",
+      "applies_to": "all",
+      "question": "Are requests to access, correct or erase data logged and answered within 90 days?",
+      "legal_basis": "DPDP Rules 2025 (response within 90 days)",
+      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2190655&reg=48&lang=2",
+      "evidence": "Request register with dates",
+      "fix": "Keep a request register and track the 90-day deadline."
+    },
+    {
+      "id": "DP-06",
+      "area": "DPDP",
+      "severity": "critical",
+      "applies_to": "all",
+      "question": "Is patient data encrypted or masked, in storage and in transit?",
+      "legal_basis": "DPDP Rules 2025 (reasonable security safeguards)",
+      "source_url": "https://www.privacyworld.blog/2025/11/india-passes-the-digital-personal-data-protection-rules-ushering-in-a-new-digital-age-in-india/",
+      "evidence": "EMR/LIMS encryption settings; HTTPS",
+      "fix": "Turn on encryption at rest and TLS everywhere."
+    },
+    {
+      "id": "DP-07",
+      "area": "DPDP",
+      "severity": "critical",
+      "applies_to": "all",
+      "question": "Do staff see only the patient data their role needs (access control)?",
+      "legal_basis": "DPDP Rules 2025 (access control)",
+      "source_url": "https://www.privacyworld.blog/2025/11/india-passes-the-digital-personal-data-protection-rules-ushering-in-a-new-digital-age-in-india/",
+      "evidence": "User roles in EMR/LIMS",
+      "fix": "Set role-based access and remove shared logins."
+    },
+    {
+      "id": "DP-08",
+      "area": "DPDP",
+      "severity": "high",
+      "applies_to": "all",
+      "question": "Are access logs monitored and kept for at least one year?",
+      "legal_basis": "DPDP Rules 2025 (logging; one-year retention)",
+      "source_url": "https://www.privacyworld.blog/2025/11/india-passes-the-digital-personal-data-protection-rules-ushering-in-a-new-digital-age-in-india/",
+      "evidence": "Log settings and retention",
+      "fix": "Enable access logs and keep them 12 months or more."
+    },
+    {
+      "id": "DP-09",
+      "area": "DPDP",
+      "severity": "medium",
+      "applies_to": "all",
+      "question": "Are backups taken and restore-tested?",
+      "legal_basis": "DPDP Rules 2025 (data backups)",
+      "source_url": "https://www.privacyworld.blog/2025/11/india-passes-the-digital-personal-data-protection-rules-ushering-in-a-new-digital-age-in-india/",
+      "evidence": "Backup schedule; last restore test",
+      "fix": "Schedule backups and test a restore each quarter."
+    },
+    {
+      "id": "DP-10",
+      "area": "DPDP",
+      "severity": "critical",
+      "applies_to": "all",
+      "question": "Is there a breach plan to inform affected patients without delay and report to the Data Protection Board within 72 hours?",
+      "legal_basis": "DPDP Act 2023, Sec 8(6); DPDP Rules 2025 (breach intimation, 72 hours to the Board)",
+      "source_url": "https://www.privacyworld.blog/2025/11/india-passes-the-digital-personal-data-protection-rules-ushering-in-a-new-digital-age-in-india/",
+      "evidence": "Written breach response plan",
+      "fix": "Write a breach plan with owners, templates and the 72-hour clock."
+    },
+    {
+      "id": "DP-11",
+      "area": "DPDP",
+      "severity": "high",
+      "applies_to": "all",
+      "question": "Do vendors that handle patient data (EMR, LIMS, cloud, AI tools) work under written contracts with security terms?",
+      "legal_basis": "DPDP Act 2023, Sec 8(2) (processors only under a valid contract)",
+      "source_url": "https://indiankanoon.org/doc/186118625/",
+      "evidence": "Vendor contracts",
+      "fix": "Sign data-processing terms with every vendor."
+    },
+    {
+      "id": "DP-12",
+      "area": "DPDP",
+      "severity": "medium",
+      "applies_to": "all",
+      "question": "Is data deleted once its purpose is served, except where law requires keeping it (e.g., ART records for 10 years)?",
+      "legal_basis": "DPDP Act 2023, Sec 8(7) (erase when purpose ends, unless law requires retention); ART Act Sec 21",
+      "source_url": "https://indiankanoon.org/doc/186118625/",
+      "evidence": "Retention schedule",
+      "fix": "Write a retention schedule that reconciles DPDP and ART rules."
+    },
+    {
+      "id": "DP-13",
+      "area": "DPDP",
+      "severity": "medium",
+      "applies_to": "all",
+      "question": "Where you process data of anyone under 18, do you get verifiable parental consent unless a healthcare exemption applies?",
+      "legal_basis": "DPDP Rules 2025 (children's data)",
+      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2190655&reg=48&lang=2",
+      "evidence": "Consent procedure for minors",
+      "fix": "Add a parental consent step or record the exemption relied on."
+    },
+    {
+      "id": "DP-14",
+      "area": "DPDP",
+      "severity": "medium",
+      "applies_to": "all",
+      "question": "Are staff trained on handling patient data, including not sharing reports on personal WhatsApp groups?",
+      "legal_basis": "Good practice supporting DPDP security duties",
+      "source_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2190655&reg=48&lang=2",
+      "evidence": "Training records",
+      "fix": "Run a short yearly training and keep attendance."
+    }
+  ]
+}
