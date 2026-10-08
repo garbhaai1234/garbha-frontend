@@ -13,6 +13,8 @@ import { Kicker } from "@/components/Kicker";
 import { Callout } from "@/components/Callout";
 import { SolutionMark } from "@/components/SolutionMark";
 import { TmName } from "@/components/TmName";
+import { ComplianceIcon } from "@/components/ComplianceGuide";
+import type { IconName } from "@/content/compliance";
 import { stats } from "@/lib/site";
 import { credibilityBadges } from "@/content/technology";
 
@@ -32,6 +34,7 @@ export default function Home() {
       <SolutionsIndex />
       <ProofBand />
       <WhyTrust />
+      <ComplianceTeaser />
       <ProudMoment />
       {/* <CtaBand /> */}
     </>
@@ -430,6 +433,85 @@ function WhyTrust() {
             />
           </div>
         </Reveal>
+      </Container>
+    </section>
+  );
+}
+
+const complianceGuides: {
+  href: string;
+  law: string;
+  title: string;
+  text: string;
+  icon: IconName;
+}[] = [
+  {
+    href: "/compliance/art-act",
+    law: "ART (Regulation) Act 2021",
+    title: "ART Act guide",
+    text: "Registration, consent, donors, records and penalties.",
+    icon: "building",
+  },
+  {
+    href: "/compliance/dpdp",
+    law: "DPDP Act 2023 · Rules 2025",
+    title: "DPDP guide",
+    text: "Notice, consent, security, 72-hour breach reporting and deadlines.",
+    icon: "shield",
+  },
+];
+
+function ComplianceTeaser() {
+  return (
+    <section className="border-t border-ink-100 bg-ink-50/50 py-14 sm:py-20">
+      <Container className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-16">
+        <Reveal className="lg:col-span-5">
+          <Kicker>Compliance Hub</Kicker>
+          <h2 className="mt-8 font-display text-4xl font-bold tracking-tight text-ink-900 sm:text-5xl">
+            ART Act &amp; DPDP,
+            <br />
+            in plain language
+          </h2>
+          <p className="mt-6 text-lg leading-8 text-ink-500">
+            Free guides for IVF clinics in India on what the ART (Regulation)
+            Act 2021 and the DPDP Act 2023 with the DPDP Rules 2025 require —
+            with a source for every point.
+          </p>
+          <div className="mt-8">
+            <Button href="/compliance" variant="primary">
+              Visit the Compliance Hub <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </Reveal>
+
+        <div className="grid gap-6 sm:grid-cols-2 lg:col-span-7">
+          {complianceGuides.map((g, i) => (
+            <Reveal key={g.href} delay={i * 90} className="h-full">
+              <Link
+                href={g.href}
+                className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-ink-100 bg-white p-7 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-brand-200 hover:shadow-2xl hover:shadow-brand-500/15"
+              >
+                <span className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-500 to-accent-500" />
+                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-accent-500 text-white shadow-lg shadow-brand-500/25 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3">
+                  <ComplianceIcon name={g.icon} className="h-6 w-6" />
+                </span>
+                <span className="mt-5 text-xs font-semibold uppercase tracking-[0.14em] text-brand-700">
+                  {g.law}
+                </span>
+                <h3 className="mt-2 font-display text-xl font-bold text-ink-900">
+                  {g.title}
+                </h3>
+                <p className="mt-3 flex-1 text-sm leading-6 text-ink-500">
+                  {g.text}
+                </p>
+                <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-brand-700">
+                  Read the guide
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </span>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
       </Container>
     </section>
   );
