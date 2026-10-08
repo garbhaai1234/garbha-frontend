@@ -83,7 +83,7 @@ export default function ComplianceHubPage() {
         accent="IVF clinics"
         description="Plain-language guides to the two laws every IVF clinic in India works under — the ART (Regulation) Act 2021 and the DPDP Act 2023 with the DPDP Rules 2025."
         chips={["ART Act 2021", "DPDP Act 2023", "DPDP Rules 2025"]}
-        icon="scale"
+        art="hub"
       >
         <div className="mt-9 flex flex-col gap-3 sm:flex-row">
           <CtaLink href="/compliance/art-act">

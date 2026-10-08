@@ -50,7 +50,7 @@ export default function ArtActGuidePage() {
         accent="IVF clinics"
         description="A plain-language summary of what the Assisted Reproductive Technology (Regulation) Act 2021 requires of clinics, with the section and source for every point."
         chips={["14 requirements", "Section references", "Sources linked"]}
-        icon="building"
+        art="art"
       >
         <JumpNav groups={groups} />
       </GuideHero>

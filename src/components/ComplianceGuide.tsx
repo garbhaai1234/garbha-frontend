@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Container } from "@/components/Container";
 import { SectionHeading } from "@/components/SectionHeading";
 import { ArrowRight, ChevronDown } from "@/components/Icons";
+import { ComplianceHeroArt } from "@/components/ComplianceHeroArt";
 import { clsx } from "@/lib/clsx";
 import {
   complianceDisclaimer,
@@ -256,7 +257,7 @@ export function GuideHero({
   accent,
   description,
   chips,
-  icon,
+  art,
   children,
 }: {
   pill: string;
@@ -265,7 +266,8 @@ export function GuideHero({
   accent?: string;
   description: string;
   chips?: string[];
-  icon: IconName;
+  /** Illustration on the right (desktop only). */
+  art: "hub" | "art" | "dpdp";
   children?: React.ReactNode;
 }) {
   return (
@@ -280,7 +282,7 @@ export function GuideHero({
 
       <Container className="pt-8 pb-14 sm:pt-12 sm:pb-20 lg:pt-14 lg:pb-24">
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
-          <div className="lg:col-span-8">
+          <div className="lg:col-span-7">
             <span className="inline-flex items-center gap-2.5 rounded-full border border-brand-200 bg-white/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand-700 backdrop-blur">
               <span className="h-2 w-2 rounded-full bg-brand-500" />
               {pill}
@@ -315,13 +317,11 @@ export function GuideHero({
             <ReviewedNote className="mt-8 text-sm text-ink-500" />
           </div>
 
-          <div className="hidden lg:col-span-4 lg:block">
-            <div className="animate-float relative mx-auto w-full max-w-[300px] lg:ml-auto lg:mr-0">
+          <div className="hidden lg:col-span-5 lg:block">
+            <div className="animate-float relative mx-auto w-full max-w-[400px] lg:ml-auto lg:mr-0">
               <div className="pointer-events-none absolute -inset-6 rounded-full bg-brand-400/15 blur-2xl" />
-              <div className="relative flex aspect-square items-center justify-center rounded-[2rem] bg-white/70 shadow-2xl shadow-brand-500/20 ring-1 ring-white/60 backdrop-blur-md">
-                <span className="flex h-36 w-36 items-center justify-center rounded-[2rem] bg-gradient-to-br from-brand-500 to-accent-500 text-white shadow-lg shadow-brand-500/30">
-                  <ComplianceIcon name={icon} className="h-20 w-20" />
-                </span>
+              <div className="relative rounded-[2rem] bg-white/70 p-4 shadow-2xl shadow-brand-500/20 ring-1 ring-white/60 backdrop-blur-md">
+                <ComplianceHeroArt variant={art} className="h-auto w-full" />
               </div>
             </div>
           </div>

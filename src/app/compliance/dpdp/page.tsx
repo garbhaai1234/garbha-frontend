@@ -92,7 +92,7 @@ export default function DpdpGuidePage() {
         accent="IVF clinics"
         description="A plain-language summary of what the Digital Personal Data Protection Act 2023 and DPDP Rules 2025 require of clinics, and by when — with a source for every point."
         chips={["Timeline", "10 requirements", "Sources linked"]}
-        icon="shield"
+        art="dpdp"
       >
         <JumpNav
           groups={[
