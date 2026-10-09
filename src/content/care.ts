@@ -1,10 +1,11 @@
 import type { IconName } from "@/content/compliance";
 
 /**
- * Garbha Care — the consumer (B2C) fertility ecosystem. Copy comes from
- * "Garbha Care: B2C Ecosystem Roadmap, App Design and Developer Brief"
- * (v2, 3 Oct 2026). Only the public, consumer-facing parts are used here:
- * no revenue, competitor or internal-decision content.
+ * Garbha Care — the consumer fertility app, written for the person using it.
+ * Facts come from "Garbha Care: B2C Ecosystem Roadmap, App Design and
+ * Developer Brief" (v2, 3 Oct 2026); the wording is the patient's view, not
+ * the brief's. No market figures, revenue, roadmap priorities or partner
+ * onboarding detail on this page.
  *
  * Rules from the brief that this page follows:
  * - every tool is educational only and ends with the free counsellor call;
@@ -17,7 +18,7 @@ import type { IconName } from "@/content/compliance";
 export type Source = { label: string; href: string };
 
 export const careDisclaimer =
-  "Educational information, not medical advice. Tools, assistant answers and care programmes are signed off by a clinical advisor before launch.";
+  "Educational information, not medical advice. Tools, assistant answers and care plans are checked by a clinical advisor before they go live.";
 
 export const careStatus = {
   label: "Coming soon",
@@ -30,14 +31,6 @@ export const careSources = {
   registry: {
     label: "National ART & Surrogacy Registry — registered clinics",
     href: "https://registry.artsurrogacy.gov.in/clinic/list?type=register-clinic",
-  },
-  isar: {
-    label: "The Diplomat — ISAR estimate of 27.5M infertile couples",
-    href: "https://thediplomat.com/2018/05/indias-hidden-infertility-struggles/",
-  },
-  cycles: {
-    label: "Omnicuris — India IVF cycles",
-    href: "https://www.omnicuris.com/medshots/daily_updates/india-ivf-market-growth-regulatory-trends",
   },
   asrmNatural: {
     label: "ASRM — Optimizing natural fertility (2022)",
@@ -59,20 +52,12 @@ export const careSources = {
     label: "Indira IVF — Egg freezing cost in India",
     href: "https://www.indiraivf.com/blog/egg-freezing-cost-in-india",
   },
-  asrmOocyte: {
-    label: "ASRM — Planned oocyte cryopreservation guideline (2021)",
-    href: "https://www.asrm.org/practice-guidance/practice-committee-documents/evidence-based-outcomes-after-oocyte-cryopreservation-for-donor-oocyte-in-vitro-fertilization-and-planned-oocyte-cryopreservation-a-guideline-2021/",
-  },
   artAct: {
     label: "ART (Regulation) Act 2021 — full text",
     href: "https://indiankanoon.org/doc/61852499/",
   },
-  artRules: {
-    label: "ART (Regulation) Rules 2022 — official text",
-    href: "https://artsurrogacy.gov.in/public/fornt/assets/images/Notifications/rules/art-rules-2022.pdf",
-  },
   pcpndt: {
-    label: "PCPNDT Act 1994 — full text (sections 18 and 22)",
+    label: "PCPNDT Act 1994 — full text",
     href: "https://indiankanoon.org/doc/13125684/",
   },
   telemedicine: {
@@ -80,550 +65,393 @@ export const careSources = {
     href: "https://nmcn.in/public/assets/pdf/Telemedicine%20Practice%20Guidelines.pdf",
   },
   drugsRules: {
-    label: "Drugs Rules 1945 — rule 65 (licence, pharmacist, prescription)",
+    label: "Drugs Rules 1945 — rule 65",
     href: "https://cdsco.gov.in/opencms/resources/UploadCDSCOWeb/2022/drug_rules/Drugs%20Rules%201945_2024%2009.pdf",
   },
   fssai: {
     label: "FSSAI — advisory to e-commerce food businesses (3 Dec 2024)",
     href: "https://www.fssai.gov.in/upload/advisories/2024/12/674efa161d756Adobe%20Scan%203%20Dec%202024.pdf",
   },
-  nabl: {
-    label: "NABL — FAQ (accreditation is voluntary)",
-    href: "https://nabl-india.org/faq/",
-  },
-  whatsapp: {
-    label: "WhatsApp Business Messaging Policy",
-    href: "https://whatsappbusiness.com/policy/",
-  },
 } satisfies Record<string, Source>;
 
-/** 1.1 — the six stages of the journey. */
+/** "Where are you right now?" — the six stages, as the person would say them. */
 export const journey: {
   stage: string;
-  who: string;
-  worry: string;
-  free: string;
-  book: string;
-}[] = [
-  {
-    stage: "Trying",
-    who: "Couples trying naturally for 6–12+ months",
-    worry: "“When is my fertile window?” “Is it normal it hasn’t happened yet?”",
-    free: "Ovulation tracker; “Should we see a specialist?” checker",
-    book: "Preconception care programme; a first consult",
-  },
-  {
-    stage: "Worried",
-    who: "First tests done (AMH, semen analysis)",
-    worry: "“What does my report mean?”",
-    free: "Report readers; the assistant; free counselling call",
-    book: "Scans and tests; a doctor consult",
-  },
-  {
-    stage: "Deciding",
-    who: "Advised IUI or IVF",
-    worry: "“How much will IVF cost?” “Which clinic is genuine?”",
-    free: "Cost estimator; verified clinic finder; questions-to-ask checklist",
-    book: "Consult at a verified IVF centre; second opinion",
-  },
-  {
-    stage: "In treatment",
-    who: "Mid-cycle patients",
-    worry: "“What happens next?” “Where do I get these injections?”",
-    free: "IVF timeline planner; medicine reminders",
-    book: "Medicine delivery; IVF companion programme",
-  },
-  {
-    stage: "After a cycle",
-    who: "Failed cycle or planning another",
-    worry: "“Why did it fail?” “Should we switch clinics?”",
-    free: "Second-opinion counselling",
-    book: "Second-opinion consult; repeat tests",
-  },
-  {
-    stage: "Planning ahead",
-    who: "People delaying parenthood",
-    worry: "“Should I freeze my eggs?”",
-    free: "Egg-freezing guide and planner",
-    book: "Egg-freezing programme at a registered clinic",
-  },
-];
-
-/** 1.3 — the four layers. */
-export const layers: {
-  name: string;
-  holds: string;
-  by: string;
-  price: string;
+  feeling: string;
+  helpNow: string;
+  whenReady: string;
   icon: IconName;
 }[] = [
   {
-    name: "Free",
-    holds: "Ovulation tracker, fertility tools, the assistant, verified finder",
-    by: "Garbha",
-    price: "Free",
-    icon: "heart",
+    stage: "We’ve just started trying",
+    feeling: "“When is my fertile window? Is it normal that it hasn’t happened yet?”",
+    helpNow: "The ovulation tracker, and a quick check on whether it’s time to see a specialist.",
+    whenReady: "A preconception care plan, or a first consult.",
+    icon: "calendar",
   },
   {
-    name: "Guided",
-    holds: "First-level counselling; care programmes",
-    by: "Garbha counsellors, with partners inside programmes",
-    price: "Counselling free; programmes paid",
-    icon: "chat",
+    stage: "We’ve had our first tests",
+    feeling: "“What does my AMH or semen report actually mean?”",
+    helpNow: "Plain-language report readers, the assistant, and a free call with a counsellor.",
+    whenReady: "Scans, tests or a doctor’s consult.",
+    icon: "doc",
   },
   {
-    name: "Marketplace",
-    holds: "Consults, scans and tests, egg freezing, IVF and IUI, medicines and supplements",
-    by: "Verified sellers",
-    price: "The seller’s price, shown in full before booking",
+    stage: "We’ve been told about IUI or IVF",
+    feeling: "“How much will it cost? Which clinic can we trust?”",
+    helpNow: "A cost estimator, a finder of government-registered clinics, and a checklist of questions to ask.",
+    whenReady: "A consult at a verified IVF centre, or a second opinion.",
     icon: "building",
   },
   {
-    name: "Trust",
-    holds: "Licence checks, consent, payments, grievance desk",
-    by: "Garbha",
-    price: "Included",
-    icon: "shield",
+    stage: "We’re in treatment",
+    feeling: "“What happens next? Where do I get these injections?”",
+    helpNow: "A timeline of your cycle and discreet medicine reminders.",
+    whenReady: "Medicines delivered home, and a companion plan with counsellor support.",
+    icon: "clock",
+  },
+  {
+    stage: "A cycle didn’t work",
+    feeling: "“Why did it fail? Should we change clinics?”",
+    helpNow: "A free counselling call to talk it through.",
+    whenReady: "A second-opinion consult and repeat tests.",
+    icon: "heart",
+  },
+  {
+    stage: "I’m planning for later",
+    feeling: "“Should I freeze my eggs? What does it involve?”",
+    helpNow: "An egg-freezing guide and cost planner.",
+    whenReady: "Egg freezing at a registered clinic.",
+    icon: "cell",
   },
 ];
 
-/** 1.4 — free tools, P1 first. "Later" tools are not shown. */
+/** How it works, from the person’s side: three steps. */
+export const howItWorks: { title: string; text: string; free: boolean; icon: IconName }[] = [
+  {
+    title: "Understand where you are",
+    text: "Use the free tools or ask the assistant. You see your answer straight away, with no account and no forms.",
+    free: true,
+    icon: "heart",
+  },
+  {
+    title: "Talk it through with a person",
+    text: "Book a free call with a fertility counsellor, in your language, at a time that suits you. They explain your options in plain words and help you decide the next step.",
+    free: true,
+    icon: "chat",
+  },
+  {
+    title: "Get care only if you need it",
+    text: "Book a consult, a test or a care plan with a provider whose licences we have checked. You see the full price before you book, and nothing is added at checkout.",
+    free: false,
+    icon: "check",
+  },
+];
+
+/** Free tools — what the person gets, then why they can trust it. */
 export const tools: {
   name: string;
   gets: string;
   basis: string;
   source?: Source;
-  priority: "At launch" | "Next";
+  later?: boolean;
   icon: IconName;
 }[] = [
   {
     name: "Ovulation tracker",
-    gets: "Period log, estimated fertile window and ovulation day, LH-test and symptom logging, reminders.",
+    gets: "Log your period, see your likely fertile days, and add LH-test results and symptoms. Gentle reminders, nothing more.",
     basis:
-      "ASRM 2022: the fertile window is the 6 days ending on ovulation day. In a study of 949 women, calendar apps predicted ovulation day with at most 21% accuracy, so dates are shown as estimates and sharpened by LH tests.",
+      "Your fertile window is the six days ending on ovulation day. Calendar dates alone are often wrong, so we show them as estimates and sharpen them with LH tests.",
     source: careSources.asrmNatural,
-    priority: "At launch",
     icon: "calendar",
   },
   {
-    name: "“Should we see a specialist?” checker",
-    gets: "A clear yes / not yet, with reasons.",
+    name: "Is it time to see a specialist?",
+    gets: "Answer a few questions and get a clear “yes” or “not yet”, with the reasons.",
     basis:
-      "ASRM 2021: evaluate after 12 months if under 35, 6 months if 35+, sooner if over 40 or with irregular cycles, endometriosis or known male factor.",
+      "Guidance suggests seeing a specialist after 12 months of trying if you are under 35, after 6 months if you are 35 or older, and sooner in some situations, such as irregular periods.",
     source: careSources.asrmEvaluation,
-    priority: "At launch",
     icon: "check",
   },
   {
-    name: "Semen analysis report reader",
-    gets: "Each value marked within or below the WHO reference.",
-    basis:
-      "WHO 6th ed. (2021) lower limits: volume 1.4 mL, concentration 16 M/mL, total 39 M, progressive motility 30%, morphology 4%.",
+    name: "Semen report reader",
+    gets: "Enter the numbers from your report and see, for each one, whether it is within the WHO reference range.",
+    basis: "Uses the World Health Organization’s 2021 reference values.",
     source: careSources.who,
-    priority: "At launch",
     icon: "doc",
   },
   {
     name: "IVF cost estimator",
-    gets: "A likely range for your city and add-ons.",
-    basis:
-      "Cloudnine: ₹1.5–2.5L metro, ₹1–1.8L tier-2, ₹3.5–5L with ICSI, freezing or PGT.",
+    gets: "A likely cost range for your city, and what add-ons such as ICSI or embryo freezing do to it.",
+    basis: "Based on published price ranges for Indian cities.",
     source: careSources.cloudnine,
-    priority: "At launch",
     icon: "scale",
   },
   {
     name: "Questions to ask your clinic",
-    gets: "A printable checklist, including “Do you use AI embryo grading?”",
-    basis: "Includes ART Act registration — check any clinic in the verified finder.",
+    gets: "A checklist to take to your consult, including whether the clinic is registered under the ART Act.",
+    basis: "You can check any clinic’s registration in our clinic finder.",
     source: careSources.registry,
-    priority: "At launch",
     icon: "list",
   },
   {
     name: "Medicine and appointment reminders",
     gets: "Discreet reminders for tablets, injections, scans and calls.",
-    basis:
-      "Set by you from your own prescription; the app gives no dosing advice.",
-    priority: "At launch",
+    basis: "You set them from your own prescription. The app never suggests doses.",
     icon: "clock",
   },
   {
-    name: "Egg-freezing planner and cost guide",
-    gets: "What freezing involves, what it costs, what to ask.",
+    name: "Egg-freezing guide",
+    gets: "What egg freezing involves, what it typically costs, and what to ask.",
     basis:
-      "Indira IVF: ₹1–2.5L per cycle, storage ₹10,000–30,000 a year. ASRM 2021: outcomes appear better when eggs are frozen younger; there is not enough data to name a best age.",
+      "Typical costs are ₹1–2.5 lakh per cycle plus yearly storage. Results tend to be better when eggs are frozen younger.",
     source: careSources.indira,
-    priority: "Next",
+    later: true,
     icon: "cell",
   },
   {
-    name: "Eligibility checker",
-    gets: "Whether you fall inside ART Act age limits.",
-    basis:
-      "ART Act s.21(g): women above 21 and below 50; men above 21 and below 55.",
-    source: careSources.artAct,
-    priority: "Next",
-    icon: "users",
-  },
-  {
-    name: "IVF timeline planner",
-    gets: "A week-by-week view of a typical cycle.",
+    name: "IVF week-by-week planner",
+    gets: "What usually happens in each week of an IVF cycle, so nothing comes as a surprise.",
     basis: "Written by our clinical advisor.",
-    priority: "Next",
+    later: true,
     icon: "list",
   },
+];
+
+/** A sample assistant conversation, shown as a phone chat. */
+export const sampleChat: { from: "you" | "garbha"; text: string }[] = [
   {
-    name: "AMH / ovarian reserve explainer",
-    gets: "What the number means and what to ask next.",
-    basis: "Written by our clinical advisor; no diagnosis.",
-    priority: "Next",
-    icon: "dna",
+    from: "garbha",
+    text: "Hi, I’m Garbha’s automated assistant. I can explain terms and reports, and set reminders. A real person is one tap away.",
+  },
+  { from: "you", text: "My AMH report says 1.1. Is that bad?" },
+  {
+    from: "garbha",
+    text: "AMH gives an idea of your egg reserve. It doesn’t tell you whether you can get pregnant, and only a doctor can say what your number means for you. Here’s a short explainer. Would you like a free call with a counsellor?",
   },
 ];
 
-/** 1.5 — the assistant: what it does and when it hands over. */
-export const assistantJobs: { job: string; does: string; handover: string }[] = [
+export const assistantPromises: string[] = [
+  "Tells you it’s automated, and always offers a real person.",
+  "Answers only from content our clinical advisor has approved, and shows where the answer comes from.",
+  "Never diagnoses, prescribes or tells you your chances. That is a doctor’s job.",
+  "If you mention something urgent, such as heavy bleeding or severe pain, it tells you to get urgent care and offers a call back.",
+  "On WhatsApp only if you ask for it, and never to sell you anything.",
+];
+
+/** The free counselling call, as the person experiences it. */
+export const callSteps: { title: string; text: string }[] = [
   {
-    job: "Welcome",
-    does: "Asks your stage and language; points to the right tool",
-    handover: "You sound distressed or unsure where to start",
+    title: "Tell us a little",
+    text: "Your first name, mobile number, city, both partners’ ages, how long you’ve been trying, and when and in which language you’d like the call.",
   },
   {
-    job: "Answers",
-    does: "Explains terms, reports and next steps from approved content, and shows its source",
-    handover: "The question needs a diagnosis, a medicine or a personal prediction",
+    title: "A counsellor calls you",
+    text: "They listen, explain your options in plain words, and help you work out the next step. Medical questions go to a registered doctor.",
   },
   {
-    job: "Reminders",
-    does: "Fertile window, medicines, scans, calls and storage renewals",
-    handover: "You reply with a medical question",
-  },
-  {
-    job: "Booking help",
-    does: "Finds a slot, reschedules, tracks an order",
-    handover: "A partner has not confirmed in time",
-  },
-  {
-    job: "Programme check-ins",
-    does: "Weekly check-in and the next task",
-    handover: "An answer suggests a red flag",
+    title: "You decide what happens next",
+    text: "Maybe nothing yet. Maybe a test or a consult. You are never pushed to buy, and the first call is always free.",
   },
 ];
 
-export const assistantRules: string[] = [
-  "Says it is automated in its first message, and keeps “Talk to a person” one tap away.",
-  "Never diagnoses, counsels, prescribes or predicts chances — only a registered doctor may.",
-  "Answers only from content our clinical advisor has approved. If nothing matches, it says so and offers a counsellor.",
-  "Red-flag words, such as heavy bleeding or severe pain, trigger an urgent-care message and a call-back offer.",
-  "On WhatsApp it needs your opt-in, and nothing is sold there — orders happen only in the app.",
-];
-
-/** 1.6 — the free counselling call. */
-export const counsellingSteps: { title: string; text: string; icon: IconName }[] = [
-  {
-    title: "Use a free tool or ask the assistant",
-    text: "Get your answer first — no sign-up needed.",
-    icon: "heart",
-  },
-  {
-    title: "Book a free counselling call",
-    text: "A short form on your phone: first name, mobile, city or PIN, both partners’ ages, how long you’ve been trying, where you are now, and your language and call time.",
-    icon: "calendar",
-  },
-  {
-    title: "Talk to a fertility counsellor",
-    text: "They listen, explain your options in plain words and set the next step — never a diagnosis. Medical questions go to a registered doctor.",
-    icon: "chat",
-  },
-  {
-    title: "Book care only if you need it",
-    text: "A programme or a booking with a verified partner. First-level counselling calls are always free.",
-    icon: "check",
-  },
-];
-
-/** 1.7 — care programmes. */
+/** Care plans. */
 export const programmes: {
   name: string;
   for: string;
-  bundles: string;
-  by: string;
+  includes: string;
   icon: IconName;
 }[] = [
   {
     name: "Preconception care",
-    for: "Couples planning, or trying for under a year",
-    bundles: "Cycle and lifestyle plan, counsellor calls, baseline tests, nutrition guidance",
-    by: "Garbha counsellor; partner lab; nutritionist",
+    for: "If you’re planning, or have been trying for less than a year",
+    includes: "A cycle and lifestyle plan, counsellor calls, baseline tests and nutrition guidance.",
     icon: "heart",
   },
   {
     name: "Fertility check",
-    for: "Couples who want to know where they stand",
-    bundles: "AMH, scan and semen analysis with a doctor’s review",
-    by: "Partner lab; IVF centre doctor",
+    for: "If you want to know where you both stand",
+    includes: "AMH, a scan and a semen analysis, reviewed with a doctor.",
     icon: "check",
   },
   {
     name: "PCOS and cycle health",
-    for: "Irregular cycles",
-    bundles: "Gynaecologist consult, tests, lifestyle plan, tracker coaching",
-    by: "Partner doctor; Garbha counsellor",
+    for: "If your periods are irregular",
+    includes: "A gynaecologist consult, tests, a lifestyle plan and help with tracking.",
     icon: "calendar",
   },
   {
     name: "Male fertility",
-    for: "A semen report below reference",
-    bundles: "Andrology consult, repeat test, lifestyle plan",
-    by: "Partner doctor and lab",
+    for: "If a semen report came back below the reference range",
+    includes: "An andrology consult, a repeat test and a lifestyle plan.",
     icon: "users",
   },
   {
     name: "IVF companion",
-    for: "Couples in a treatment cycle",
-    bundles: "Timeline, medicine reminders and delivery, counsellor support",
-    by: "Garbha counsellor; partner pharmacy",
+    for: "If you’re in a treatment cycle",
+    includes: "Your cycle timeline, medicine reminders and delivery, and a counsellor to lean on.",
     icon: "clock",
   },
   {
     name: "Egg freezing",
-    for: "People planning ahead",
-    bundles: "Assessment (AMH and scan), counselling, the clinic package, storage reminders",
-    by: "Registered Level 2 ART clinic",
+    for: "If you’re planning for later",
+    includes: "An assessment (AMH and scan), counselling, the clinic package and storage reminders.",
     icon: "cell",
   },
   {
     name: "After a cycle",
-    for: "A failed cycle",
-    bundles: "Second-opinion consult, emotional support, a next-step plan",
-    by: "Partner doctor; Garbha counsellor",
+    for: "If a cycle didn’t work",
+    includes: "A second-opinion consult, emotional support and a plan for what’s next.",
     icon: "message",
   },
 ];
 
-/** 1.8 — marketplace services and the rule the app enforces. */
+/** What you can book, and what protects you when you do. */
 export const services: {
   name: string;
   gets: string;
-  seller: string;
-  rule: string;
+  protection: string;
   source: Source;
   icon: IconName;
 }[] = [
   {
-    name: "Consults",
-    gets: "Video or in-clinic visit with a fertility doctor",
-    seller: "Registered medical practitioners; IVF centres",
-    rule: "The doctor’s name, qualification and registration number are shown.",
+    name: "Doctor consults",
+    gets: "A video call or a clinic visit with a fertility doctor.",
+    protection: "You see the doctor’s name, qualification and registration number before you book.",
     source: careSources.telemedicine,
     icon: "chat",
   },
   {
     name: "Scans and tests",
-    gets: "Blood tests with home collection; ultrasound at the centre",
-    seller: "Diagnostic centres; IVF centres",
-    rule: "Ultrasound only at PCPNDT-registered centres. No sex determination, ever.",
+    gets: "Blood tests with home collection; ultrasound at the centre.",
+    protection: "Ultrasound only at centres registered under the PCPNDT Act. No sex determination, ever.",
     source: careSources.pcpndt,
     icon: "doc",
   },
   {
-    name: "Egg freezing",
-    gets: "Assessment, freezing cycle and storage",
-    seller: "Registered Level 2 ART clinics",
-    rule: "Your own eggs only — no donor matching. Storage is normally up to ten years.",
-    source: careSources.artRules,
-    icon: "cell",
-  },
-  {
-    name: "IVF and IUI",
-    gets: "Consultation and treatment packages at the centre",
-    seller: "Registered ART clinics",
-    rule: "Only clinics on the national registry; women above 21 and below 50, men above 21 and below 55.",
+    name: "IVF, IUI and egg freezing",
+    gets: "Consults and treatment packages at the centre.",
+    protection: "Only clinics on the government’s national ART registry. Your own eggs only: we never arrange donors.",
     source: careSources.artAct,
     icon: "building",
   },
   {
     name: "Medicines",
-    gets: "Prescribed fertility medicines delivered home",
-    seller: "Licensed retail pharmacies",
-    rule: "A valid prescription checked by the pharmacy’s registered pharmacist; the pharmacy’s own invoice with its licence number.",
+    gets: "Your prescribed fertility medicines, delivered home.",
+    protection: "Checked against your prescription by a registered pharmacist, with the pharmacy’s own invoice.",
     source: careSources.drugsRules,
     icon: "archive",
   },
   {
     name: "Supplements",
-    gets: "Nutraceuticals delivered home",
-    seller: "FSSAI-licensed vendors",
-    rule: "FSSAI licence shown; “not for medicinal use”; no claim to treat or cure; at least 30% of shelf life or 45 days left at delivery.",
+    gets: "Nutritional supplements, delivered home.",
+    protection: "FSSAI-licensed sellers only, with no claims to treat or cure.",
     source: careSources.fssai,
     icon: "inbox",
   },
 ];
 
-/** 1.9 — what Garbha verifies, by seller type. */
-export const verification: { type: string; sells: string; checks: string }[] = [
-  {
-    type: "IVF centres",
-    sells: "Consults, scans, IUI and IVF, egg freezing",
-    checks:
-      "ART registration on the national registry (Level 1 or 2, valid five years); PCPNDT registration; each doctor’s medical council registration",
-  },
-  {
-    type: "Diagnostic centres",
-    sells: "Blood tests, semen analysis, ultrasound",
-    checks:
-      "State clinical-establishment registration; PCPNDT registration for ultrasound; NABL accreditation where held (it is voluntary)",
-  },
-  {
-    type: "Pharmacies",
-    sells: "Prescription medicines, delivered",
-    checks:
-      "Retail drug licence (Forms 20 and 21); registered pharmacist; cold storage for temperature-sensitive medicines",
-  },
-  {
-    type: "Nutraceutical vendors",
-    sells: "Supplements",
-    checks: "FSSAI licence; each product’s label and claims",
-  },
-  {
-    type: "Doctors and counsellors",
-    sells: "Consults",
-    checks:
-      "Medical council registration number and qualification; certificates for counsellors and nutritionists",
-  },
+/** What "verified" means, in one line per provider type. */
+export const verification: { type: string; checked: string }[] = [
+  { type: "IVF centres", checked: "Registered on the national ART registry, and registered for ultrasound under the PCPNDT Act." },
+  { type: "Doctors", checked: "Medical council registration number and qualification." },
+  { type: "Diagnostic centres", checked: "State registration, PCPNDT registration for ultrasound, and NABL accreditation where they hold it." },
+  { type: "Pharmacies", checked: "A retail drug licence, a registered pharmacist, and cold storage for medicines that need it." },
+  { type: "Supplement sellers", checked: "An FSSAI licence, and every product’s label and claims." },
 ];
 
-/** 1.9 — the six onboarding steps for partners. */
-export const onboarding: { step: string; what: string; gate: string }[] = [
-  {
-    step: "Apply",
-    what: "Fill the partner form: business, services, cities",
-    gate: "Form complete; authorised signatory named",
-  },
-  {
-    step: "Verify",
-    what: "Garbha checks each licence against the issuing registry and records its expiry date",
-    gate: "Every required licence valid",
-  },
-  {
-    step: "Agree",
-    what: "Partner agreement: full prices, service levels, data protection, no sex selection, no donor brokering",
-    gate: "Agreement signed",
-  },
-  {
-    step: "List",
-    what: "Add services, prices and slots; Garbha reviews each listing and claim",
-    gate: "Listings approved; a test order passes",
-  },
-  {
-    step: "Go live",
-    what: "Orders flow; payouts go through the payment aggregator",
-    gate: "First orders reviewed by Garbha",
-  },
-  {
-    step: "Monitor",
-    what: "Fulfilment, turnaround and complaints are tracked; licences are re-checked before expiry",
-    gate: "A lapsed licence pauses the listing automatically",
-  },
-];
-
-/** 1.9 — finder labels. */
 export const finderLabels: { label: string; meaning: string; tone: "registry" | "verified" | "ai" }[] = [
   {
     label: "ART registered",
-    meaning: "On the National ART & Surrogacy Registry; links to its government certificate.",
+    meaning: "On the government’s national ART registry, with a link to its certificate.",
     tone: "registry",
   },
   {
     label: "Verified partner",
-    meaning: "Licences checked by Garbha; can be booked in the app.",
+    meaning: "We have checked its licences, and you can book it in the app.",
     tone: "verified",
   },
   {
     label: "Garbha AI–enabled",
-    meaning: "A partner clinic that uses Garbha’s embryo-grading AI. When shown first, that placement is labelled.",
+    meaning: "Uses Garbha’s embryo-assessment AI. If it is shown first, that is labelled.",
     tone: "ai",
   },
 ];
 
-/** 2.1 / 3.4 — privacy and trust promises, as the member sees them. */
+/** Privacy and trust promises. */
 export const promises: { title: string; text: string; icon: IconName }[] = [
   {
-    title: "Free first",
-    text: "Every tool shows its result before any sign-up. Tools and the tracker store nothing on our servers.",
-    icon: "heart",
-  },
-  {
-    title: "Private by default",
-    text: "App lock, and discreet notifications: the lock screen shows only “Garbha: you have a reminder”. Tracker entries stay on your phone until you choose to back them up.",
+    title: "Your cycle data stays on your phone",
+    text: "Tracker entries are stored on your phone unless you choose to back them up. Your health data is never used for advertising.",
     icon: "lock",
   },
   {
-    title: "Your consent, per purpose",
-    text: "Boxes are never pre-ticked; one purpose per box. Each share of a report with a partner needs its own consent, and can be time-limited. Withdraw any consent in one tap.",
+    title: "Nobody can read your notifications",
+    text: "Lock the app, and reminders on your lock screen just say “Garbha: you have a reminder”.",
+    icon: "shield",
+  },
+  {
+    title: "You choose what to share",
+    text: "Nothing is ticked for you. Sharing a report with a clinic needs your consent each time, and you can take consent back in one tap.",
     icon: "check",
   },
   {
-    title: "Full price, no surprises",
-    text: "The seller’s full price before booking; nothing added at checkout. No countdown timers or pre-added items.",
+    title: "The full price, up front",
+    text: "You see the full price before you book. No hidden extras, no countdown timers.",
     icon: "scale",
   },
   {
-    title: "Verified is visible",
-    text: "Every seller shows the licence behind the word, with its number. Promoted listings are labelled, and the ranking is explained.",
+    title: "“Verified” is backed by a licence",
+    text: "Every provider shows the licence behind the badge. Promoted listings are clearly labelled.",
     icon: "badge",
   },
   {
-    title: "A person is one tap away",
-    text: "A named grievance officer; complaints acknowledged within 48 hours and resolved within a month. Delete your account in the app or by a web link.",
+    title: "A person when you need one",
+    text: "A named grievance officer replies within 48 hours. You can delete your account at any time.",
     icon: "users",
   },
 ];
 
-/** 3.4 — things Garbha Care never does. */
 export const neverDo: string[] = [
-  "Sex selection, or any mention of it",
-  "Donor matching, or trade in eggs, sperm or embryos",
-  "Diagnoses, prescriptions or success percentages from the app or the assistant",
-  "A promise of pregnancy",
-  "Selling medicines or health products on WhatsApp",
-  "Health data used for advertising",
-  "Accounts for under-18s",
-  "Star ratings or success-rate rankings at launch",
+  "Help with choosing a baby’s sex, or even talk about it",
+  "Arrange egg, sperm or embryo donors",
+  "Give you a diagnosis, a prescription or your “chances” as a number",
+  "Promise a pregnancy",
+  "Sell you medicines on WhatsApp",
+  "Use your health data for advertising",
 ];
 
 export const careFaqs: { q: string; a: string }[] = [
   {
     q: "What is Garbha Care?",
-    a: "An app-based fertility ecosystem for individuals and couples in India. Free tools — led by an ovulation tracker — and an assistant help you understand where you are; a free counselling call helps you decide the next step; and verified sellers (IVF centres, diagnostic centres, pharmacies and nutraceutical vendors) deliver consults, scans, care programmes, egg freezing and medicines that you can find, book and pay for in one place.",
+    a: "An app to support you through trying to conceive and fertility treatment. Free tools and an assistant help you understand where you are, a free call with a counsellor helps you decide what to do next, and, if you need care, you can book consults, tests, care plans and medicines from providers whose licences we have checked.",
   },
   {
-    q: "Is it free?",
-    a: "The tools, the tracker, the assistant, the verified clinic finder and first-level counselling calls are free. Care programmes and marketplace bookings are paid, at a price shown in full before you book.",
+    q: "What does it cost?",
+    a: "The tools, the ovulation tracker, the assistant, the clinic finder and your first counselling call are free. Care plans and bookings are paid, and you see the provider’s full price before you book.",
   },
   {
-    q: "Does Garbha treat patients?",
-    a: "No. Garbha does not treat, test or dispense. It guides, verifies, connects and collects payment. Care is delivered by licensed providers that Garbha has verified.",
+    q: "Is Garbha a clinic?",
+    a: "No. Garbha does not treat, test or dispense medicines. We help you understand your options and connect you with licensed providers. Your care is always given by them.",
   },
   {
-    q: "What does “verified” mean?",
-    a: "A seller goes live only after Garbha has checked its licences against the issuing registry — for example ART registration for IVF centres, PCPNDT registration for ultrasound, a retail drug licence for pharmacies, or an FSSAI licence for supplements. A lapsed licence pauses the listing automatically.",
+    q: "Can the assistant tell me if something is wrong?",
+    a: "No. It explains terms and reports from content our clinical advisor has approved, but it never diagnoses or predicts your chances. Whenever a question needs a doctor, or whenever you ask, it puts you in touch with a person.",
   },
   {
-    q: "Can the assistant tell me if I have a fertility problem?",
-    a: "No. The assistant is automated and answers only from content approved by a clinical advisor. It never diagnoses, counsels, prescribes or predicts chances, and hands you to a counsellor whenever a question turns medical or you ask.",
+    q: "Can I use the ovulation tracker as contraception?",
+    a: "No. The tracker shows estimated dates, which are not accurate enough to prevent pregnancy.",
   },
   {
-    q: "Is the ovulation tracker a form of contraception?",
-    a: "No. The tracker shows estimated dates — calendar methods alone are not accurate enough to pinpoint ovulation — and it must never be used as contraception.",
+    q: "Who can see my information?",
+    a: "Your tracker data stays on your phone unless you choose to back it up. A clinic sees your reports only if you agree to share them, and you can withdraw that consent at any time. Your health data is never used for advertising.",
   },
   {
-    q: "Where is my cycle data stored?",
-    a: "On your phone. Tracker entries reach our servers only if you create an account and agree to back them up. Health data is never used for advertising.",
+    q: "How do I know a clinic is genuine?",
+    a: "Our clinic finder lists every clinic on the government’s national ART registry, with a link to its certificate. Providers marked “Verified partner” have also had their licences checked by us. A provider whose licence lapses is paused automatically.",
   },
   {
-    q: "When and where does it launch?",
-    a: "Garbha Care launches first in Hyderabad, in English and Telugu, with Hindi to follow. Consults and tests open first; medicine delivery comes last, after a legal review.",
+    q: "When can I use it?",
+    a: "Garbha Care opens first in Hyderabad, in English and Telugu, with Hindi to follow. Leave us your details on the contact page and we’ll let you know when it opens.",
   },
 ];
