@@ -22,6 +22,7 @@ export const site = {
 
 export const mainNav = [
   { label: "Technology", href: "/technology" },
+  { label: "Garbha Care", href: "/care" },
   { label: "Compliance", href: "/compliance" },
   { label: "Blog", href: "/blog" },
   { label: "About Us", href: "/about" },

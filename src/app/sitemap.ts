@@ -17,6 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/partnership",
     "/contact",
     "/privacy",
+    "/care",
     "/compliance",
     "/compliance/art-act",
     "/compliance/dpdp",
