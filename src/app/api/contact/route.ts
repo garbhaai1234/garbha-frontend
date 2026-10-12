@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { site } from "@/lib/site";
+import {
+  clientIp,
+  createRateLimiter,
+  escapeHtml,
+  isCrossSite,
+} from "@/lib/server/requestGuard";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -22,59 +27,8 @@ type Field = keyof typeof FIELD_LIMITS;
 
 const EMAIL_TIMEOUT_MS = 10_000;
 
-// --- Basic in-memory rate limit (per IP) -----------------------------------
-// Note: in-memory only guards a single instance. For serverless/multi-instance
-// production, back this with a shared store (e.g. Upstash Redis).
-const WINDOW_MS = 10 * 60 * 1000; // 10 minutes
-const MAX_PER_WINDOW = 5;
-const MAX_TRACKED_IPS = 5000;
-const hits = new Map<string, number[]>();
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  // Keep memory bounded: drop expired entries once the map grows large.
-  if (hits.size > MAX_TRACKED_IPS) {
-    for (const [key, times] of hits) {
-      if (times.every((t) => now - t >= WINDOW_MS)) hits.delete(key);
-    }
-  }
-  const recent = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS);
-  recent.push(now);
-  hits.set(ip, recent);
-  return recent.length > MAX_PER_WINDOW;
-}
-
-function clientIp(request: Request): string {
-  const fwd = request.headers.get("x-forwarded-for");
-  return fwd?.split(",")[0]?.trim() || "unknown";
-}
-
-/** Reject requests a browser marks as coming from another site. */
-function isCrossSite(request: Request): boolean {
-  const origin = request.headers.get("origin");
-  if (origin) {
-    let originHost: string;
-    try {
-      originHost = new URL(origin).host;
-    } catch {
-      return true;
-    }
-    const allowed = new Set([new URL(site.url).host]);
-    const host = request.headers.get("host");
-    if (host) allowed.add(host);
-    return !allowed.has(originHost);
-  }
-  return request.headers.get("sec-fetch-site") === "cross-site";
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
+// In-memory, single instance only (see createRateLimiter).
+const isRateLimited = createRateLimiter({ windowMs: 10 * 60 * 1000, max: 5 });
 
 async function deliver(lead: Record<string, string | boolean>): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
