@@ -7,6 +7,8 @@ import { ArrowRight, ChevronDown } from "@/components/Icons";
 import { ComplianceIcon, CtaLink } from "@/components/ComplianceGuide";
 import { CareCycleRing } from "@/components/CareCycleRing";
 import { CareTools } from "@/components/CareTools";
+import { CareCallForm } from "@/components/CareCallForm";
+import { CareStickyBar } from "@/components/CareStickyBar";
 import {
   assistantPromises,
   callSteps,
@@ -111,7 +113,7 @@ export default function GarbhaCarePage() {
       />
 
       {/* Hero */}
-      <section className="relative isolate overflow-hidden border-b border-ink-100">
+      <section id="care-hero" className="relative isolate overflow-hidden border-b border-ink-100">
         <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-brand-50 via-white to-white" />
         <div className="pointer-events-none absolute inset-0 -z-10 bg-dot-grid opacity-50 [mask-image:radial-gradient(90%_60%_at_50%_0%,black,transparent)]" />
         <div className="animate-blob pointer-events-none absolute -left-24 -top-24 -z-10 h-80 w-80 rounded-full bg-brand-300/30 blur-3xl" />
@@ -354,33 +356,38 @@ export default function GarbhaCarePage() {
         </div>
       </SectionShell>
 
-      {/* Free counsellor call */}
+      {/* Free counsellor call: the one form on the page */}
       <SectionShell id="call">
-        <SectionHeading
-          eyebrow="Free counselling"
-          title="Talk to a person before you pay for anything"
-          description="A fertility counsellor listens, explains your options in plain words and helps you decide what to do next. If you already know what you need, you can book directly."
-        />
-        <ol className="mt-12 grid gap-6 md:grid-cols-3">
-          {callSteps.map((s, i) => (
-            <li
-              key={s.title}
-              className="relative h-full rounded-2xl border border-ink-100 bg-white p-6 shadow-sm"
-            >
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-700 font-display font-bold text-white">
-                {i + 1}
-              </span>
-              <h3 className="mt-5 font-display text-lg font-bold text-ink-900">
-                {s.title}
-              </h3>
-              <p className="mt-3 text-sm leading-6 text-ink-600">{s.text}</p>
-            </li>
-          ))}
-        </ol>
-        <p className="mt-8 text-sm text-ink-600">
-          We ask your permission before anyone calls you. WhatsApp updates are a
-          separate choice, and you never have to upload reports to sign up.
-        </p>
+        <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
+          <div className="lg:col-span-5">
+            <SectionHeading
+              eyebrow="Free counselling"
+              title="Talk it through with a person, free"
+              description="A fertility counsellor listens, explains your options in plain words and helps you decide what to do next. You are never pushed to buy anything."
+            />
+            <ol className="mt-8 space-y-5">
+              {callSteps.map((s, i) => (
+                <li key={s.title} className="flex gap-4">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-700 font-display text-sm font-bold text-white">
+                    {i + 1}
+                  </span>
+                  <div>
+                    <h3 className="font-display text-base font-bold text-ink-900">{s.title}</h3>
+                    <p className="mt-1 text-sm leading-6 text-ink-600">{s.text}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <p className="mt-8 rounded-xl border border-indigo-100 bg-indigo-50/70 px-4 py-3 text-sm leading-6 text-indigo-900">
+              <strong className="font-semibold">Opening soon in {careStatus.city}.</strong>{" "}
+              Request your call now and a counsellor will ring you, in{" "}
+              {careStatus.languages.join(" or ")}, as soon as calls begin.
+            </p>
+          </div>
+          <div className="lg:col-span-7">
+            <CareCallForm />
+          </div>
+        </div>
       </SectionShell>
 
       {/* Care plans */}
@@ -575,8 +582,8 @@ export default function GarbhaCarePage() {
               ready, in {careStatus.languages.join(" or ")}.
             </p>
             <div className="mt-8 flex justify-center">
-              <CtaLink href="/contact">
-                Keep me posted <ArrowRight className="h-4 w-4" />
+              <CtaLink href="#call">
+                Request a free call <ArrowRight className="h-4 w-4" />
               </CtaLink>
             </div>
             <p className="mt-8 text-sm text-ink-500">
@@ -595,6 +602,7 @@ export default function GarbhaCarePage() {
           </p>
         </Container>
       </section>
+      <CareStickyBar heroId="care-hero" callId="call" />
     </>
   );
 }

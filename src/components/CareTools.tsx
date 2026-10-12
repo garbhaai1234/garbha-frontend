@@ -1,16 +1,9 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-  useSyncExternalStore,
-} from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ComplianceIcon } from "@/components/ComplianceGuide";
 import { ArrowRight } from "@/components/Icons";
+import { Check, Field, btnPrimary, btnQuiet, btnSecondary, inputCls } from "@/components/CareUi";
 import { artRegistryUrl, tools, type CareToolId } from "@/content/care";
 import { clsx } from "@/lib/clsx";
 import {
@@ -21,7 +14,6 @@ import {
   lakh,
   num,
   parseDate,
-  startOfToday,
   toInput,
 } from "@/lib/care/dates";
 import { cyclePlan, isIrregular } from "@/lib/care/ovulation";
@@ -30,6 +22,7 @@ import { evaluateSemen, semenRows, type SemenKey } from "@/lib/care/semen";
 import { cities, eggFreezingCost, ivfCost } from "@/lib/care/cost";
 import { byWeek, ivfMilestones } from "@/lib/care/ivf";
 import { byStart, toIcs, type Reminder } from "@/lib/care/ics";
+import { useStored, useToday } from "@/lib/care/useStored";
 
 /**
  * The eight free Garbha Care tools as working modules. Everything runs in the
@@ -46,77 +39,6 @@ import { byStart, toIcs, type Reminder } from "@/lib/care/ics";
 /* Helpers                                                            */
 /* ------------------------------------------------------------------ */
 
-/*
- * Values saved on this device. A tiny external store over localStorage (with
- * an in-memory copy, so tools still work when storage is blocked). The server
- * snapshot is null, so the first render matches the server HTML.
- */
-const memory = new Map<string, string | null>();
-const listeners = new Set<() => void>();
-
-function readStored(key: string): string | null {
-  if (!memory.has(key)) {
-    try {
-      memory.set(key, localStorage.getItem(key));
-    } catch {
-      memory.set(key, null);
-    }
-  }
-  return memory.get(key) ?? null;
-}
-
-function writeStored(key: string, v: string | null) {
-  memory.set(key, v);
-  try {
-    if (v === null) localStorage.removeItem(key);
-    else localStorage.setItem(key, v);
-  } catch {
-    // Storage unavailable: the in-memory copy still works for this visit.
-  }
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => listeners.delete(l);
-}
-
-function parseStored<T>(raw: string | null, initial: T): T {
-  if (!raw) return initial;
-  try {
-    return JSON.parse(raw) as T;
-  } catch {
-    return initial;
-  }
-}
-
-function useStored<T>(key: string, initial: T) {
-  const raw = useSyncExternalStore(
-    subscribe,
-    () => readStored(key),
-    () => null,
-  );
-  const value = useMemo(() => parseStored(raw, initial), [raw]); // eslint-disable-line react-hooks/exhaustive-deps
-  const setValue = useCallback(
-    (next: T | ((prev: T) => T)) => {
-      const prev = parseStored(readStored(key), initial);
-      const v = typeof next === "function" ? (next as (p: T) => T)(prev) : next;
-      writeStored(key, JSON.stringify(v));
-    },
-    [key], // eslint-disable-line react-hooks/exhaustive-deps
-  );
-  const clear = useCallback(() => writeStored(key, null), [key]);
-  return [value, setValue, clear] as const;
-}
-
-const noSubscribe = () => () => {};
-
-/** Today's date on the client; null during server render and hydration. */
-function useToday(): Date | null {
-  const hydrated = useSyncExternalStore(noSubscribe, () => true, () => false);
-  return hydrated ? startOfToday() : null;
-}
-
 function download(filename: string, text: string, type: string) {
   const url = URL.createObjectURL(new Blob([text], { type }));
   const a = document.createElement("a");
@@ -131,58 +53,6 @@ function download(filename: string, text: string, type: string) {
 /* ------------------------------------------------------------------ */
 /* Shared UI                                                          */
 /* ------------------------------------------------------------------ */
-
-const inputCls =
-  "mt-1.5 block w-full rounded-xl border border-ink-200 bg-white px-3.5 py-2.5 text-base text-ink-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30 sm:text-sm";
-
-function Field({
-  label,
-  hint,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  children: (id: string) => React.ReactNode;
-}) {
-  const id = useId();
-  return (
-    <div>
-      <label htmlFor={id} className="block text-sm font-semibold text-ink-800">
-        {label}
-      </label>
-      {children(id)}
-      {hint && <p className="mt-1 text-xs text-ink-500">{hint}</p>}
-    </div>
-  );
-}
-
-function Check({
-  checked,
-  onChange,
-  children,
-}: {
-  checked: boolean;
-  onChange: (v: boolean) => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-ink-100 bg-white px-4 py-3 text-sm leading-6 text-ink-700 transition-colors has-[:checked]:border-brand-300 has-[:checked]:bg-brand-50/60">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-        className="mt-1 h-4 w-4 shrink-0 accent-brand-700"
-      />
-      <span>{children}</span>
-    </label>
-  );
-}
-
-const btn =
-  "inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
-const btnPrimary = `${btn} bg-brand-700 text-white hover:bg-brand-800`;
-const btnSecondary = `${btn} bg-white text-brand-700 ring-1 ring-inset ring-brand-200 hover:bg-brand-50`;
-const btnQuiet = `${btn} px-3 text-ink-500 hover:text-ink-800`;
 
 function Result({
   tone = "neutral",
