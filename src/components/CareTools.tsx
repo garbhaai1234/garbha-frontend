@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ComplianceIcon } from "@/components/ComplianceGuide";
 import { ArrowRight } from "@/components/Icons";
 import { Check, Field, btnPrimary, btnQuiet, btnSecondary, inputCls } from "@/components/CareUi";
-import { artRegistryUrl, tools, type CareToolId } from "@/content/care";
+import { artRegistryUrl, journey, tools, type CareToolId } from "@/content/care";
 import { clsx } from "@/lib/clsx";
 import {
   addDays,
@@ -95,7 +95,7 @@ function Counsellor({ text }: { text?: string }) {
       <p className="text-sm leading-6 text-ink-600">
         {text ?? "Want to talk your result through with a person?"}
       </p>
-      <a href="#call" className={clsx(btnPrimary, "shrink-0")}>
+      <a href="#request-call" className={clsx(btnPrimary, "shrink-0")}>
         Talk to a fertility counsellor, free <ArrowRight className="h-4 w-4" />
       </a>
     </div>
@@ -945,8 +945,19 @@ const panels: Record<CareToolId, () => React.ReactElement> = {
 
 const isToolId = (v: string): v is CareToolId => v in panels;
 
+/** The last module opened in this tab, so the call form knows where the person came from. */
+const LAST_MODULE_KEY = "garbha-care:last-module"; // read by CareCallForm
+function rememberModule(id: CareToolId) {
+  try {
+    sessionStorage.setItem(LAST_MODULE_KEY, id);
+  } catch {
+    // Storage blocked: the form simply won't pre-fill.
+  }
+}
+
 export function CareTools() {
   const [active, setActive] = useState<CareToolId>("ovulation");
+  const [stage, setStage] = useState<number | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Partial<Record<CareToolId, HTMLButtonElement | null>>>({});
 
@@ -956,6 +967,7 @@ export function CareTools() {
       const id = hash.replace(/^#tool-/, "");
       if (!isToolId(id)) return;
       setActive(id);
+      rememberModule(id);
       requestAnimationFrame(() => panelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
     };
     const onHash = () => open(window.location.hash);
@@ -989,6 +1001,7 @@ export function CareTools() {
   const select = (id: CareToolId) => {
     setActive(id);
     history.replaceState(null, "", `#tool-${id}`);
+    rememberModule(id);
   };
 
   const onKey = (e: React.KeyboardEvent, i: number) => {
@@ -1002,13 +1015,47 @@ export function CareTools() {
 
   const tool = tools.find((t) => t.id === active)!;
   const Panel = panels[active];
+  const suggested = stage === null ? [] : journey[stage].tools;
+
+  const pickStage = (i: number) => {
+    const same = stage === i;
+    setStage(same ? null : i);
+    if (!same) select(journey[i].tools[0]);
+  };
 
   return (
-    <div className="mt-10 grid gap-6 lg:grid-cols-12 lg:gap-8">
+    <>
+    <div className="mt-8">
+      <p id="care-stage-label" className="text-sm font-semibold text-ink-800">
+        Where are you right now?
+      </p>
+      <div
+        role="group"
+        aria-labelledby="care-stage-label"
+        className="-mx-5 mt-3 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
+      >
+        {journey.map((j, i) => (
+          <button
+            key={j.stage}
+            type="button"
+            aria-pressed={stage === i}
+            onClick={() => pickStage(i)}
+            className={clsx(
+              "min-h-11 shrink-0 whitespace-nowrap rounded-full border px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
+              stage === i
+                ? "border-teal-600 bg-teal-50 text-teal-800"
+                : "border-ink-200 bg-white text-ink-700 hover:border-teal-300 hover:text-teal-800",
+            )}
+          >
+            {j.stage}
+          </button>
+        ))}
+      </div>
+    </div>
+    <div className="mt-6 grid gap-6 lg:grid-cols-12 lg:gap-8">
       <div
         role="tablist"
-        aria-label="Free tools"
-        aria-orientation="vertical"
+        aria-label="Free modules"
         className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] lg:col-span-4 lg:mx-0 lg:flex-col lg:self-start lg:overflow-visible lg:px-0 lg:sticky lg:top-24"
       >
         {tools.map((t, i) => {
@@ -1045,6 +1092,7 @@ export function CareTools() {
               <span className="flex flex-col">
                 <span className={clsx("text-[0.65rem] font-bold uppercase tracking-[0.12em]", on ? "text-brand-600" : "text-ink-400")}>
                   Module {i + 1}
+                  {suggested.includes(t.id) && <span className="ml-1.5 text-teal-700">· For you</span>}
                 </span>
                 <span className="whitespace-nowrap lg:whitespace-normal">{t.name}</span>
               </span>
@@ -1071,5 +1119,6 @@ export function CareTools() {
         </div>
       </div>
     </div>
+    </>
   );
 }

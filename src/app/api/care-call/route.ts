@@ -45,7 +45,7 @@ export async function POST(request: Request) {
   }
 
   if (isRateLimited(clientIp(request))) {
-    return fail(429, "Too many requests from this connection. Please try again in a few minutes.");
+    return fail(429, `Too many requests from this connection. Please try again in a few minutes, or email us at ${site.email}.`);
   }
 
   const result = validateCallRequest(raw);

@@ -48,7 +48,7 @@ export function CareStickyBar({ heroId, callId }: { heroId: string; callId: stri
             Free modules
           </a>
           <a
-            href={`#${callId}`}
+            href="#request-call"
             className="flex min-h-12 items-center justify-center rounded-full bg-brand-700 text-sm font-semibold text-white"
           >
             Free counsellor call

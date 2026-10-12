@@ -160,7 +160,9 @@ test.describe("POST /api/care-call", () => {
   test("the 6th request from one address in 10 minutes gets 429", async () => {
     const headers = { "x-forwarded-for": "10.9.9.9" };
     for (let i = 0; i < 5; i++) expect((await call(valid, headers)).status).toBe(200);
-    expect((await call(valid, headers)).status).toBe(429);
+    const limited = await call(valid, headers);
+    expect(limited.status).toBe(429);
+    expect((await limited.json()).error).toContain("info@garbha.ai");
   });
 
   test("production without email settings refuses with the email address, never silently", async () => {

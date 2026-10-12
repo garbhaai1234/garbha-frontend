@@ -10,26 +10,23 @@ import { CareTools } from "@/components/CareTools";
 import { CareCallForm } from "@/components/CareCallForm";
 import { CareStickyBar } from "@/components/CareStickyBar";
 import {
-  assistantPromises,
+  artRegistryUrl,
   callSteps,
   careDisclaimer,
   careFaqs,
   careStatus,
-  finderLabels,
-  howItWorks,
-  journey,
   neverDo,
   programmes,
   promises,
-  sampleChat,
   services,
-  tools,
   verification,
 } from "@/content/care";
 import { breadcrumbSchema, faqSchema } from "@/lib/seo";
 import { clsx } from "@/lib/clsx";
 
-// Server component; the free tools are one client component (CareTools).
+// Server component. Interactive parts are client components: the hero
+// tracker, the modules, the call form and the phone shortcut bar.
+// Spec: docs/specs/garbha-care-redesign.md (REQ-CARE-01).
 
 export const metadata: Metadata = {
   title: "Garbha Care — Fertility Support You Can Trust",
@@ -38,11 +35,14 @@ export const metadata: Metadata = {
   alternates: { canonical: "/care" },
 };
 
-const reassurance: { label: string; icon: Parameters<typeof ComplianceIcon>[0]["name"] }[] = [
-  { label: "Free to start", icon: "heart" },
-  { label: "No sign-up for tools", icon: "check" },
-  { label: "A real person to talk to", icon: "chat" },
-  { label: "Clinics checked against the government registry", icon: "badge" },
+type Icon = Parameters<typeof ComplianceIcon>[0]["name"];
+
+/** Only what is true today. */
+const reassurance: { label: string; icon: Icon }[] = [
+  { label: "Free, no sign-up", icon: "heart" },
+  { label: "Answers saved only on your device", icon: "lock" },
+  { label: `A free counsellor call, in ${careStatus.languages.join(" or ")}`, icon: "chat" },
+  { label: "No diagnosis, no chances as a number", icon: "check" },
 ];
 
 function SectionShell({
@@ -57,47 +57,61 @@ function SectionShell({
   return (
     <section
       id={id}
-      className={clsx(
-        "scroll-mt-24 border-t border-ink-100",
-        tinted && "bg-ink-50/60",
-      )}
+      className={clsx("scroll-mt-24 border-t border-ink-100", tinted && "bg-ink-50/60")}
     >
       <Container className="py-10 sm:py-14">{children}</Container>
     </section>
   );
 }
 
-function IconTile({
-  name,
-  solid,
-}: {
-  name: Parameters<typeof ComplianceIcon>[0]["name"];
-  solid?: boolean;
-}) {
+function IconTile({ name }: { name: Icon }) {
   return (
-    <span
-      className={clsx(
-        "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl",
-        solid
-          ? "bg-gradient-to-br from-brand-500 to-accent-500 text-white shadow-lg shadow-brand-500/25"
-          : "bg-brand-50 text-brand-700 ring-1 ring-brand-100",
-      )}
-    >
+    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700 ring-1 ring-brand-100">
       <ComplianceIcon name={name} className="h-6 w-6" />
     </span>
   );
 }
 
-const toolName = (id: (typeof tools)[number]["id"]) =>
-  tools.find((t) => t.id === id)?.name ?? id;
+function ComingBadge() {
+  return (
+    <span className="inline-flex shrink-0 items-center rounded-full bg-indigo-50 px-2.5 py-1 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-indigo-700 ring-1 ring-inset ring-indigo-200">
+      Coming
+    </span>
+  );
+}
 
-const jumpLinks = [
-  { href: "#journey", label: "Where are you?" },
-  { href: "#call", label: "Free counsellor call" },
-  { href: "#care", label: "Care plans" },
-  { href: "#trust", label: "Who we list" },
-  { href: "#privacy", label: "Your privacy" },
-];
+/** A "when it opens" topic: title and one line, with the detail folded away. */
+function Upcoming({
+  icon,
+  title,
+  summary,
+  children,
+}: {
+  icon: Icon;
+  title: string;
+  summary: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <details className="group rounded-2xl border border-ink-100 bg-white shadow-sm open:shadow-md">
+      <summary className="flex cursor-pointer list-none items-start gap-4 p-5 sm:p-6 [&::-webkit-details-marker]:hidden">
+        <IconTile name={icon} />
+        <span className="flex-1">
+          <span className="flex flex-wrap items-center gap-2">
+            <span className="font-display text-lg font-bold text-ink-900">{title}</span>
+            <ComingBadge />
+          </span>
+          <span className="mt-1 block text-sm leading-6 text-ink-600">{summary}</span>
+        </span>
+        <ChevronDown
+          aria-hidden="true"
+          className="mt-1 h-5 w-5 shrink-0 text-brand-500 transition-transform duration-300 group-open:rotate-180"
+        />
+      </summary>
+      <div className="border-t border-ink-100 px-5 pb-6 pt-4 sm:px-6">{children}</div>
+    </details>
+  );
+}
 
 export default function GarbhaCarePage() {
   return (
@@ -112,11 +126,11 @@ export default function GarbhaCarePage() {
         ]}
       />
 
-      {/* Hero */}
+      {/* Hero: a working fertile-day check */}
       <section id="care-hero" className="relative isolate overflow-hidden border-b border-ink-100">
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-brand-50 via-white to-white" />
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-brand-50/70 via-white to-white" />
         <div className="pointer-events-none absolute inset-0 -z-10 bg-dot-grid opacity-50 [mask-image:radial-gradient(90%_60%_at_50%_0%,black,transparent)]" />
-        <div className="animate-blob pointer-events-none absolute -left-24 -top-24 -z-10 h-80 w-80 rounded-full bg-brand-300/30 blur-3xl" />
+        <div className="animate-blob pointer-events-none absolute -left-24 -top-24 -z-10 h-80 w-80 rounded-full bg-brand-300/25 blur-3xl" />
         <div
           className="animate-blob pointer-events-none absolute -right-24 top-10 -z-10 h-72 w-72 rounded-full bg-teal-300/25 blur-3xl"
           style={{ animationDelay: "-6s" }}
@@ -137,7 +151,7 @@ export default function GarbhaCarePage() {
             </p>
             <p className="mt-3 text-sm text-ink-500">
               Prefer to talk first?{" "}
-              <a href="#call" className="font-semibold text-brand-700 underline underline-offset-4 hover:text-brand-800">
+              <a href="#request-call" className="font-semibold text-brand-700 underline underline-offset-4 hover:text-brand-800">
                 Request a free counsellor call
               </a>
             </p>
@@ -145,197 +159,37 @@ export default function GarbhaCarePage() {
         </Container>
       </section>
 
-      {/* Free modules: first, so the page starts with something that works */}
-      <SectionShell id="tools">
-        <SectionHeading
-          eyebrow="8 free modules"
-          title="Pick a module. Get your answer now."
-          description="Each module works right here: enter your details and see the result straight away. No account, no forms, nothing sent to us: anything you save stays on this device."
-        />
-        <CareTools />
-        <p className="mt-8 rounded-xl border border-ink-100 bg-ink-50 px-5 py-4 text-sm text-ink-600">
-          <strong className="font-semibold text-ink-900">
-            These tools inform; they don’t diagnose.
-          </strong>{" "}
-          None of them gives a diagnosis or your chances as a percentage. The
-          tracker shows estimates and must never be used as contraception.
-        </p>
-      </SectionShell>
-
-      {/* Reassurance strip */}
+      {/* What is true today, in one line */}
       <section className="border-b border-ink-100 bg-ink-50/60">
-        <Container className="py-8">
-          <ul className="grid grid-cols-2 gap-x-6 gap-y-6 lg:grid-cols-4">
+        <Container className="py-6 sm:py-8">
+          <ul className="grid grid-cols-2 gap-x-6 gap-y-5 lg:grid-cols-4">
             {reassurance.map((r) => (
               <li key={r.label} className="flex items-center gap-3">
                 <IconTile name={r.icon} />
-                <span className="text-sm font-semibold leading-5 text-ink-800">
-                  {r.label}
-                </span>
+                <span className="text-sm font-semibold leading-5 text-ink-800">{r.label}</span>
               </li>
             ))}
           </ul>
         </Container>
       </section>
 
-      {/* Jump links: one scrollable line on phones. */}
-      <Container>
-        <nav
-          aria-label="On this page"
-          className="-mx-5 flex gap-2 overflow-x-auto px-5 py-6 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
-        >
-          {jumpLinks.map((j) => (
-            <a
-              key={j.href}
-              href={j.href}
-              className="inline-flex shrink-0 items-center whitespace-nowrap rounded-full border border-ink-200 bg-white px-4 py-2 text-sm font-medium text-ink-700 transition-colors hover:border-brand-300 hover:text-brand-700"
-            >
-              {j.label}
-            </a>
-          ))}
-        </nav>
-      </Container>
-
-      {/* Where are you right now? */}
-      <SectionShell id="journey">
+      {/* The eight modules */}
+      <SectionShell id="tools">
         <SectionHeading
-          eyebrow="Wherever you are"
-          title="Where are you right now?"
-          description="Every journey is different. Find the moment that sounds like yours, and see what can help today and what you can book when you’re ready."
+          eyebrow="8 free modules"
+          title="Pick a module. Get your answer now."
+          description="Each module works right here: enter your details and see the result straight away. No account and no forms, and anything you save stays on this device."
         />
-        <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {journey.map((j) => (
-            <li
-              key={j.stage}
-              className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-ink-100 bg-white p-6 shadow-sm"
-            >
-              <span className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-500 to-accent-500" />
-              <div className="flex items-center gap-3">
-                <IconTile name={j.icon} />
-                <h3 className="font-display text-lg font-bold leading-snug text-ink-900">
-                  {j.stage}
-                </h3>
-              </div>
-              <p className="mt-4 text-sm italic leading-6 text-ink-600">{j.feeling}</p>
-              <dl className="mt-5 flex-1 space-y-3 border-t border-ink-100 pt-4 text-sm">
-                <div>
-                  <dt className="text-xs font-bold uppercase tracking-[0.1em] text-teal-700">
-                    Free help now
-                  </dt>
-                  <dd className="mt-1 text-ink-700">{j.helpNow}</dd>
-                  <dd className="mt-3 flex flex-wrap gap-2">
-                    {j.tools.map((id) => (
-                      <a
-                        key={id}
-                        href={`#tool-${id}`}
-                        className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-800 ring-1 ring-inset ring-teal-200 transition-colors hover:bg-teal-100"
-                      >
-                        Open: {toolName(id)} <ArrowRight className="h-3.5 w-3.5" />
-                      </a>
-                    ))}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-bold uppercase tracking-[0.1em] text-brand-700">
-                    When you’re ready
-                  </dt>
-                  <dd className="mt-1 text-ink-700">{j.whenReady}</dd>
-                </div>
-              </dl>
-            </li>
-          ))}
-        </ul>
-      </SectionShell>
-
-      {/* How it works */}
-      <SectionShell tinted>
-        <SectionHeading
-          eyebrow="How it works"
-          title="Free help first. Care only when you need it."
-        />
-        <ol className="mt-12 grid gap-6 md:grid-cols-3">
-          {howItWorks.map((s, i) => (
-            <li
-              key={s.title}
-              className="relative h-full rounded-2xl border border-ink-100 bg-white p-6 shadow-sm"
-            >
-              <div className="flex items-center justify-between">
-                <IconTile name={s.icon} solid />
-                <span
-                  className={clsx(
-                    "rounded-full px-2.5 py-1 text-[0.7rem] font-bold uppercase tracking-[0.1em] ring-1 ring-inset",
-                    s.free
-                      ? "bg-teal-50 text-teal-700 ring-teal-200"
-                      : "bg-ink-50 text-ink-600 ring-ink-200",
-                  )}
-                >
-                  {s.free ? "Free" : "Paid, price shown first"}
-                </span>
-              </div>
-              <h3 className="mt-5 font-display text-lg font-bold text-ink-900">
-                <span className="text-brand-500">{i + 1}.</span> {s.title}
-              </h3>
-              <p className="mt-3 text-sm leading-6 text-ink-600">{s.text}</p>
-            </li>
-          ))}
-        </ol>
-      </SectionShell>
-
-      {/* Assistant */}
-      <SectionShell tinted>
-        <div className="grid items-center gap-12 lg:grid-cols-12">
-          <div className="lg:col-span-6">
-            <SectionHeading
-              eyebrow="The Garbha Assistant"
-              title="Ask anything, any time, without judgement"
-              description="In the app, and on WhatsApp if you choose. It explains terms and reports in plain words, reminds you of medicines and scans, and helps you book."
-            />
-            <ul className="mt-8 space-y-3">
-              {assistantPromises.map((r) => (
-                <li key={r} className="flex gap-3 text-sm leading-6 text-ink-700">
-                  <ComplianceIcon name="check" className="mt-0.5 h-5 w-5 shrink-0 text-teal-700" />
-                  {r}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="lg:col-span-6">
-            <figure className="mx-auto max-w-md overflow-hidden rounded-[1.75rem] border border-ink-100 bg-white shadow-xl shadow-brand-500/10">
-              <div className="flex items-center justify-between gap-3 border-b border-ink-100 bg-ink-50 px-5 py-3">
-                <span className="flex items-center gap-2 text-sm font-semibold text-ink-900">
-                  <span className="h-2 w-2 rounded-full bg-teal-500" />
-                  Garbha Assistant · automated
-                </span>
-                <span className="shrink-0 whitespace-nowrap rounded-full bg-white px-3 py-1 text-xs font-semibold text-brand-700 ring-1 ring-inset ring-brand-200">
-                  Talk to a person
-                </span>
-              </div>
-              <ul className="space-y-3 px-5 py-5">
-                {sampleChat.map((m, i) => (
-                  <li
-                    key={i}
-                    className={clsx(
-                      "max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-6",
-                      m.from === "you"
-                        ? "ml-auto rounded-br-md bg-brand-700 text-white"
-                        : "rounded-bl-md bg-ink-50 text-ink-800 ring-1 ring-inset ring-ink-100",
-                    )}
-                  >
-                    <span className="sr-only">{m.from === "you" ? "You: " : "Assistant: "}</span>
-                    {m.text}
-                  </li>
-                ))}
-              </ul>
-              <figcaption className="border-t border-ink-100 px-5 py-3 text-xs text-ink-500">
-                Example conversation, for illustration.
-              </figcaption>
-            </figure>
-          </div>
-        </div>
+        <CareTools />
+        <p className="mt-8 rounded-xl border border-ink-100 bg-ink-50 px-5 py-4 text-sm text-ink-600">
+          <strong className="font-semibold text-ink-900">These modules inform; they don’t diagnose.</strong>{" "}
+          None of them gives a diagnosis or your chances as a percentage. The tracker shows
+          estimates and must never be used as contraception.
+        </p>
       </SectionShell>
 
       {/* Free counsellor call: the one form on the page */}
-      <SectionShell id="call">
+      <SectionShell id="call" tinted>
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-5">
             <SectionHeading
@@ -362,158 +216,130 @@ export default function GarbhaCarePage() {
               {careStatus.languages.join(" or ")}, as soon as calls begin.
             </p>
           </div>
-          <div className="lg:col-span-7">
+          {/* Call buttons land here, so on a phone the form is on screen, not the steps. */}
+          <div id="request-call" className="scroll-mt-20 lg:col-span-7 lg:scroll-mt-24">
             <CareCallForm />
           </div>
         </div>
       </SectionShell>
 
-      {/* Care plans */}
-      <SectionShell id="care" tinted>
+      {/* Everything that opens later: clearly marked, nothing to click that doesn't work */}
+      <SectionShell id="care">
         <SectionHeading
-          eyebrow="Care plans"
-          title="A clear plan for where you are"
-          description="Each plan brings together counselling, the right tests and consults with verified providers. It lists everything included before you start, and never promises a pregnancy."
+          eyebrow={`Opening in ${careStatus.city}`}
+          title="When you need care, book it with protections built in"
+          description="These start when Garbha Care opens. Until then, you can check any clinic yourself on the government’s registry."
         />
-        <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {programmes.map((p) => (
-            <li
-              key={p.name}
-              className="flex h-full flex-col rounded-2xl border border-ink-100 bg-white p-6 shadow-sm"
-            >
-              <IconTile name={p.icon} solid />
-              <h3 className="mt-5 font-display text-xl font-bold text-ink-900">
-                {p.name}
-              </h3>
-              <p className="mt-1 text-sm font-medium text-brand-700">{p.for}</p>
-              <p className="mt-4 flex-1 text-sm leading-6 text-ink-600">{p.includes}</p>
-            </li>
-          ))}
-        </ul>
-      </SectionShell>
+        <div className="mt-8 flex flex-col gap-4 rounded-2xl border border-indigo-100 bg-indigo-50/60 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <p className="flex gap-3 text-sm leading-6 text-indigo-900">
+            <ComplianceIcon name="badge" className="mt-0.5 h-5 w-5 shrink-0 text-indigo-700" />
+            <span>
+              <strong className="font-semibold">Available today:</strong> look up any IVF clinic on
+              the National ART &amp; Surrogacy Registry before you visit.
+            </span>
+          </p>
+          <a
+            href={artRegistryUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-white px-5 text-sm font-semibold text-indigo-800 ring-1 ring-inset ring-indigo-200 hover:bg-indigo-50"
+          >
+            Check a clinic’s registration <ArrowRight className="h-4 w-4" />
+            <span className="sr-only">(opens the government registry in a new tab)</span>
+          </a>
+        </div>
 
-      {/* What you can book */}
-      <SectionShell>
-        <SectionHeading
-          eyebrow="When you need care"
-          title="Book it in one place, with the protections built in"
-          description="Every service comes from a verified provider at its own full price, shown before you book."
-        />
-        <ul className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {services.map((s) => (
-            <li
-              key={s.name}
-              className="flex h-full flex-col rounded-2xl border border-ink-100 bg-white p-6 shadow-sm"
-            >
-              <IconTile name={s.icon} />
-              <h3 className="mt-5 font-display text-xl font-bold text-ink-900">
-                {s.name}
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-ink-600">{s.gets}</p>
-              <div className="mt-4 flex-1 rounded-xl bg-indigo-50 px-4 py-3 text-sm leading-6 text-indigo-900">
-                <span className="font-semibold">What protects you: </span>
-                {s.protection}
-              </div>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-8 text-sm text-ink-600">
-          Consults and tests open first. Medicine delivery follows later.
-        </p>
-      </SectionShell>
-
-      {/* Trust: who we list */}
-      <SectionShell id="trust" tinted>
-        <div className="grid gap-12 lg:grid-cols-12">
-          <div className="lg:col-span-6">
-            <SectionHeading
-              eyebrow="Who we list"
-              title="How you know a clinic is genuine"
-              description="Before any provider can take a booking, we check its licences with the authority that issued them. If a licence lapses, its listing is paused automatically."
-            />
-            <ul className="mt-8 divide-y divide-ink-100 overflow-hidden rounded-2xl border border-ink-100 bg-white">
-              {verification.map((v) => (
-                <li key={v.type} className="flex gap-3 px-5 py-4 text-sm leading-6">
-                  <ComplianceIcon name="badge" className="mt-0.5 h-5 w-5 shrink-0 text-indigo-700" />
-                  <p>
-                    <span className="font-semibold text-ink-900">{v.type}:</span>{" "}
-                    <span className="text-ink-700">{v.checked}</span>
-                  </p>
+        <div className="mt-6 grid gap-4 lg:grid-cols-2">
+          <Upcoming
+            icon="list"
+            title="Care plans"
+            summary="A clear plan for where you are, with everything included listed before you start."
+          >
+            <ul className="space-y-3">
+              {programmes.map((p) => (
+                <li key={p.name} className="text-sm leading-6">
+                  <span className="font-semibold text-ink-900">{p.name}</span>
+                  <span className="text-ink-500"> · {p.for}</span>
+                  <span className="block text-ink-600">{p.includes}</span>
                 </li>
               ))}
             </ul>
-          </div>
-          <div className="lg:col-span-6">
-            <h3 className="font-display text-2xl font-bold text-ink-900 sm:text-3xl">
-              What the badges in the clinic finder mean
-            </h3>
-            <p className="mt-3 leading-7 text-ink-600">
-              The finder lists every clinic on the government’s national ART
-              registry, whether or not it works with us, so you can check any
-              clinic you are considering.
-            </p>
-            <ul className="mt-6 space-y-4">
-              {finderLabels.map((f) => (
-                <li key={f.label} className="flex flex-col gap-1.5">
-                  <span
-                    className={clsx(
-                      "inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ring-1 ring-inset",
-                      f.tone === "registry" && "bg-white text-ink-700 ring-ink-300",
-                      f.tone === "verified" && "bg-indigo-50 text-indigo-700 ring-indigo-200",
-                      f.tone === "ai" && "bg-brand-50 text-brand-700 ring-brand-200",
-                    )}
-                  >
-                    <ComplianceIcon name="badge" className="h-3.5 w-3.5" />
-                    {f.label}
+          </Upcoming>
+          <Upcoming
+            icon="building"
+            title="Consults, scans, IVF and medicines"
+            summary="Book in one place, at the provider’s full price, shown before you book."
+          >
+            <ul className="space-y-3">
+              {services.map((s) => (
+                <li key={s.name} className="text-sm leading-6">
+                  <span className="font-semibold text-ink-900">{s.name}:</span>{" "}
+                  <span className="text-ink-600">{s.gets}</span>
+                  <span className="mt-1 block rounded-lg bg-indigo-50 px-3 py-2 text-indigo-900">
+                    <span className="font-semibold">What protects you: </span>
+                    {s.protection}
                   </span>
-                  <span className="text-sm text-ink-600">{f.meaning}</span>
                 </li>
               ))}
             </ul>
-            <p className="mt-6 text-sm text-ink-600">
-              We don’t show star ratings or success-rate rankings: there is no
-              reliable public source for clinic success rates, and we won’t
-              guess.
+          </Upcoming>
+          <Upcoming
+            icon="badge"
+            title="Only licence-checked providers"
+            summary="Before a provider can take a booking, we check its licences with the authority that issued them."
+          >
+            <ul className="space-y-2">
+              {verification.map((v) => (
+                <li key={v.type} className="text-sm leading-6">
+                  <span className="font-semibold text-ink-900">{v.type}:</span>{" "}
+                  <span className="text-ink-600">{v.checked}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 text-sm text-ink-600">
+              No star ratings or success-rate rankings: there is no reliable public source for
+              clinic success rates, and we won’t guess.
             </p>
-          </div>
+          </Upcoming>
+          <Upcoming
+            icon="chat"
+            title="The Garbha Assistant"
+            summary="An automated helper in the app, and on WhatsApp if you choose, that explains terms and reports."
+          >
+            <ul className="space-y-2 text-sm leading-6 text-ink-600">
+              <li>Says it is automated, and always offers a real person.</li>
+              <li>Answers only from content our clinical advisor has approved.</li>
+              <li>Never diagnoses, prescribes or tells you your chances.</li>
+              <li>For anything urgent, such as heavy bleeding or severe pain, tells you to get urgent care.</li>
+            </ul>
+          </Upcoming>
         </div>
       </SectionShell>
 
-      {/* Privacy and promises */}
-      <SectionShell id="privacy">
+      {/* Privacy and promises: true today */}
+      <SectionShell id="privacy" tinted>
         <SectionHeading
           eyebrow="Your privacy"
           title="Private by default, honest at every step"
-          description="Fertility is personal. These promises hold whether you use one free tool or book your treatment through us."
         />
-        <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {promises.map((p) => (
-            <li
-              key={p.title}
-              className="h-full rounded-2xl border border-ink-100 bg-white p-6 shadow-sm"
-            >
+            <li key={p.title} className="h-full rounded-2xl border border-ink-100 bg-white p-5 shadow-sm">
               <IconTile name={p.icon} />
-              <h3 className="mt-5 font-display text-lg font-bold text-ink-900">
-                {p.title}
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-ink-600">{p.text}</p>
+              <h3 className="mt-4 font-display text-base font-bold text-ink-900">{p.title}</h3>
+              <p className="mt-1.5 text-sm leading-6 text-ink-600">{p.text}</p>
             </li>
           ))}
         </ul>
-
-        <div className="mt-10 rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-50 via-white to-white p-7 sm:p-10">
-          <div className="flex items-center gap-4">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-700 text-white">
-              <ComplianceIcon name="ban" className="h-6 w-6" />
-            </span>
-            <h3 className="font-display text-2xl font-bold text-ink-900">
-              What we will never do
-            </h3>
-          </div>
-          <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+        <div className="mt-6 rounded-2xl border border-brand-200 bg-white p-5 sm:p-6">
+          <h3 className="flex items-center gap-3 font-display text-lg font-bold text-ink-900">
+            <ComplianceIcon name="ban" className="h-5 w-5 text-brand-700" />
+            What we will never do
+          </h3>
+          <ul className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2">
             {neverDo.map((n) => (
-              <li key={n} className="flex gap-3 text-sm leading-6 text-ink-700">
-                <ComplianceIcon name="ban" className="mt-0.5 h-5 w-5 shrink-0 text-brand-700" />
+              <li key={n} className="flex gap-2.5 text-sm leading-6 text-ink-700">
+                <span aria-hidden="true" className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-600" />
                 {n}
               </li>
             ))}
@@ -522,49 +348,44 @@ export default function GarbhaCarePage() {
       </SectionShell>
 
       {/* FAQ */}
-      <section className="border-t border-ink-100 bg-ink-50/60">
-        <Container className="py-10 sm:py-14">
-          <SectionHeading eyebrow="Questions" title="What people ask us" />
-          <div className="mx-auto mt-10 max-w-3xl divide-y divide-ink-100 overflow-hidden rounded-2xl border border-ink-100 bg-white">
-            {careFaqs.map((f, i) => (
-              <details key={f.q} className="group" open={i === 0}>
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 text-left [&::-webkit-details-marker]:hidden">
-                  <span className="font-display text-base font-semibold text-ink-900 transition-colors group-open:text-brand-700 sm:text-lg">
-                    {f.q}
-                  </span>
-                  <ChevronDown
-                    aria-hidden="true"
-                    className="h-5 w-5 shrink-0 text-brand-500 transition-transform duration-300 group-open:rotate-180"
-                  />
-                </summary>
-                <p className="px-6 pb-6 leading-7 text-ink-600">{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </Container>
-      </section>
+      <SectionShell>
+        <SectionHeading eyebrow="Questions" title="What people ask us" />
+        <div className="mx-auto mt-8 max-w-3xl divide-y divide-ink-100 overflow-hidden rounded-2xl border border-ink-100 bg-white">
+          {careFaqs.map((f, i) => (
+            <details key={f.q} className="group" open={i === 0}>
+              <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-left sm:px-6 sm:py-5 [&::-webkit-details-marker]:hidden">
+                <span className="font-display text-base font-semibold text-ink-900 transition-colors group-open:text-brand-700 sm:text-lg">
+                  {f.q}
+                </span>
+                <ChevronDown
+                  aria-hidden="true"
+                  className="h-5 w-5 shrink-0 text-brand-500 transition-transform duration-300 group-open:rotate-180"
+                />
+              </summary>
+              <p className="px-5 pb-5 leading-7 text-ink-600 sm:px-6 sm:pb-6">{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </SectionShell>
 
-      {/* Closing CTA */}
+      {/* Closing */}
       <section className="border-t border-ink-100">
         <Container className="py-10 sm:py-14">
-          <div className="relative isolate overflow-hidden rounded-[2rem] bg-ink-50 px-7 py-12 text-center sm:px-14 sm:py-16">
+          <div className="relative isolate overflow-hidden rounded-[2rem] bg-ink-50 px-6 py-10 text-center sm:px-14 sm:py-14">
             <div className="pointer-events-none absolute inset-0 -z-10 bg-radial-brand opacity-70" />
-            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-700">
-              Garbha Care · {careStatus.label}
-            </span>
-            <h2 className="mx-auto mt-4 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
-              Be the first to know when it opens in {careStatus.city}
+            <h2 className="mx-auto max-w-2xl font-display text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
+              Not sure where to start?
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-lg leading-8 text-ink-500">
-              Leave us your details and we’ll tell you as soon as Garbha Care is
-              ready, in {careStatus.languages.join(" or ")}.
+            <p className="mx-auto mt-3 max-w-xl text-base leading-7 text-ink-500 sm:text-lg sm:leading-8">
+              Tell a counsellor where you are. The call is free, in{" "}
+              {careStatus.languages.join(" or ")}, and you decide what happens next.
             </p>
-            <div className="mt-8 flex justify-center">
-              <CtaLink href="#call">
+            <div className="mt-7 flex justify-center">
+              <CtaLink href="#request-call">
                 Request a free call <ArrowRight className="h-4 w-4" />
               </CtaLink>
             </div>
-            <p className="mt-8 text-sm text-ink-500">
+            <p className="mt-7 text-sm text-ink-500">
               Are you a clinic, lab or pharmacy?{" "}
               <Link
                 href="/partnership"
@@ -575,11 +396,12 @@ export default function GarbhaCarePage() {
             </p>
           </div>
           <p className="mx-auto mt-8 max-w-3xl text-center text-xs text-ink-500">
-            {careDisclaimer} In an emergency, such as heavy bleeding or severe
-            pain, seek urgent medical care.
+            {careDisclaimer} In an emergency, such as heavy bleeding or severe pain, seek urgent
+            medical care.
           </p>
         </Container>
       </section>
+
       <CareStickyBar heroId="care-hero" callId="call" />
     </>
   );

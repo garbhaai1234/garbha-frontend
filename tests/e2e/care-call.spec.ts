@@ -92,3 +92,13 @@ test("module context pre-fills 'where are you now'", async ({ page }) => {
   await form.getByLabel("First name").click();
   await expect(form.getByLabel("Where are you now?")).toHaveValue("Planning ahead (egg freezing)");
 });
+
+test("the module just used still pre-fills after a call button changes the address", async ({ page }) => {
+  await page.goto("/care");
+  await page.locator("#tab-semen").click();
+  await page.locator("#care-tool-panel").getByRole("link", { name: /Talk to a fertility counsellor/ }).click();
+  await expect(page).toHaveURL(/#request-call$/);
+  const form = page.locator("#call form");
+  await form.getByLabel("First name").click();
+  await expect(form.getByLabel("Where are you now?")).toHaveValue("Tests done, not sure what they mean");
+});

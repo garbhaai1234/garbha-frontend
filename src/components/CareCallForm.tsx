@@ -46,8 +46,17 @@ const stageFromModule: Record<CareToolId, (typeof callOptions.stage)[number]> = 
   eggs: "Planning ahead (egg freezing)",
 };
 
+/** The module in the address bar, else the last one opened in this tab (set by CareTools). */
 const moduleFromHash = () => {
-  const id = typeof window === "undefined" ? "" : window.location.hash.replace(/^#tool-/, "");
+  if (typeof window === "undefined") return null;
+  let id = window.location.hash.replace(/^#tool-/, "");
+  if (!(id in stageFromModule)) {
+    try {
+      id = sessionStorage.getItem("garbha-care:last-module") ?? "";
+    } catch {
+      id = "";
+    }
+  }
   return id in stageFromModule ? (id as CareToolId) : null;
 };
 

@@ -7,12 +7,16 @@ import { defineConfig, devices } from "@playwright/test";
  *
  *   npm test            unit tests only
  *   npm run test:e2e    build first (`npm run build`), then browser tests
+ *
+ * Browser tests run one at a time: on a busy machine parallel Chrome
+ * instances time out while closing, which says nothing about the page.
  */
 const port = Number(process.env.E2E_PORT ?? 3457);
 
 export default defineConfig({
   testDir: "tests",
   reporter: "list",
+  workers: 1,
   projects: [
     { name: "unit", testDir: "tests/unit" },
     {

@@ -20,7 +20,7 @@ test("one date gives the person's fertile days, ring and next steps", async ({ p
   await expect(hero.getByText("15 October 2026")).toBeVisible();
   await expect(ring).toBeVisible();
   await expect(ring).toHaveAccessibleName(/^Your estimated cycle of 28 days.*today is day 12/);
-  await expect(hero.getByRole("link", { name: /Talk to a counsellor/ })).toHaveAttribute("href", "#call");
+  await expect(hero.getByRole("link", { name: /Talk to a counsellor/ })).toHaveAttribute("href", "#request-call");
 });
 
 test("the date is shared with Module 1 and survives a reload", async ({ page }) => {

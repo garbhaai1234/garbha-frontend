@@ -125,7 +125,7 @@ export function CareHeroTracker({ children }: { children: React.ReactNode }) {
                   <a href="#tool-ovulation" className="inline-flex items-center gap-1.5 text-brand-700 hover:text-brand-800">
                     Day-by-day calendar and LH test <ArrowRight className="h-4 w-4" />
                   </a>
-                  <a href="#call" className="inline-flex items-center gap-1.5 text-brand-700 hover:text-brand-800">
+                  <a href="#request-call" className="inline-flex items-center gap-1.5 text-brand-700 hover:text-brand-800">
                     Talk to a counsellor, free <ArrowRight className="h-4 w-4" />
                   </a>
                 </div>
