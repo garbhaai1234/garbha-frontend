@@ -13,6 +13,23 @@ import { ComplianceIcon } from "@/components/ComplianceGuide";
 import { ArrowRight } from "@/components/Icons";
 import { artRegistryUrl, tools, type CareToolId } from "@/content/care";
 import { clsx } from "@/lib/clsx";
+import {
+  addDays,
+  daysBetween,
+  fmt,
+  fmtLong,
+  lakh,
+  num,
+  parseDate,
+  startOfToday,
+  toInput,
+} from "@/lib/care/dates";
+import { cyclePlan, isIrregular } from "@/lib/care/ovulation";
+import { specialistAdvice } from "@/lib/care/specialist";
+import { evaluateSemen, semenRows, type SemenKey } from "@/lib/care/semen";
+import { cities, eggFreezingCost, ivfCost } from "@/lib/care/cost";
+import { byWeek, ivfMilestones } from "@/lib/care/ivf";
+import { byStart, toIcs, type Reminder } from "@/lib/care/ics";
 
 /**
  * The eight free Garbha Care tools as working modules. Everything runs in the
@@ -28,50 +45,6 @@ import { clsx } from "@/lib/clsx";
 /* ------------------------------------------------------------------ */
 /* Helpers                                                            */
 /* ------------------------------------------------------------------ */
-
-const DAY = 86_400_000;
-
-/** "2026-10-12" -> local Date at midnight (avoids UTC off-by-one). */
-function parseDate(v: string): Date | null {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v);
-  if (!m) return null;
-  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
-  return Number.isNaN(d.getTime()) ? null : d;
-}
-
-function toInput(d: Date): string {
-  const p = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
-}
-
-function addDays(d: Date, n: number): Date {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
-}
-
-function daysBetween(a: Date, b: Date): number {
-  return Math.round((b.getTime() - a.getTime()) / DAY);
-}
-
-function today(): Date {
-  const n = new Date();
-  return new Date(n.getFullYear(), n.getMonth(), n.getDate());
-}
-
-const fmt = (d: Date) =>
-  d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
-const fmtLong = (d: Date) =>
-  d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
-
-function lakh(n: number): string {
-  const v = n / 100_000;
-  return `₹${v % 1 === 0 ? v.toFixed(0) : v.toFixed(1)} lakh`;
-}
-
-function num(v: string): number | null {
-  if (v.trim() === "") return null;
-  const n = Number(v);
-  return Number.isFinite(n) ? n : null;
-}
 
 /*
  * Values saved on this device. A tiny external store over localStorage (with
@@ -141,7 +114,7 @@ const noSubscribe = () => () => {};
 /** Today's date on the client; null during server render and hydration. */
 function useToday(): Date | null {
   const hydrated = useSyncExternalStore(noSubscribe, () => true, () => false);
-  return hydrated ? today() : null;
+  return hydrated ? startOfToday() : null;
 }
 
 function download(filename: string, text: string, type: string) {
@@ -283,43 +256,12 @@ function OvulationTracker() {
   const set = (p: Partial<TrackerData>) => setD((v) => ({ ...v, ...p }));
   const now = useToday();
 
-  const plan = useMemo(() => {
-    const start = parseDate(d.start);
-    if (!start) return null;
-    const cycle = Math.min(45, Math.max(20, Math.round(d.cycle || 28)));
-    const period = Math.min(10, Math.max(1, Math.round(d.period || 5)));
-    const next = addDays(start, cycle);
-    let ovulation = addDays(start, cycle - 14);
-    let fromLh = false;
-    const lh = parseDate(d.lh);
-    if (lh && lh >= start && lh < next) {
-      // Ovulation usually follows a positive LH test within about a day.
-      ovulation = addDays(lh, 1);
-      fromLh = true;
-    }
-    const windowStart = addDays(ovulation, -5);
-    const days = Array.from({ length: cycle }, (_, i) => {
-      const date = addDays(start, i);
-      const kind =
-        i < period
-          ? "period"
-          : daysBetween(date, ovulation) === 0
-            ? "ovulation"
-            : date >= windowStart && date < ovulation
-              ? "fertile"
-              : "other";
-      return { date, kind, day: i + 1 };
-    });
-    const upcoming = [1, 2, 3].map((k) => {
-      const s = addDays(start, cycle * k);
-      const o = addDays(s, cycle - 14);
-      return { period: s, from: addDays(o, -5), to: o };
-    });
-    return { start, cycle, next, ovulation, windowStart, days, upcoming, fromLh };
-  }, [d]);
+  const plan = useMemo(
+    () => cyclePlan({ start: d.start, cycle: d.cycle, period: d.period, lh: d.lh }),
+    [d],
+  );
 
-  // An emptied input gives 0: no warning until a real length is typed.
-  const irregular = d.cycle > 0 && (d.cycle < 21 || d.cycle > 35);
+  const irregular = isIrregular(d.cycle);
 
   return (
     <div className="space-y-6">
@@ -481,22 +423,7 @@ function SpecialistCheck() {
   const a = num(age);
   const m = num(months);
 
-  const result = useMemo(() => {
-    if (a === null || m === null) return null;
-    const reasons: string[] = [];
-    if (a >= 40) reasons.push("You are 40 or older: guidance suggests seeing a specialist without waiting.");
-    if (flags.irregular) reasons.push("Irregular or absent periods are a reason to be checked straight away.");
-    if (flags.endo) reasons.push("Known or suspected endometriosis is a reason to be checked straight away.");
-    if (flags.male) reasons.push("A semen report below the reference range is a reason to see a specialist together now.");
-    const limit = a >= 35 ? 6 : 12;
-    if (m >= limit)
-      reasons.push(
-        a >= 35
-          ? `You have been trying for ${m} months. From 35, guidance suggests a check after 6 months.`
-          : `You have been trying for ${m} months. Under 35, guidance suggests a check after 12 months.`,
-      );
-    return { yes: reasons.length > 0, reasons, limit, left: Math.max(0, limit - m) };
-  }, [a, m, flags]);
+  const result = useMemo(() => specialistAdvice(a, m, flags), [a, m, flags]);
 
   return (
     <div className="space-y-6">
@@ -553,31 +480,19 @@ function SpecialistCheck() {
 /* 3. Semen report reader                                             */
 /* ------------------------------------------------------------------ */
 
-const semenRows = [
-  { key: "volume", label: "Semen volume", unit: "mL", min: 1.4 },
-  { key: "conc", label: "Sperm concentration", unit: "million per mL", min: 16 },
-  { key: "total", label: "Total sperm number", unit: "million per ejaculate", min: 39 },
-  { key: "totalMot", label: "Total motility (PR + NP)", unit: "%", min: 42 },
-  { key: "prog", label: "Progressive motility (PR)", unit: "%", min: 30 },
-  { key: "morph", label: "Normal forms (morphology)", unit: "%", min: 4 },
-] as const;
-
-type SemenKey = (typeof semenRows)[number]["key"];
-
 function SemenReader() {
   const [v, setV] = useState<Record<SemenKey, string>>({
     volume: "", conc: "", total: "", totalMot: "", prog: "", morph: "",
   });
-  const values = useMemo(() => {
-    const out = {} as Record<SemenKey, { n: number | null; derived: boolean }>;
-    for (const r of semenRows) out[r.key] = { n: num(v[r.key]), derived: false };
-    if (out.total.n === null && out.volume.n !== null && out.conc.n !== null) {
-      out.total = { n: Math.round(out.volume.n * out.conc.n * 10) / 10, derived: true };
-    }
-    return out;
-  }, [v]);
-  const entered = semenRows.filter((r) => values[r.key].n !== null);
-  const below = entered.filter((r) => (values[r.key].n as number) < r.min);
+  const values = useMemo(
+    () =>
+      evaluateSemen(
+        Object.fromEntries(semenRows.map((r) => [r.key, num(v[r.key])])) as Record<SemenKey, number | null>,
+      ),
+    [v],
+  );
+  const entered = semenRows.filter((r) => values[r.key].status !== "none");
+  const below = semenRows.filter((r) => values[r.key].status === "below");
 
   return (
     <div className="space-y-6">
@@ -598,7 +513,7 @@ function SemenReader() {
           <tbody className="divide-y divide-ink-100">
             {semenRows.map((r) => {
               const val = values[r.key];
-              const status = val.n === null ? "none" : val.n < r.min ? "below" : "within";
+              const status = val.status;
               return (
                 <tr key={r.key} className="align-top">
                   <td className="px-4 py-3">
@@ -668,33 +583,13 @@ function SemenReader() {
 /* 4. IVF cost estimator                                              */
 /* ------------------------------------------------------------------ */
 
-const cities: { name: string; tier: "metro" | "tier2" }[] = [
-  { name: "Hyderabad", tier: "metro" },
-  { name: "Bengaluru", tier: "metro" },
-  { name: "Chennai", tier: "metro" },
-  { name: "Mumbai", tier: "metro" },
-  { name: "Delhi NCR", tier: "metro" },
-  { name: "Pune", tier: "metro" },
-  { name: "Kolkata", tier: "metro" },
-  { name: "Visakhapatnam", tier: "tier2" },
-  { name: "Vijayawada", tier: "tier2" },
-  { name: "Warangal", tier: "tier2" },
-  { name: "Another smaller city", tier: "tier2" },
-];
-
-const costRanges = {
-  metro: [150_000, 250_000],
-  tier2: [100_000, 180_000],
-  addOns: [350_000, 500_000],
-} as const;
-
 function CostEstimator() {
   const [city, setCity] = useState("Hyderabad");
   const [addOns, setAddOns] = useState({ icsi: false, freeze: false, pgt: false });
   const [cycles, setCycles] = useState(1);
-  const tier = cities.find((c) => c.name === city)?.tier ?? "metro";
-  const anyAddOn = addOns.icsi || addOns.freeze || addOns.pgt;
-  const [lo, hi] = anyAddOn ? costRanges.addOns : costRanges[tier];
+  const est = ivfCost(city, addOns, cycles);
+  const anyAddOn = est.withAddOns;
+  const [lo, hi] = est.perCycle;
 
   return (
     <div className="space-y-6">
@@ -883,43 +778,6 @@ function ClinicQuestions() {
 /* 6. Medicine and appointment reminders                              */
 /* ------------------------------------------------------------------ */
 
-type Reminder = {
-  id: string;
-  what: string;
-  kind: "Tablet" | "Injection" | "Scan" | "Call or appointment";
-  date: string;
-  time: string;
-  days: number;
-};
-
-function icsStamp(date: string, time: string): string {
-  return `${date.replaceAll("-", "")}T${time.replace(":", "")}00`;
-}
-
-function icsEscape(s: string): string {
-  return s.replace(/[\\;,]/g, (c) => `\\${c}`).replace(/\n/g, "\\n");
-}
-
-function toIcs(list: Reminder[], discreet: boolean): string {
-  const now = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
-  const events = list.flatMap((r) => [
-    "BEGIN:VEVENT",
-    `UID:${r.id}@care.garbha.ai`,
-    `DTSTAMP:${now}`,
-    `DTSTART:${icsStamp(r.date, r.time)}`,
-    "DURATION:PT15M",
-    `SUMMARY:${discreet ? "Garbha: you have a reminder" : icsEscape(`${r.kind}: ${r.what}`)}`,
-    ...(r.days > 1 ? [`RRULE:FREQ=DAILY;COUNT=${r.days}`] : []),
-    "BEGIN:VALARM",
-    "ACTION:DISPLAY",
-    "DESCRIPTION:Garbha reminder",
-    "TRIGGER:PT0M",
-    "END:VALARM",
-    "END:VEVENT",
-  ]);
-  return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Garbha//Care reminders//EN", "CALSCALE:GREGORIAN", ...events, "END:VCALENDAR"].join("\r\n");
-}
-
 function Reminders() {
   const [list, setList, clearAll] = useStored<Reminder[]>("garbha-care:reminders", []);
   const [discreet, setDiscreet] = useStored<boolean>("garbha-care:discreet", true);
@@ -939,9 +797,7 @@ function Reminders() {
     if (!form.what.trim() || !parseDate(date) || !/^\d{2}:\d{2}$/.test(form.time)) return;
     const days = Math.min(90, Math.max(1, Math.round(form.days || 1)));
     setList((l) =>
-      [...l, { ...form, date, what: form.what.trim(), days, id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}` }].sort(
-        (a, b) => icsStamp(a.date, a.time).localeCompare(icsStamp(b.date, b.time)),
-      ),
+      [...l, { ...form, date, what: form.what.trim(), days, id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}` }].sort(byStart),
     );
     setForm((f) => ({ ...f, what: "" }));
   };
@@ -1062,8 +918,7 @@ function EggPlanner() {
   const [cycles, setCycles] = useState(1);
   const [years, setYears] = useState(5);
   const a = num(age);
-  const lo = cycles * 100_000 + years * 10_000;
-  const hi = cycles * 250_000 + years * 30_000;
+  const [lo, hi] = eggFreezingCost(cycles, years);
 
   return (
     <div className="space-y-6">
@@ -1130,41 +985,12 @@ function EggPlanner() {
 /* 8. IVF week-by-week planner                                        */
 /* ------------------------------------------------------------------ */
 
-type Milestone = { day: number; title: string; text: string; key?: boolean };
-
-function ivfMilestones(transfer: "fresh" | "frozen"): Milestone[] {
-  const base: Milestone[] = [
-    { day: 0, title: "Day 1 of your period", text: "Call the clinic to tell them your period has started.", key: true },
-    { day: 1, title: "Baseline scan and blood test", text: "Usually on day 2 or 3. If all is well, the injections start." },
-    { day: 2, title: "Daily injections begin", text: "Hormone injections at about the same time each day, for roughly 8–12 days." },
-    { day: 6, title: "Monitoring scans", text: "Every 2–3 days the clinic checks how the follicles are growing and may adjust the dose." },
-    { day: 7, title: "A second injection is often added", text: "It stops ovulation happening too early." },
-    { day: 11, title: "Trigger injection", text: "Given at an exact time when the follicles are ready. Note the time the clinic gives you.", key: true },
-    { day: 13, title: "Egg collection", text: "About 34–36 hours after the trigger, under sedation. The partner gives a semen sample the same day. Plan to rest.", key: true },
-    { day: 14, title: "Fertilisation call", text: "The embryology lab tells you how many eggs fertilised." },
-  ];
-  if (transfer === "fresh") {
-    return [
-      ...base,
-      { day: 18, title: "Embryo transfer", text: "Usually 3 or 5 days after collection. A short procedure, no sedation needed.", key: true },
-      { day: 27, title: "Pregnancy blood test (beta-hCG)", text: "About two weeks after egg collection. Keep taking any support medicines until the clinic tells you.", key: true },
-    ];
-  }
-  return [
-    ...base,
-    { day: 18, title: "Embryos frozen", text: "Embryos that reach day 5 are frozen. The transfer happens in a later cycle, often after your next period.", key: true },
-  ];
-}
-
 function IvfPlanner() {
   const [start, setStart] = useState("");
   const [transfer, setTransfer] = useState<"fresh" | "frozen">("fresh");
   const s = parseDate(start);
   const ms = ivfMilestones(transfer);
-  const weeks = Array.from(new Set(ms.map((m) => Math.floor(m.day / 7)))).map((w) => ({
-    week: w + 1,
-    items: ms.filter((m) => Math.floor(m.day / 7) === w),
-  }));
+  const weeks = byWeek(ms);
 
   return (
     <div className="space-y-6">
