@@ -135,7 +135,7 @@ export const tools: {
 export const callSteps: { title: string; text: string }[] = [
   {
     title: "Tell us a little",
-    text: "Your first name, mobile number, city, your age and how long you’ve been trying, and when and in which language you’d like the call. About a minute.",
+    text: "Your first name, mobile number and the language you’d like. Anything else, such as your city or how long you’ve been trying, is optional.",
   },
   {
     title: "A counsellor calls you",

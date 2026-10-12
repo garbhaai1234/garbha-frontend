@@ -1,8 +1,11 @@
 /**
- * The free counsellor call request (Garbha Care brief, sign-up form): the
- * fields, their rules and the email the team receives. Used by the form in
- * the browser and again by POST /api/care-call, so both apply the same rules.
- * Nothing here stores data.
+ * The free counsellor call request: the fields, their rules and the email the
+ * team receives. Used by the form in the browser and again by POST
+ * /api/care-call, so both apply the same rules. Nothing here stores data.
+ *
+ * Required: first name, mobile, language, consent (data minimisation: what the
+ * call needs). Everything else from the brief's sign-up form is optional, but
+ * checked when given. Decision recorded in docs/specs/garbha-care-polish.md.
  */
 
 export const callOptions = {
@@ -28,13 +31,14 @@ export const callOptions = {
 export type CallRequest = {
   firstName: string;
   mobile: string; // normalised: 10 digits
-  place: string;
-  age: number;
-  partnerAge: number | null;
-  trying: (typeof callOptions.trying)[number];
-  stage: (typeof callOptions.stage)[number];
   language: (typeof callOptions.language)[number];
-  callTime: (typeof callOptions.callTime)[number];
+  // Optional ("" or null when not given)
+  place: string;
+  age: number | null;
+  partnerAge: number | null;
+  trying: (typeof callOptions.trying)[number] | "";
+  stage: (typeof callOptions.stage)[number] | "";
+  callTime: (typeof callOptions.callTime)[number] | "";
   email: string;
   whatsapp: boolean;
   from: string; // the module the person came from, if any (not personal)
@@ -122,19 +126,16 @@ export function validateCallRequest(raw: unknown): Validation {
   if (!v.mobile) errors.mobile = "Please enter your mobile number.";
   else if (!mobile) errors.mobile = "Please enter a 10-digit Indian mobile number.";
 
-  if (!v.place) errors.place = "Please enter your city or PIN code.";
+  if (!oneOf(callOptions.language, v.language)) errors.language = "Please choose a language for the call.";
 
-  const a = age(v.age);
-  if (!v.age) errors.age = "Please enter your age.";
-  else if (a === null) errors.age = "Please enter an age between 18 and 60.";
-
+  // Optional answers: checked only when given.
+  const a = v.age ? age(v.age) : null;
+  if (v.age && a === null) errors.age = "Please enter an age between 18 and 60, or leave it blank.";
   const pa = v.partnerAge ? age(v.partnerAge) : null;
   if (v.partnerAge && pa === null) errors.partnerAge = "Please enter an age between 18 and 60, or leave it blank.";
-
-  if (!oneOf(callOptions.trying, v.trying)) errors.trying = "Please choose how long you’ve been trying.";
-  if (!oneOf(callOptions.stage, v.stage)) errors.stage = "Please choose where you are now.";
-  if (!oneOf(callOptions.language, v.language)) errors.language = "Please choose a language.";
-  if (!oneOf(callOptions.callTime, v.callTime)) errors.callTime = "Please choose a time.";
+  if (v.trying && !oneOf(callOptions.trying, v.trying)) errors.trying = "Please choose one of the options, or leave it blank.";
+  if (v.stage && !oneOf(callOptions.stage, v.stage)) errors.stage = "Please choose one of the options, or leave it blank.";
+  if (v.callTime && !oneOf(callOptions.callTime, v.callTime)) errors.callTime = "Please choose one of the times, or leave it blank.";
 
   if (v.email && !EMAIL_RE.test(v.email)) errors.email = "Please check your email address, or leave it blank.";
 
@@ -146,12 +147,12 @@ export function validateCallRequest(raw: unknown): Validation {
     data: {
       firstName: v.firstName,
       mobile: mobile!,
+      language: v.language as CallRequest["language"],
       place: v.place,
-      age: a!,
+      age: a,
       partnerAge: pa,
       trying: v.trying as CallRequest["trying"],
       stage: v.stage as CallRequest["stage"],
-      language: v.language as CallRequest["language"],
       callTime: v.callTime as CallRequest["callTime"],
       email: v.email,
       whatsapp: v.whatsapp === "yes",
@@ -162,16 +163,17 @@ export function validateCallRequest(raw: unknown): Validation {
 
 /** The rows of the email the team receives, in reading order. */
 export function callRequestRows(d: CallRequest): [string, string][] {
+  const given = (v: string | number | null) => (v === null || v === "" ? "Not given" : String(v));
   return [
     ["First name", d.firstName],
     ["Mobile", `+91 ${d.mobile.slice(0, 5)} ${d.mobile.slice(5)}`],
-    ["City or PIN", d.place],
-    ["Age", String(d.age)],
-    ["Partner’s age", d.partnerAge === null ? "Not given" : String(d.partnerAge)],
-    ["Trying for", d.trying],
-    ["Where they are", d.stage],
     ["Language", d.language],
-    ["Best time to call", d.callTime],
+    ["Best time to call", given(d.callTime)],
+    ["City or PIN", given(d.place)],
+    ["Age", given(d.age)],
+    ["Partner’s age", given(d.partnerAge)],
+    ["Trying for", given(d.trying)],
+    ["Where they are", given(d.stage)],
     ["Email", d.email || "Not given"],
     ["Consent to be called", "Yes"],
     ["WhatsApp updates", d.whatsapp ? "Yes, opted in" : "No"],

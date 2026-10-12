@@ -2,8 +2,9 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight } from "@/components/Icons";
-import { Check, Field, btnPrimary, btnQuiet, inputCls } from "@/components/CareUi";
+import { ArrowRight, ChevronDown } from "@/components/Icons";
+import { ComplianceIcon } from "@/components/ComplianceGuide";
+import { Check, Field, btnPrimary, inputCls } from "@/components/CareUi";
 import { careStatus, type CareToolId } from "@/content/care";
 import {
   callOptions,
@@ -16,9 +17,11 @@ import { useHydrated } from "@/lib/care/useStored";
 import { site } from "@/lib/site";
 
 /**
- * The free counsellor call request: two short steps on one card. The same
- * rules run here and on the server (lib/care/callRequest). What is typed stays
- * in this component only (never in storage) and is kept if sending fails.
+ * The free counsellor call request: four required answers (name, mobile,
+ * language, consent) and an optional, folded "help your counsellor prepare"
+ * part. The same rules run here and on the server (lib/care/callRequest).
+ * What is typed stays in this component only (never in storage) and is kept if
+ * sending fails.
  */
 
 type Values = Record<
@@ -31,8 +34,6 @@ const empty: Values = {
   firstName: "", mobile: "", place: "", age: "", partnerAge: "", trying: "", stage: "",
   language: "", callTime: "", email: "", consent: false, whatsapp: false,
 };
-
-const STEP1: CallField[] = ["firstName", "mobile", "place", "age", "partnerAge", "trying", "stage"];
 
 /** The module someone came from suggests where they are; they can change it. */
 const stageFromModule: Record<CareToolId, (typeof callOptions.stage)[number]> = {
@@ -119,15 +120,16 @@ function Choices({
   );
 }
 
+const OPTIONAL: CallField[] = ["place", "age", "partnerAge", "trying", "stage", "callTime", "email"];
+
 export function CareCallForm() {
   const [v, setV] = useState<Values>(empty);
-  const [step, setStep] = useState<1 | 2>(1);
   const [errors, setErrors] = useState<CallErrors>({});
   const [status, setStatus] = useState<"idle" | "sending" | "done">("idle");
   const [problem, setProblem] = useState("");
   const [sentTo, setSentTo] = useState<Values | null>(null);
+  const [moreOpen, setMoreOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-  const stepHeading = useRef<HTMLParagraphElement>(null);
   const honeypot = useRef<HTMLInputElement>(null);
   // Fields stay disabled until the page is interactive, so nothing typed is lost.
   const ready = useHydrated();
@@ -147,48 +149,30 @@ export function CareCallForm() {
       formRef.current?.querySelector<HTMLElement>(`[name="${field}"]`)?.focus(),
     );
 
-  const goTo = (n: 1 | 2) => {
-    setStep(n);
-    requestAnimationFrame(() => stepHeading.current?.focus());
+  /** Shows errors; opens the optional part if one of them is there; focuses the first. */
+  const showErrors = (errs: CallErrors) => {
+    setErrors(errs);
+    const first = (Object.keys(errs) as CallField[])[0];
+    if (!first) return;
+    if (OPTIONAL.includes(first)) setMoreOpen(true);
+    focusField(first);
   };
 
-  // Pre-fill "where you are now" from the module just used, the first time the form is touched.
+  // Pre-fill "where you are now" from the tool just used, the first time the form is touched.
   const prefill = () => {
     if (v.stage) return;
     const m = moduleFromHash();
     if (m) set("stage", stageFromModule[m]);
   };
 
-  const next = () => {
-    // Check step 1 only: fill step 2 with placeholders that pass.
-    const r = validateCallRequest(
-      payload(v, { consent: "yes", language: callOptions.language[0], callTime: callOptions.callTime[0], email: "" }),
-    );
-    const stepErrors: CallErrors = {};
-    if (!r.ok && !r.malformed) {
-      for (const f of STEP1) if (r.errors[f]) stepErrors[f] = r.errors[f];
-    }
-    setErrors(stepErrors);
-    const first = STEP1.find((f) => stepErrors[f]);
-    if (first) focusField(first);
-    else goTo(2);
-  };
-
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (step === 1) return next();
     setProblem("");
     const body = payload(v, { from: moduleFromHash() ?? "", website: honeypot.current?.value ?? "" });
     const r = validateCallRequest(body);
     if (!r.ok) {
-      if (r.malformed) {
-        setProblem("Some answers are too long. Please shorten them and try again.");
-        return;
-      }
-      setErrors(r.errors);
-      const first = (Object.keys(r.errors) as CallField[])[0];
-      if (STEP1.includes(first)) goTo(1);
-      focusField(first);
+      if (r.malformed) setProblem("Some answers are too long. Please shorten them and try again.");
+      else showErrors(r.errors);
       return;
     }
     setStatus("sending");
@@ -206,11 +190,7 @@ export function CareCallForm() {
         return;
       }
       setStatus("idle");
-      if (data.errors) {
-        setErrors(data.errors);
-        const first = (Object.keys(data.errors) as CallField[])[0];
-        if (first && STEP1.includes(first)) goTo(1);
-      }
+      if (data.errors) showErrors(data.errors);
       setProblem(data.error ?? `We couldn’t send your request. Please try again, or email us at ${site.email}.`);
     } catch {
       setStatus("idle");
@@ -220,16 +200,19 @@ export function CareCallForm() {
 
   if (status === "done" && sentTo) {
     const masked = sentTo.mobile.replace(/\D/g, "").slice(-10).replace(/^(\d{2})\d{4}/, "$1••••");
+    const when = sentTo.callTime ? `, in the ${sentTo.callTime.split(" ")[0].toLowerCase()}` : "";
     return (
-      <div role="status" className="rounded-[1.75rem] border border-teal-200 bg-teal-50/70 p-6 sm:p-8">
-        <p className="font-display text-2xl font-bold text-teal-900">
+      <div role="status" className="rounded-[1.75rem] border border-teal-200 bg-white p-6 shadow-xl shadow-teal-700/10 sm:p-8">
+        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-600 text-white">
+          <ComplianceIcon name="check" className="h-6 w-6" />
+        </span>
+        <p className="mt-4 font-display text-2xl font-bold text-ink-900">
           Thank you, {sentTo.firstName}. Your request is with our team.
         </p>
         <ul className="mt-4 space-y-2 text-sm leading-6 text-ink-700">
           <li>
-            A counsellor will call you on <strong>+91 {masked}</strong> in{" "}
-            <strong>{sentTo.language}</strong>, in the <strong>{sentTo.callTime.split(" ")[0].toLowerCase()}</strong>,
-            when calls begin in {careStatus.city}.
+            A counsellor will call you on <strong>+91 {masked}</strong> in <strong>{sentTo.language}</strong>
+            {when}, when calls begin in {careStatus.city}.
           </li>
           <li>The call is free, and nobody will ask you to pay or to share reports on it.</li>
           {sentTo.whatsapp && <li>We’ll also send updates on WhatsApp, as you asked.</li>}
@@ -242,7 +225,7 @@ export function CareCallForm() {
           and we’ll delete your request.
         </p>
         <a href="#tools" className={clsx(btnPrimary, "mt-6")}>
-          Keep using the free modules <ArrowRight className="h-4 w-4" />
+          Keep using the free tools <ArrowRight className="h-4 w-4" />
         </a>
       </div>
     );
@@ -257,20 +240,10 @@ export function CareCallForm() {
       aria-labelledby="call-form-title"
       className="relative rounded-[1.75rem] border border-ink-100 bg-white p-5 shadow-xl shadow-brand-500/10 sm:p-8"
     >
-      <div className="flex items-center justify-between gap-4">
-        <p id="call-form-title" className="font-display text-xl font-bold text-ink-900">
-          Request your free call
-        </p>
-        <p className="shrink-0 text-xs font-bold uppercase tracking-[0.12em] text-brand-600">Step {step} of 2</p>
-      </div>
-      <div className="mt-3 grid grid-cols-2 gap-1.5" aria-hidden="true">
-        <span className="h-1.5 rounded-full bg-brand-600" />
-        <span className={clsx("h-1.5 rounded-full transition-colors", step === 2 ? "bg-brand-600" : "bg-ink-100")} />
-      </div>
-
-      <p ref={stepHeading} tabIndex={-1} className="mt-5 text-sm font-semibold text-ink-600 focus:outline-none">
-        {step === 1 ? "About you" : "Your call"}
+      <p id="call-form-title" className="font-display text-xl font-bold text-ink-900">
+        Request your free call
       </p>
+      <p className="mt-1 text-sm text-ink-500">Takes under a minute. Only four answers are needed.</p>
 
       {/* Honeypot: hidden from people and screen readers; bots fill it. */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
@@ -281,8 +254,7 @@ export function CareCallForm() {
       </div>
 
       <fieldset disabled={!ready} className="contents">
-      {step === 1 ? (
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <Field label="First name" error={errors.firstName}>
             {(id, d) => (
               <input id={id} name="firstName" autoComplete="given-name" value={v.firstName} maxLength={60}
@@ -300,80 +272,99 @@ export function CareCallForm() {
               </div>
             )}
           </Field>
-          <Field label="City or PIN code" error={errors.place} hint="So we can suggest care near you later.">
-            {(id, d) => (
-              <input id={id} name="place" autoComplete="address-level2" value={v.place} maxLength={80}
-                aria-invalid={!!errors.place || undefined} aria-describedby={d}
-                onChange={(e) => set("place", e.target.value)} className={inputCls} />
-            )}
-          </Field>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Your age" error={errors.age}>
-              {(id, d) => (
-                <input id={id} name="age" inputMode="numeric" value={v.age} maxLength={3}
-                  aria-invalid={!!errors.age || undefined} aria-describedby={d}
-                  onChange={(e) => set("age", e.target.value.replace(/\D/g, ""))} className={inputCls} />
-              )}
-            </Field>
-            <Field label="Partner’s age" optional error={errors.partnerAge}>
-              {(id, d) => (
-                <input id={id} name="partnerAge" inputMode="numeric" value={v.partnerAge} maxLength={3}
-                  aria-invalid={!!errors.partnerAge || undefined} aria-describedby={d}
-                  onChange={(e) => set("partnerAge", e.target.value.replace(/\D/g, ""))} className={inputCls} />
-              )}
-            </Field>
-          </div>
-          <Field label="How long have you been trying?" error={errors.trying}>
-            {(id, d) => (
-              <select id={id} name="trying" value={v.trying} aria-invalid={!!errors.trying || undefined} aria-describedby={d}
-                onChange={(e) => set("trying", e.target.value)} className={inputCls}>
-                <option value="">Choose one</option>
-                {callOptions.trying.map((o) => <option key={o}>{o}</option>)}
-              </select>
-            )}
-          </Field>
-          <Field label="Where are you now?" error={errors.stage}>
-            {(id, d) => (
-              <select id={id} name="stage" value={v.stage} aria-invalid={!!errors.stage || undefined} aria-describedby={d}
-                onChange={(e) => set("stage", e.target.value)} className={inputCls}>
-                <option value="">Choose one</option>
-                {callOptions.stage.map((o) => <option key={o}>{o}</option>)}
-              </select>
-            )}
-          </Field>
         </div>
-      ) : (
-        <div className="mt-4 space-y-5">
+
+        <div className="mt-5">
           <Choices name="language" legend="Language for the call" options={callOptions.language}
             value={v.language} error={errors.language} onChange={(o) => set("language", o)} />
-          <Choices name="callTime" legend="Best time to call" options={callOptions.callTime}
-            value={v.callTime} error={errors.callTime} onChange={(o) => set("callTime", o)} />
-          <Field label="Email" optional error={errors.email} hint="Only if you’d like a written summary after the call.">
-            {(id, d) => (
-              <input id={id} name="email" type="email" autoComplete="email" value={v.email} maxLength={254}
-                aria-invalid={!!errors.email || undefined} aria-describedby={d}
-                onChange={(e) => set("email", e.target.value)} className={inputCls} />
-            )}
-          </Field>
-          <div className="space-y-2">
-            <Check name="consent" checked={v.consent} onChange={(c) => set("consent", c)} invalid={!!errors.consent}
-              describedBy={errors.consent ? "consent-error" : undefined}>
-              I agree that Garbha may call me on this number about my request. My details are used for this call
-              only and are never shared with a clinic without my permission.{" "}
-              <Link href="/privacy" className="font-semibold text-brand-700 underline underline-offset-4">
-                Privacy policy
-              </Link>
-            </Check>
-            {errors.consent && (
-              <p id="consent-error" className="text-sm font-medium text-brand-700">{errors.consent}</p>
-            )}
-            <Check name="whatsapp" checked={v.whatsapp} onChange={(c) => set("whatsapp", c)}>
-              Also send me updates on WhatsApp (optional). Nothing is ever sold on WhatsApp.
-            </Check>
-          </div>
         </div>
-      )}
 
+        <details
+          className="group mt-5 rounded-2xl border border-ink-100 bg-ink-50/60"
+          open={moreOpen}
+          onToggle={(e) => setMoreOpen(e.currentTarget.open)}
+        >
+          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 [&::-webkit-details-marker]:hidden">
+            <span>
+              <span className="block text-sm font-semibold text-ink-800">Help your counsellor prepare</span>
+              <span className="block text-xs text-ink-500">Optional: your city, ages, how long you’ve been trying</span>
+            </span>
+            <ChevronDown aria-hidden="true" className="h-4 w-4 shrink-0 text-brand-500 transition-transform group-open:rotate-180" />
+          </summary>
+          <div className="grid gap-4 px-4 pb-5 sm:grid-cols-2">
+            <Field label="City or PIN code" optional error={errors.place}>
+              {(id, d) => (
+                <input id={id} name="place" autoComplete="address-level2" value={v.place} maxLength={80}
+                  aria-invalid={!!errors.place || undefined} aria-describedby={d}
+                  onChange={(e) => set("place", e.target.value)} className={inputCls} />
+              )}
+            </Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Your age" optional error={errors.age}>
+                {(id, d) => (
+                  <input id={id} name="age" inputMode="numeric" value={v.age} maxLength={3}
+                    aria-invalid={!!errors.age || undefined} aria-describedby={d}
+                    onChange={(e) => set("age", e.target.value.replace(/\D/g, ""))} className={inputCls} />
+                )}
+              </Field>
+              <Field label="Partner’s age" optional error={errors.partnerAge}>
+                {(id, d) => (
+                  <input id={id} name="partnerAge" inputMode="numeric" value={v.partnerAge} maxLength={3}
+                    aria-invalid={!!errors.partnerAge || undefined} aria-describedby={d}
+                    onChange={(e) => set("partnerAge", e.target.value.replace(/\D/g, ""))} className={inputCls} />
+                )}
+              </Field>
+            </div>
+            <Field label="How long have you been trying?" optional error={errors.trying}>
+              {(id, d) => (
+                <select id={id} name="trying" value={v.trying} aria-invalid={!!errors.trying || undefined} aria-describedby={d}
+                  onChange={(e) => set("trying", e.target.value)} className={inputCls}>
+                  <option value="">Choose one</option>
+                  {callOptions.trying.map((o) => <option key={o}>{o}</option>)}
+                </select>
+              )}
+            </Field>
+            <Field label="Where are you now?" optional error={errors.stage}>
+              {(id, d) => (
+                <select id={id} name="stage" value={v.stage} aria-invalid={!!errors.stage || undefined} aria-describedby={d}
+                  onChange={(e) => set("stage", e.target.value)} className={inputCls}>
+                  <option value="">Choose one</option>
+                  {callOptions.stage.map((o) => <option key={o}>{o}</option>)}
+                </select>
+              )}
+            </Field>
+            <div className="sm:col-span-2">
+              <Choices name="callTime" legend="Best time to call (optional)" options={callOptions.callTime}
+                value={v.callTime} error={errors.callTime} onChange={(o) => set("callTime", o)} />
+            </div>
+            <div className="sm:col-span-2">
+              <Field label="Email" optional error={errors.email} hint="Only if you’d like a written summary after the call.">
+                {(id, d) => (
+                  <input id={id} name="email" type="email" autoComplete="email" value={v.email} maxLength={254}
+                    aria-invalid={!!errors.email || undefined} aria-describedby={d}
+                    onChange={(e) => set("email", e.target.value)} className={inputCls} />
+                )}
+              </Field>
+            </div>
+          </div>
+        </details>
+
+        <div className="mt-5 space-y-2">
+          <Check name="consent" checked={v.consent} onChange={(c) => set("consent", c)} invalid={!!errors.consent}
+            describedBy={errors.consent ? "consent-error" : undefined}>
+            I agree that Garbha may call me on this number about my request. My details are used for this call
+            only and are never shared with a clinic without my permission.{" "}
+            <Link href="/privacy" className="font-semibold text-brand-700 underline underline-offset-4">
+              Privacy policy
+            </Link>
+          </Check>
+          {errors.consent && (
+            <p id="consent-error" className="text-sm font-medium text-brand-700">{errors.consent}</p>
+          )}
+          <Check name="whatsapp" checked={v.whatsapp} onChange={(c) => set("whatsapp", c)}>
+            Also send me updates on WhatsApp (optional). Nothing is ever sold on WhatsApp.
+          </Check>
+        </div>
       </fieldset>
 
       {problem && (
@@ -382,19 +373,11 @@ export function CareCallForm() {
         </p>
       )}
 
-      <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-        {step === 2 ? (
-          <button type="button" onClick={() => goTo(1)} className={btnQuiet}>
-            Back
-          </button>
-        ) : (
-          <span className="text-xs text-ink-500">Takes about a minute. The call is free.</span>
-        )}
-        <button type="submit" disabled={!ready || status === "sending"} className={clsx(btnPrimary, "min-h-12 w-full sm:w-auto")}>
-          {step === 1 ? "Next" : status === "sending" ? "Sending…" : "Request my free call"}
-          {status !== "sending" && <ArrowRight className="h-4 w-4" />}
-        </button>
-      </div>
+      <button type="submit" disabled={!ready || status === "sending"} className={clsx(btnPrimary, "mt-6 min-h-12 w-full")}>
+        {status === "sending" ? "Sending…" : "Request my free call"}
+        {status !== "sending" && <ArrowRight className="h-4 w-4" />}
+      </button>
+      <p className="mt-3 text-center text-xs text-ink-500">Free. No payment, no reports needed.</p>
     </form>
   );
 }

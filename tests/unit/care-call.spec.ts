@@ -38,6 +38,18 @@ test.describe("call request rules", () => {
     }
   });
 
+  test("only first name, mobile, language and consent are required", () => {
+    const r = validateCallRequest({ firstName: "Ravi", mobile: "9876543210", language: "English", consent: "yes" });
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.data.age).toBeNull();
+      expect(r.data.place).toBe("");
+      expect(r.data.callTime).toBe("");
+    }
+    const missing = validateCallRequest({ firstName: "Ravi", mobile: "9876543210", consent: "yes" });
+    expect(missing).toMatchObject({ ok: false, malformed: false, errors: { language: expect.any(String) } });
+  });
+
   test("consent is required", () => {
     const r = validateCallRequest({ ...valid, consent: "" });
     expect(r).toMatchObject({ ok: false, malformed: false, errors: { consent: expect.any(String) } });
