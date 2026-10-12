@@ -32,7 +32,7 @@ happens. One hydration warning was also introduced in REQ-CARE-01.
 6. Hero background is neutral with coral only as accent; the ring shows on phones too; the sample ring has no sample temperature chart.
 7. Section layouts vary (a soft full-width band for the call, a plain list for "coming", icon rows for privacy) without new colours or fonts.
 8. Call form: required fields as above; optional fields folded; server rules match; email lists "Not given" for skipped answers.
-9. On `/care` the header button reads "Free counsellor call" and goes to the form, desktop and phone menu.
+9. On `/care` the header button goes to the form: "Free call" on desktop (no wider than "Book a demo", so the logo keeps its shape), "Free counsellor call" in the phone menu, which closes on tap.
 10. All REQ-CARE-01 tests still pass (updated where the behaviour above changed); no sideways scroll at 360 px; Lighthouse SEO and Accessibility do not drop.
 
 ## Tasks
