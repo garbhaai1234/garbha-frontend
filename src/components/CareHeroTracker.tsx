@@ -4,14 +4,8 @@ import { useMemo } from "react";
 import { CareCycleRing } from "@/components/CareCycleRing";
 import { ArrowRight } from "@/components/Icons";
 import { Field, inputCls } from "@/components/CareUi";
-import { fmt, fmtLong, parseDate, toInput } from "@/lib/care/dates";
-import {
-  CYCLE_MAX,
-  CYCLE_MIN,
-  currentCycleStart,
-  cyclePlan,
-  ringFromPlan,
-} from "@/lib/care/ovulation";
+import { fmt, fmtLong, toInput } from "@/lib/care/dates";
+import { CYCLE_MAX, CYCLE_MIN, currentPlan, ringFromPlan } from "@/lib/care/ovulation";
 import { useStored, useToday } from "@/lib/care/useStored";
 import { clsx } from "@/lib/clsx";
 
@@ -37,18 +31,9 @@ export function CareHeroTracker({ children }: { children: React.ReactNode }) {
   const now = useToday();
 
   const view = useMemo(() => {
-    const logged = parseDate(d.start);
-    if (!logged || !now) return null;
-    const cur = currentCycleStart(logged, d.cycle, now);
-    if (!cur) return null;
-    const plan = cyclePlan({
-      start: toInput(cur.start),
-      cycle: d.cycle,
-      period: d.period,
-      lh: cur.cyclesAhead === 0 ? d.lh : "",
-    });
-    if (!plan) return null;
-    return { plan, logged, projected: cur.cyclesAhead > 0, ring: ringFromPlan(plan, now) };
+    if (!now) return null;
+    const cur = currentPlan(d, now);
+    return cur ? { ...cur, ring: ringFromPlan(cur.plan, now) } : null;
   }, [d, now]);
 
   const passed = view && now ? now > view.plan.ovulation : false;

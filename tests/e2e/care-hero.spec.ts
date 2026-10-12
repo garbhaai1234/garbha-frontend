@@ -23,14 +23,15 @@ test("one date gives the person's fertile days, ring and next steps", async ({ p
   await expect(hero.getByRole("link", { name: /Talk to a counsellor/ })).toHaveAttribute("href", "#request-call");
 });
 
-test("the date is shared with Module 1 and survives a reload", async ({ page }) => {
+test("the date is shared with Tool 1 and survives a reload", async ({ page }) => {
   await page.goto("/care");
   await page.locator("#care-hero").getByLabel("First day of your last period").fill("2026-10-01");
   await page.reload();
   await expect(page.locator("#care-hero").getByLabel("First day of your last period")).toHaveValue("2026-10-01");
   await page.locator("#care-hero").getByRole("link", { name: /Day-by-day calendar/ }).click();
-  await expect(page.locator("#tab-ovulation")).toHaveAttribute("aria-selected", "true");
-  await expect(page.locator("#care-tool-panel").getByLabel("First day of your last period")).toHaveValue("2026-10-01");
+  const panel = page.locator("#care-tool-panel");
+  await expect(panel.getByText(/Most fertile: Sat, 10 Oct – Thu, 15 Oct/)).toBeVisible();
+  await expect(panel.getByLabel("First day of your last period")).toHaveValue("2026-10-01");
 });
 
 test("an old period is projected forward and says so", async ({ page }) => {

@@ -54,12 +54,15 @@ export const journey: { stage: string; tools: CareToolId[] }[] = [
 export const tools: {
   id: CareToolId;
   name: string;
+  /** One line on the phone card. */
+  short: string;
   gets: string;
   basis: string;
   icon: IconName;
 }[] = [
   {
     id: "ovulation",
+    short: "Your likely fertile days",
     name: "Ovulation tracker",
     gets: "Enter your last period to see your likely fertile days for this cycle and the next three. Add a positive LH test to sharpen the estimate.",
     basis:
@@ -68,6 +71,7 @@ export const tools: {
   },
   {
     id: "specialist",
+    short: "A clear yes or not yet",
     name: "Is it time to see a specialist?",
     gets: "Answer a few questions and get a clear “yes” or “not yet”, with the reasons.",
     basis:
@@ -76,6 +80,7 @@ export const tools: {
   },
   {
     id: "semen",
+    short: "Each value against WHO ranges",
     name: "Semen report reader",
     gets: "Enter the numbers from your report and see, for each one, whether it is within the WHO reference range.",
     basis: "Uses the World Health Organization’s 2021 reference values.",
@@ -83,6 +88,7 @@ export const tools: {
   },
   {
     id: "cost",
+    short: "A likely range for your city",
     name: "IVF cost estimator",
     gets: "A likely cost range for your city, and what add-ons such as ICSI or embryo freezing do to it.",
     basis: "Based on published price ranges for Indian cities.",
@@ -90,6 +96,7 @@ export const tools: {
   },
   {
     id: "questions",
+    short: "A checklist for your consult",
     name: "Questions to ask your clinic",
     gets: "A checklist to take to your consult, including whether the clinic is registered under the ART Act.",
     basis: "Tick questions as you get answers, add your own, and download the list to take with you.",
@@ -97,6 +104,7 @@ export const tools: {
   },
   {
     id: "reminders",
+    short: "Discreet, in your calendar",
     name: "Medicine and appointment reminders",
     gets: "Discreet reminders for tablets, injections, scans and calls.",
     basis: "You set them from your own prescription; we never suggest doses. Reminders go into your phone’s own calendar, so nothing is sent to us.",
@@ -104,6 +112,7 @@ export const tools: {
   },
   {
     id: "eggs",
+    short: "Steps and cost over the years",
     name: "Egg-freezing planner",
     gets: "What egg freezing involves, and what it could cost you over the years you plan to store.",
     basis:
@@ -112,6 +121,7 @@ export const tools: {
   },
   {
     id: "ivf",
+    short: "What happens each week",
     name: "IVF week-by-week planner",
     gets: "What usually happens in each week of an IVF cycle, so nothing comes as a surprise.",
     basis: "A typical cycle. Your clinic’s protocol decides the real dates, so treat these as a guide to plan work and travel around.",

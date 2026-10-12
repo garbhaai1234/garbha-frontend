@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openTool } from "./helpers";
 
 /** The free call request on /care. No real email is sent: the API is stubbed unless stated. */
 
@@ -86,16 +87,17 @@ test("unstubbed: without email settings the person is told to email, never silen
   await expect(form.getByRole("alert")).toContainText("info@garbha.ai");
 });
 
-test("module context pre-fills 'where are you now'", async ({ page }) => {
+test("tool context pre-fills 'where are you now'", async ({ page, isMobile }) => {
   await page.goto("/care#tool-eggs");
+  if (isMobile) await page.keyboard.press("Escape");
   const form = page.locator("#call form");
   await form.getByLabel("First name").click();
   await expect(form.getByLabel("Where are you now?")).toHaveValue("Planning ahead (egg freezing)");
 });
 
-test("the module just used still pre-fills after a call button changes the address", async ({ page }) => {
+test("the tool just used still pre-fills after a call button changes the address", async ({ page, isMobile }) => {
   await page.goto("/care");
-  await page.locator("#tab-semen").click();
+  await openTool(page, "semen", isMobile);
   await page.locator("#care-tool-panel").getByRole("link", { name: /Talk to a fertility counsellor/ }).click();
   await expect(page).toHaveURL(/#request-call$/);
   const form = page.locator("#call form");

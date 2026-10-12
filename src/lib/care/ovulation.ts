@@ -1,4 +1,4 @@
-import { addDays, daysBetween, parseDate } from "./dates";
+import { addDays, daysBetween, parseDate, toInput } from "./dates";
 
 /**
  * Fertile-window estimate (ASRM: the six days ending on ovulation day).
@@ -103,4 +103,26 @@ export function ringFromPlan(plan: CyclePlan, today: Date | null): RingCycle {
     ovulationDay: daysBetween(plan.start, plan.ovulation) + 1,
     today: today ? cycleDay(plan, today) : null,
   };
+}
+
+/**
+ * The plan for the cycle `today` falls in, from the saved tracker answers.
+ * Shared by the hero and Tool 1 so both always show the same dates. An LH
+ * test only counts in the cycle it was logged in.
+ */
+export function currentPlan(
+  d: { start: string; cycle: number; period: number; lh?: string },
+  today: Date,
+): { plan: CyclePlan; logged: Date; projected: boolean } | null {
+  const logged = parseDate(d.start);
+  if (!logged) return null;
+  const cur = currentCycleStart(logged, d.cycle, today);
+  if (!cur) return null;
+  const plan = cyclePlan({
+    start: toInput(cur.start),
+    cycle: d.cycle,
+    period: d.period,
+    lh: cur.cyclesAhead === 0 ? d.lh : "",
+  });
+  return plan ? { plan, logged, projected: cur.cyclesAhead > 0 } : null;
 }

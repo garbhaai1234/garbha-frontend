@@ -5,7 +5,7 @@ import { clsx } from "@/lib/clsx";
 
 /**
  * Phones only: "Free modules" and "Free call" stay one tap away once the hero
- * has scrolled out of view. Hidden while the call form is on screen, so it
+ * has scrolled out of view. Hidden while the call form (`callId`) is on screen, so it
  * never covers the form; z-40 sits under the cookie banner (z-50).
  */
 export function CareStickyBar({ heroId, callId }: { heroId: string; callId: string }) {

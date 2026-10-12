@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { lakh, parseDate, toInput } from "@/lib/care/dates";
-import { currentCycleStart, cycleDay, cyclePlan, isIrregular, ringFromPlan } from "@/lib/care/ovulation";
+import { currentCycleStart, currentPlan, cycleDay, cyclePlan, isIrregular, ringFromPlan } from "@/lib/care/ovulation";
 import { specialistAdvice } from "@/lib/care/specialist";
 import { evaluateSemen } from "@/lib/care/semen";
 import { eggFreezingCost, ivfCost } from "@/lib/care/cost";
@@ -158,5 +158,24 @@ test.describe("hero ring", () => {
     const p = cyclePlan({ start: "2026-10-01", cycle: 28, period: 5 })!;
     expect(ringFromPlan(p, parseDate("2026-10-11")!)).toEqual({ length: 28, periodDays: 5, ovulationDay: 15, today: 11 });
     expect(ringFromPlan(p, null).today).toBeNull();
+  });
+});
+
+test.describe("current plan (hero and Tool 1)", () => {
+  const today = parseDate("2026-10-12")!;
+  test("same cycle keeps the LH test", () => {
+    const r = currentPlan({ start: "2026-10-01", cycle: 28, period: 5, lh: "2026-10-12" }, today)!;
+    expect(r.projected).toBe(false);
+    expect(ymd(r.plan.ovulation)).toBe("2026-10-13");
+  });
+  test("an older cycle is projected and drops the old LH test", () => {
+    const r = currentPlan({ start: "2026-08-10", cycle: 28, period: 5, lh: "2026-08-20" }, today)!;
+    expect(r.projected).toBe(true);
+    expect(ymd(r.plan.start)).toBe("2026-10-05");
+    expect(r.plan.fromLh).toBe(false);
+  });
+  test("no date or a future date gives nothing", () => {
+    expect(currentPlan({ start: "", cycle: 28, period: 5 }, today)).toBeNull();
+    expect(currentPlan({ start: "2026-10-20", cycle: 28, period: 5 }, today)).toBeNull();
   });
 });

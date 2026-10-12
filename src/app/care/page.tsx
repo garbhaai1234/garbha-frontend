@@ -402,7 +402,7 @@ export default function GarbhaCarePage() {
         </Container>
       </section>
 
-      <CareStickyBar heroId="care-hero" callId="call" />
+      <CareStickyBar heroId="care-hero" callId="request-call" />
     </>
   );
 }

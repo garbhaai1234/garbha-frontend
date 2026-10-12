@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { ComplianceIcon } from "@/components/ComplianceGuide";
-import { ArrowRight } from "@/components/Icons";
+import { ArrowRight, ChevronDown } from "@/components/Icons";
 import { Check, Field, btnPrimary, btnQuiet, btnSecondary, inputCls } from "@/components/CareUi";
 import { artRegistryUrl, journey, tools, type CareToolId } from "@/content/care";
 import { clsx } from "@/lib/clsx";
@@ -16,7 +16,7 @@ import {
   parseDate,
   toInput,
 } from "@/lib/care/dates";
-import { cyclePlan, isIrregular } from "@/lib/care/ovulation";
+import { currentPlan, isIrregular } from "@/lib/care/ovulation";
 import { specialistAdvice } from "@/lib/care/specialist";
 import { evaluateSemen, semenRows, type SemenKey } from "@/lib/care/semen";
 import { cities, eggFreezingCost, ivfCost } from "@/lib/care/cost";
@@ -126,141 +126,136 @@ function OvulationTracker() {
   const set = (p: Partial<TrackerData>) => setD((v) => ({ ...v, ...p }));
   const now = useToday();
 
-  const plan = useMemo(
-    () => cyclePlan({ start: d.start, cycle: d.cycle, period: d.period, lh: d.lh }),
-    [d],
-  );
-
+  // Same dates as the hero: the cycle today falls in.
+  const current = useMemo(() => (now ? currentPlan(d, now) : null), [d, now]);
+  const plan = current?.plan ?? null;
   const irregular = isIrregular(d.cycle);
+
+  // The cycle question is asked once, in the hero. Without an answer, point there.
+  if (!plan) {
+    return (
+      <div className="space-y-6">
+        <div className="rounded-2xl border border-dashed border-ink-200 px-5 py-8 text-center">
+          <p className="font-display text-lg font-bold text-ink-900">Start with your last period</p>
+          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-ink-600">
+            Enter the first day of your last period in the box at the top of the page. Your
+            day-by-day calendar appears here, and you can add an LH test result.
+          </p>
+          <a
+            href="#care-hero"
+            onClick={() =>
+              setTimeout(() => document.querySelector<HTMLInputElement>('[name="hero-start"]')?.focus(), 400)
+            }
+            className={clsx(btnPrimary, "mt-5")}
+          >
+            Enter my date
+          </a>
+        </div>
+        <Counsellor />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="First day of your last period">
-          {(id) => (
-            <input
-              id={id}
-              type="date"
-              value={d.start}
-              max={now ? toInput(now) : undefined}
-              onChange={(e) => set({ start: e.target.value })}
-              className={inputCls}
-            />
-          )}
-        </Field>
-        <Field label="Usual cycle length (days)" hint="From the first day of one period to the first day of the next. Most are 21–35.">
-          {(id) => (
-            <input
-              id={id}
-              type="number"
-              inputMode="numeric"
-              min={20}
-              max={45}
-              value={d.cycle}
-              onChange={(e) => set({ cycle: Number(e.target.value) })}
-              className={inputCls}
-            />
-          )}
-        </Field>
-        <Field label="How many days your period lasts">
-          {(id) => (
-            <input
-              id={id}
-              type="number"
-              inputMode="numeric"
-              min={1}
-              max={10}
-              value={d.period}
-              onChange={(e) => set({ period: Number(e.target.value) })}
-              className={inputCls}
-            />
-          )}
-        </Field>
-        <Field label="Positive LH (ovulation) test on (optional)" hint="Logging it sharpens the estimate for this cycle.">
-          {(id) => (
-            <input
-              id={id}
-              type="date"
-              value={d.lh}
-              min={d.start || undefined}
-              onChange={(e) => set({ lh: e.target.value })}
-              className={inputCls}
-            />
-          )}
-        </Field>
+      <Result tone="good" title={`Most fertile: ${fmt(plan.windowStart)} – ${fmt(plan.ovulation)}`}>
+        <p>
+          Estimated ovulation day: <strong>{fmtLong(plan.ovulation)}</strong>
+          {plan.fromLh ? " (moved by your positive LH test)." : "."} Next period expected around{" "}
+          <strong>{fmtLong(plan.next)}</strong>.
+        </p>
+        {current?.projected && (
+          <p>Projected from the period you logged on {fmtLong(current.logged)}. Log your latest period for a closer estimate.</p>
+        )}
+        {now && now >= plan.windowStart && now <= plan.ovulation && (
+          <p className="font-semibold text-teal-800">Today is inside your estimated fertile window.</p>
+        )}
+        <p className="text-ink-500">
+          The fertile window is the six days ending on ovulation day. Calendar dates are estimates,
+          so use LH tests to confirm, and never use these dates as contraception.
+        </p>
+      </Result>
+
+      <div>
+        <p className="text-sm font-semibold text-ink-800">This cycle, day by day</p>
+        <ol className="mt-3 grid grid-cols-7 gap-1.5 sm:gap-2" aria-label="Cycle calendar">
+          {plan.days.map((x) => {
+            const isToday = now && daysBetween(x.date, now) === 0;
+            return (
+              <li
+                key={x.day}
+                title={`${fmtLong(x.date)}${x.kind === "other" ? "" : ` · ${x.kind}`}`}
+                className={clsx(
+                  "flex aspect-square flex-col items-center justify-center rounded-lg text-[0.7rem] leading-tight sm:text-xs",
+                  x.kind === "period" && "bg-rose-100 text-rose-800",
+                  x.kind === "fertile" && "bg-teal-100 text-teal-800",
+                  x.kind === "ovulation" && "bg-teal-600 font-bold text-white",
+                  x.kind === "other" && "bg-ink-50 text-ink-500",
+                  isToday && "ring-2 ring-brand-500 ring-offset-1",
+                )}
+              >
+                <span className="font-semibold">{x.date.getDate()}</span>
+                <span className="sr-only">
+                  {fmtLong(x.date)} {x.kind === "other" ? "" : x.kind}
+                </span>
+              </li>
+            );
+          })}
+        </ol>
+        <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs text-ink-600">
+          <li className="flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-rose-100" />Period</li>
+          <li className="flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-teal-100" />Fertile</li>
+          <li className="flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-teal-600" />Ovulation (est.)</li>
+          <li className="flex items-center gap-1.5"><span className="h-3 w-3 rounded ring-2 ring-brand-500" />Today</li>
+        </ul>
       </div>
 
-      {!plan ? (
-        <Empty>Enter the first day of your last period to see your estimated fertile days.</Empty>
-      ) : (
-        <>
-          <Result
-            tone="good"
-            title={`Most fertile: ${fmt(plan.windowStart)} – ${fmt(plan.ovulation)}`}
-          >
-            <p>
-              Estimated ovulation day: <strong>{fmtLong(plan.ovulation)}</strong>
-              {plan.fromLh ? " (moved by your positive LH test)." : "."} Next period expected
-              around <strong>{fmtLong(plan.next)}</strong>.
-            </p>
-            {now && now >= plan.windowStart && now <= plan.ovulation && (
-              <p className="font-semibold text-teal-800">Today is inside your estimated fertile window.</p>
+      <details className="group rounded-2xl border border-ink-100 bg-ink-50/50" open={!!d.lh}>
+        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-5 py-3 text-sm font-semibold text-ink-800 [&::-webkit-details-marker]:hidden">
+          Change dates or add an LH test
+          <ChevronDown aria-hidden="true" className="h-4 w-4 text-brand-500 transition-transform group-open:rotate-180" />
+        </summary>
+        <div className="grid gap-4 px-5 pb-5 sm:grid-cols-2">
+          <Field label="First day of your last period">
+            {(id) => (
+              <input id={id} type="date" value={d.start} max={now ? toInput(now) : undefined}
+                onChange={(e) => set({ start: e.target.value })} className={inputCls} />
             )}
-            <p className="text-ink-500">
-              The fertile window is the six days ending on ovulation day. Calendar dates are
-              estimates, so use LH tests to confirm, and never use these dates as contraception.
-            </p>
-          </Result>
+          </Field>
+          <Field label="Positive LH (ovulation) test on" optional hint="Logging it sharpens the estimate for this cycle.">
+            {(id, desc) => (
+              <input id={id} type="date" value={d.lh} min={toInput(plan.start)} aria-describedby={desc}
+                onChange={(e) => set({ lh: e.target.value })} className={inputCls} />
+            )}
+          </Field>
+          <Field label="Usual cycle length (days)" hint="From the first day of one period to the first day of the next. Most are 21–35.">
+            {(id, desc) => (
+              <input id={id} type="number" inputMode="numeric" min={20} max={45} value={d.cycle} aria-describedby={desc}
+                onChange={(e) => set({ cycle: Number(e.target.value) })} className={inputCls} />
+            )}
+          </Field>
+          <Field label="How many days your period lasts">
+            {(id) => (
+              <input id={id} type="number" inputMode="numeric" min={1} max={10} value={d.period}
+                onChange={(e) => set({ period: Number(e.target.value) })} className={inputCls} />
+            )}
+          </Field>
+        </div>
+      </details>
 
-          <div>
-            <p className="text-sm font-semibold text-ink-800">This cycle, day by day</p>
-            <ol className="mt-3 grid grid-cols-7 gap-1.5 sm:gap-2" aria-label="Cycle calendar">
-              {plan.days.map((x) => {
-                const isToday = now && daysBetween(x.date, now) === 0;
-                return (
-                  <li
-                    key={x.day}
-                    title={`${fmtLong(x.date)}${x.kind === "other" ? "" : ` · ${x.kind}`}`}
-                    className={clsx(
-                      "flex aspect-square flex-col items-center justify-center rounded-lg text-[0.7rem] leading-tight sm:text-xs",
-                      x.kind === "period" && "bg-rose-100 text-rose-800",
-                      x.kind === "fertile" && "bg-teal-100 text-teal-800",
-                      x.kind === "ovulation" && "bg-teal-600 font-bold text-white",
-                      x.kind === "other" && "bg-ink-50 text-ink-500",
-                      isToday && "ring-2 ring-brand-500 ring-offset-1",
-                    )}
-                  >
-                    <span className="font-semibold">{x.date.getDate()}</span>
-                    <span className="sr-only">
-                      {fmtLong(x.date)} {x.kind === "other" ? "" : x.kind}
-                    </span>
-                  </li>
-                );
-              })}
-            </ol>
-            <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs text-ink-600">
-              <li className="flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-rose-100" />Period</li>
-              <li className="flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-teal-100" />Fertile</li>
-              <li className="flex items-center gap-1.5"><span className="h-3 w-3 rounded bg-teal-600" />Ovulation (est.)</li>
-              <li className="flex items-center gap-1.5"><span className="h-3 w-3 rounded ring-2 ring-brand-500" />Today</li>
-            </ul>
-          </div>
-
-          <div>
-            <p className="text-sm font-semibold text-ink-800">Next three cycles (estimates)</p>
-            <ul className="mt-3 divide-y divide-ink-100 overflow-hidden rounded-2xl border border-ink-100 bg-white text-sm">
-              {plan.upcoming.map((u) => (
-                <li key={u.period.getTime()} className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:justify-between">
-                  <span className="text-ink-600">Period ~ {fmt(u.period)}</span>
-                  <span className="font-semibold text-teal-800">
-                    Fertile {fmt(u.from)} – {fmt(u.to)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </>
-      )}
+      <div>
+        <p className="text-sm font-semibold text-ink-800">Next three cycles (estimates)</p>
+        <ul className="mt-3 divide-y divide-ink-100 overflow-hidden rounded-2xl border border-ink-100 bg-white text-sm">
+          {plan.upcoming.map((u) => (
+            <li key={u.period.getTime()} className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:justify-between">
+              <span className="text-ink-600">Period ~ {fmt(u.period)}</span>
+              <span className="font-semibold text-teal-800">
+                Fertile {fmt(u.from)} – {fmt(u.to)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {irregular && (
         <Result tone="act" title="Cycles shorter than 21 or longer than 35 days are worth a check">
@@ -955,57 +950,95 @@ function rememberModule(id: CareToolId) {
   }
 }
 
+const wideQuery = "(min-width: 1024px)";
+const subscribeWide = (cb: () => void) => {
+  const m = window.matchMedia(wideQuery);
+  m.addEventListener("change", cb);
+  return () => m.removeEventListener("change", cb);
+};
+
+/** true on desktop, false on phones and tablets, null before hydration (render both). */
+function useIsWide(): boolean | null {
+  return useSyncExternalStore(subscribeWide, () => window.matchMedia(wideQuery).matches, () => null);
+}
+
+/**
+ * Desktop: a numbered list beside the open tool. Phones: a grid of cards, and
+ * the tool opens in a bottom sheet (a native modal dialog: focus stays inside,
+ * Escape closes it, focus returns to the card). Only one copy of the open tool
+ * is ever mounted, so ids stay unique.
+ */
 export function CareTools() {
   const [active, setActive] = useState<CareToolId>("ovulation");
   const [stage, setStage] = useState<number | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const wide = useIsWide();
   const panelRef = useRef<HTMLDivElement>(null);
+  const sheetRef = useRef<HTMLDialogElement>(null);
   const tabRefs = useRef<Partial<Record<CareToolId, HTMLButtonElement | null>>>({});
 
-  // Links such as #tool-semen (from the journey cards) open that tool.
+  const select = useCallback((id: CareToolId) => {
+    setActive(id);
+    history.replaceState(null, "", `#tool-${id}`);
+    rememberModule(id);
+  }, []);
+
+  /** Opens a tool: in the sheet on phones, or scrolls to the panel on desktop. */
+  const openTool = useCallback(
+    (id: CareToolId, scroll: boolean) => {
+      select(id);
+      if (!window.matchMedia(wideQuery).matches) setSheetOpen(true);
+      else if (scroll) requestAnimationFrame(() => panelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    },
+    [select],
+  );
+
+  // Links such as #tool-semen open that tool.
   useEffect(() => {
     const open = (hash: string) => {
       const id = hash.replace(/^#tool-/, "");
-      if (!isToolId(id)) return;
-      setActive(id);
-      rememberModule(id);
-      requestAnimationFrame(() => panelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+      if (isToolId(id)) openTool(id, true);
     };
     const onHash = () => open(window.location.hash);
-    // A link to the hash already in the address bar fires no hashchange.
     const onClick = (e: MouseEvent) => {
-      const href = (e.target as Element | null)?.closest?.('a[href^="#tool-"]')?.getAttribute("href");
-      if (href && href === window.location.hash) open(href);
+      const link = (e.target as Element | null)?.closest?.('a[href^="#tool-"]');
+      const href = link?.getAttribute("href");
+      if (!href) return;
+      // Same hash as now fires no hashchange; on phones the sheet must open either way.
+      e.preventDefault();
+      if (href !== window.location.hash) history.pushState(null, "", href);
+      open(href);
     };
-    onHash();
+    // After hydration only: on phones this opens the sheet for a shared #tool- link.
+    if (wide !== null) onHash();
     window.addEventListener("hashchange", onHash);
     document.addEventListener("click", onClick);
     return () => {
       window.removeEventListener("hashchange", onHash);
       document.removeEventListener("click", onClick);
     };
-  }, []);
+  }, [openTool, wide]);
 
-  // On phones the tabs are a sideways strip: keep the active one in view.
-  // On desktop the list doesn't overflow, so this does nothing there.
+  // The sheet: show as a modal, lock the page behind it.
   useEffect(() => {
-    const tab = tabRefs.current[active];
-    const strip = tab?.parentElement;
-    if (!tab || !strip || strip.scrollWidth <= strip.clientWidth) return;
-    const t = tab.getBoundingClientRect();
-    const s = strip.getBoundingClientRect();
-    if (t.left < s.left || t.right > s.right) {
-      strip.scrollBy({ left: t.left - s.left - (s.width - t.width) / 2, behavior: "smooth" });
-    }
-  }, [active]);
+    const dlg = sheetRef.current;
+    if (!dlg) return;
+    if (sheetOpen && !dlg.open) dlg.showModal();
+    document.documentElement.style.overflow = sheetOpen ? "hidden" : "";
+    return () => {
+      document.documentElement.style.overflow = "";
+    };
+  }, [sheetOpen]);
 
-  const select = (id: CareToolId) => {
-    setActive(id);
-    history.replaceState(null, "", `#tool-${id}`);
-    rememberModule(id);
-  };
+  // Turning a phone sideways into desktop width closes the sheet.
+  useEffect(() => {
+    if (wide) sheetRef.current?.close();
+  }, [wide]);
+
+  const closeSheet = () => sheetRef.current?.close();
 
   const onKey = (e: React.KeyboardEvent, i: number) => {
-    const step = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
+    const step = e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : e.key === "ArrowUp" || e.key === "ArrowLeft" ? -1 : 0;
     if (!step) return;
     e.preventDefault();
     const next = tools[(i + step + tools.length) % tools.length].id;
@@ -1013,112 +1046,175 @@ export function CareTools() {
     tabRefs.current[next]?.focus();
   };
 
-  const tool = tools.find((t) => t.id === active)!;
-  const Panel = panels[active];
-  const suggested = stage === null ? [] : journey[stage].tools;
-
   const pickStage = (i: number) => {
     const same = stage === i;
     setStage(same ? null : i);
-    if (!same) select(journey[i].tools[0]);
+    // Desktop shows the first matching tool; phones just mark the cards.
+    if (!same && wide !== false) select(journey[i].tools[0]);
   };
+
+  const tool = tools.find((t) => t.id === active)!;
+  const index = tools.indexOf(tool) + 1;
+  const Panel = panels[active];
+  const suggested = stage === null ? [] : journey[stage].tools;
+
+  const panelBody = (
+    <>
+      <p className="text-xs font-bold uppercase tracking-[0.12em] text-brand-600">
+        Tool {index} of {tools.length}
+      </p>
+      <h3 className="mt-1 font-display text-2xl font-bold text-ink-900">{tool.name}</h3>
+      <p className="mt-2 text-sm leading-6 text-ink-600">{tool.gets}</p>
+      <p className="mt-1 text-xs leading-5 text-ink-500">{tool.basis}</p>
+      <div className="mt-6">
+        <Panel key={active} />
+      </div>
+    </>
+  );
 
   return (
     <>
-    <div className="mt-8">
-      <p id="care-stage-label" className="text-sm font-semibold text-ink-800">
-        Where are you right now?
-      </p>
-      <div
-        role="group"
-        aria-labelledby="care-stage-label"
-        className="-mx-5 mt-3 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
-      >
-        {journey.map((j, i) => (
-          <button
-            key={j.stage}
-            type="button"
-            aria-pressed={stage === i}
-            onClick={() => pickStage(i)}
-            className={clsx(
-              "min-h-11 shrink-0 whitespace-nowrap rounded-full border px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
-              stage === i
-                ? "border-teal-600 bg-teal-50 text-teal-800"
-                : "border-ink-200 bg-white text-ink-700 hover:border-teal-300 hover:text-teal-800",
-            )}
-          >
-            {j.stage}
-          </button>
-        ))}
-      </div>
-    </div>
-    <div className="mt-6 grid gap-6 lg:grid-cols-12 lg:gap-8">
-      <div
-        role="tablist"
-        aria-label="Free modules"
-        className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] lg:col-span-4 lg:mx-0 lg:flex-col lg:self-start lg:overflow-visible lg:px-0 lg:sticky lg:top-24"
-      >
-        {tools.map((t, i) => {
-          const on = t.id === active;
-          return (
+      <div className="mt-8">
+        <p id="care-stage-label" className="text-sm font-semibold text-ink-800">
+          Where are you right now?
+        </p>
+        <div role="group" aria-labelledby="care-stage-label" className="mt-3 flex flex-wrap gap-2">
+          {journey.map((j, i) => (
             <button
-              key={t.id}
-              ref={(el) => {
-                tabRefs.current[t.id] = el;
-              }}
-              id={`tab-${t.id}`}
-              role="tab"
+              key={j.stage}
               type="button"
-              aria-selected={on}
-              aria-controls="care-tool-panel"
-              tabIndex={on ? 0 : -1}
-              onClick={() => select(t.id)}
-              onKeyDown={(e) => onKey(e, i)}
+              aria-pressed={stage === i}
+              onClick={() => pickStage(i)}
               className={clsx(
-                "flex shrink-0 items-center gap-3 rounded-2xl border px-3.5 py-2.5 text-left text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 lg:px-4 lg:py-3",
-                on
-                  ? "border-brand-300 bg-brand-50 text-brand-800 shadow-sm"
-                  : "border-ink-100 bg-white text-ink-700 hover:border-brand-200 hover:text-brand-700",
+                "min-h-11 rounded-full border px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
+                stage === i
+                  ? "border-teal-600 bg-teal-50 text-teal-800"
+                  : "border-ink-200 bg-white text-ink-700 hover:border-teal-300 hover:text-teal-800",
               )}
             >
-              <span
-                className={clsx(
-                  "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
-                  on ? "bg-brand-700 text-white" : "bg-brand-50 text-brand-700",
-                )}
-              >
-                <ComplianceIcon name={t.icon} className="h-5 w-5" />
-              </span>
-              <span className="flex flex-col">
-                <span className={clsx("text-[0.65rem] font-bold uppercase tracking-[0.12em]", on ? "text-brand-600" : "text-ink-400")}>
-                  Module {i + 1}
-                  {suggested.includes(t.id) && <span className="ml-1.5 text-teal-700">· For you</span>}
-                </span>
-                <span className="whitespace-nowrap lg:whitespace-normal">{t.name}</span>
-              </span>
+              {j.stage}
             </button>
-          );
-        })}
-      </div>
-
-      <div
-        ref={panelRef}
-        id="care-tool-panel"
-        role="tabpanel"
-        aria-labelledby={`tab-${active}`}
-        className="scroll-mt-24 rounded-[1.75rem] border border-ink-100 bg-white p-5 shadow-sm sm:p-8 lg:col-span-8"
-      >
-        <p className="text-xs font-bold uppercase tracking-[0.12em] text-brand-600">
-          Module {tools.indexOf(tool) + 1} of {tools.length}
-        </p>
-        <h3 className="mt-1 font-display text-2xl font-bold text-ink-900">{tool.name}</h3>
-        <p className="mt-2 text-sm leading-6 text-ink-600">{tool.gets}</p>
-        <p className="mt-1 text-xs leading-5 text-ink-500">{tool.basis}</p>
-        <div className="mt-6">
-          <Panel key={active} />
+          ))}
         </div>
       </div>
-    </div>
+
+      {/* Phones and tablets: every tool visible as a card. */}
+      <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:hidden">
+        {tools.map((t, i) => {
+          const forYou = suggested.includes(t.id);
+          return (
+            <li key={t.id}>
+              <button
+                type="button"
+                id={`card-${t.id}`}
+                aria-haspopup="dialog"
+                onClick={() => openTool(t.id, false)}
+                className={clsx(
+                  "flex h-full w-full flex-col items-start rounded-2xl border bg-white p-4 text-left shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
+                  forYou ? "border-teal-400 ring-1 ring-teal-400" : "border-ink-100",
+                )}
+              >
+                <span className="flex w-full items-center justify-between gap-2">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+                    <ComplianceIcon name={t.icon} className="h-5 w-5" />
+                  </span>
+                  {forYou && <span className="text-[0.65rem] font-bold uppercase tracking-[0.1em] text-teal-700">For you</span>}
+                </span>
+                <span className="mt-3 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-400">Tool {i + 1}</span>
+                <span className="mt-0.5 text-sm font-bold leading-5 text-ink-900">{t.name}</span>
+                <span className="mt-1 text-xs leading-5 text-ink-500">{t.short}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+
+      {/* Desktop: a list beside the open tool. */}
+      <div className="mt-6 hidden gap-8 lg:grid lg:grid-cols-12">
+        <div role="tablist" aria-label="Free tools" aria-orientation="vertical" className="flex flex-col gap-2 self-start lg:sticky lg:top-24 lg:col-span-4">
+          {tools.map((t, i) => {
+            const on = t.id === active;
+            return (
+              <button
+                key={t.id}
+                ref={(el) => {
+                  tabRefs.current[t.id] = el;
+                }}
+                id={`tab-${t.id}`}
+                role="tab"
+                type="button"
+                aria-selected={on}
+                aria-controls="care-tool-panel"
+                tabIndex={on ? 0 : -1}
+                onClick={() => select(t.id)}
+                onKeyDown={(e) => onKey(e, i)}
+                className={clsx(
+                  "flex items-center gap-3 rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
+                  on
+                    ? "border-brand-300 bg-brand-50 text-brand-800 shadow-sm"
+                    : "border-ink-100 bg-white text-ink-700 hover:border-brand-200 hover:text-brand-700",
+                )}
+              >
+                <span
+                  className={clsx(
+                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
+                    on ? "bg-brand-700 text-white" : "bg-brand-50 text-brand-700",
+                  )}
+                >
+                  <ComplianceIcon name={t.icon} className="h-5 w-5" />
+                </span>
+                <span className="flex flex-col">
+                  <span className={clsx("text-[0.65rem] font-bold uppercase tracking-[0.12em]", on ? "text-brand-600" : "text-ink-400")}>
+                    Tool {i + 1}
+                    {suggested.includes(t.id) && <span className="ml-1.5 text-teal-700">· For you</span>}
+                  </span>
+                  {t.name}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        {wide !== false && (
+          <div
+            ref={panelRef}
+            id="care-tool-panel"
+            role="tabpanel"
+            aria-labelledby={`tab-${active}`}
+            className="scroll-mt-24 rounded-[1.75rem] border border-ink-100 bg-white p-8 shadow-sm lg:col-span-8"
+          >
+            {panelBody}
+          </div>
+        )}
+      </div>
+
+      {/* Phones: the open tool as a bottom sheet. */}
+      <dialog
+        ref={sheetRef}
+        aria-labelledby="care-sheet-title"
+        onClose={() => setSheetOpen(false)}
+        onClick={(e) => {
+          // Tap on the dimmed backdrop, or on a link to elsewhere on the page: close first.
+          if (e.target === e.currentTarget) closeSheet();
+          else if ((e.target as Element).closest('a[href^="#"]:not([href^="#tool-"])')) closeSheet();
+        }}
+        className="m-0 mt-auto h-auto max-h-[92dvh] w-full max-w-none rounded-t-[1.75rem] bg-white p-0 text-ink-900 shadow-2xl transition-transform duration-300 backdrop:bg-ink-900/50 open:flex open:flex-col motion-reduce:transition-none starting:open:translate-y-full lg:hidden"
+      >
+        {sheetOpen && (
+          <>
+            <div className="flex items-center justify-between gap-3 border-b border-ink-100 px-5 py-3">
+              <span id="care-sheet-title" className="text-sm font-semibold text-ink-600">
+                Tool {index}: {tool.name}
+              </span>
+              <button type="button" onClick={closeSheet} className="flex min-h-11 items-center rounded-full px-4 text-sm font-semibold text-brand-700 ring-1 ring-inset ring-brand-200">
+                Close
+              </button>
+            </div>
+            <div id="care-tool-panel" className="overflow-y-auto overscroll-contain px-5 pb-8 pt-5">
+              {panelBody}
+            </div>
+          </>
+        )}
+      </dialog>
     </>
   );
 }
