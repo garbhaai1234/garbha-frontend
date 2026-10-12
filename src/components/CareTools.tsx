@@ -1120,7 +1120,7 @@ export function CareTools() {
                   </span>
                   {forYou && <span className="text-[0.65rem] font-bold uppercase tracking-[0.1em] text-teal-700">For you</span>}
                 </span>
-                <span className="mt-3 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-400">Tool {i + 1}</span>
+                <span className="mt-3 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-500">Tool {i + 1}</span>
                 <span className="mt-0.5 text-sm font-bold leading-5 text-ink-900">{t.name}</span>
                 <span className="mt-1 text-xs leading-5 text-ink-500">{t.short}</span>
               </button>
@@ -1164,7 +1164,7 @@ export function CareTools() {
                   <ComplianceIcon name={t.icon} className="h-5 w-5" />
                 </span>
                 <span className="flex flex-col">
-                  <span className={clsx("text-[0.65rem] font-bold uppercase tracking-[0.12em]", on ? "text-brand-600" : "text-ink-400")}>
+                  <span className={clsx("text-[0.65rem] font-bold uppercase tracking-[0.12em]", on ? "text-brand-700" : "text-ink-500")}>
                     Tool {i + 1}
                     {suggested.includes(t.id) && <span className="ml-1.5 text-teal-700">· For you</span>}
                   </span>

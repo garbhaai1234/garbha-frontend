@@ -16,6 +16,11 @@ export function Header() {
   const [solutionsOpen, setSolutionsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  // Garbha Care speaks to couples, not clinics: its page gets its own button.
+  const cta =
+    pathname === "/care"
+      ? { href: "/care#request-call", label: "Free counsellor call", short: "Free call" }
+      : { href: "/contact", label: "Book a demo", short: "Book a demo" };
   const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -160,11 +165,12 @@ export function Header() {
 
         <div className="hidden lg:block">
           <Button
-            href="/contact"
+            href={cta.href}
             variant="primary"
             className="group whitespace-nowrap lg:px-4 xl:px-6"
           >
-            Book a demo
+            {/* Desktop: no wider than "Book a demo", so the logo is never squeezed. */}
+            {cta.short}
             <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Button>
         </div>
@@ -234,9 +240,12 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
-            <Button href="/contact" variant="primary" className="mt-2 w-full">
-              Book a demo
-            </Button>
+            {/* Closes the menu: on /care the button stays on the page (a #link). */}
+            <div onClickCapture={close}>
+              <Button href={cta.href} variant="primary" className="mt-2 w-full">
+                {cta.label}
+              </Button>
+            </div>
           </Container>
         </div>
       )}

@@ -251,7 +251,7 @@ export const verification: { type: string; checked: string }[] = [
 export const promises: { title: string; text: string; icon: IconName }[] = [
   {
     title: "What you enter stays on your device",
-    text: "The modules save your answers in this browser only. Nothing you type into them is sent to Garbha.",
+    text: "The tools save your answers in this browser only. Nothing you type into them is sent to Garbha.",
     icon: "lock",
   },
   {
@@ -266,7 +266,7 @@ export const promises: { title: string; text: string; icon: IconName }[] = [
   },
   {
     title: "No diagnosis, no chances as a number",
-    text: "The modules explain and estimate. They never diagnose, prescribe or promise a pregnancy.",
+    text: "The tools explain and estimate. They never diagnose, prescribe or promise a pregnancy.",
     icon: "heart",
   },
 ];
@@ -283,18 +283,18 @@ export const neverDo: string[] = [
 export const careFaqs: { q: string; a: string }[] = [
   {
     q: "What is Garbha Care?",
-    a: "Garbha Care is a fertility support service from Garbha.ai, opening first in Hyderabad. Today you can use eight free modules on this page and request a free call with a fertility counsellor. When it opens, you will also be able to book consults, tests, care plans and medicines from providers whose licences Garbha has checked.",
+    a: "Garbha Care is a fertility support service from Garbha.ai, opening first in Hyderabad. Today you can use eight free tools on this page and request a free call with a fertility counsellor. When it opens, you will also be able to book consults, tests, care plans and medicines from providers whose licences Garbha has checked.",
   },
   {
     q: "What does it cost?",
-    a: "The modules on this page and the counselling call are free. When bookings open, care plans and bookings will be paid, and you will see the provider’s full price before you book, with nothing added at checkout.",
+    a: "The tools on this page and the counselling call are free. When bookings open, care plans and bookings will be paid, and you will see the provider’s full price before you book, with nothing added at checkout.",
   },
   {
     q: "Is Garbha a clinic?",
     a: "No. Garbha does not treat, test or dispense medicines. We help you understand your options and connect you with licensed providers. Your care is always given by them.",
   },
   {
-    q: "Can the modules tell me if something is wrong?",
+    q: "Can the tools tell me if something is wrong?",
     a: "No. They explain and estimate using published guidance, such as the World Health Organization’s 2021 semen reference values, and published Indian price ranges. They never give a diagnosis or your chances as a number. A doctor can tell you what your results mean for you.",
   },
   {
@@ -303,7 +303,7 @@ export const careFaqs: { q: string; a: string }[] = [
   },
   {
     q: "Who can see my information?",
-    a: "What you enter in the modules stays in this browser on your device and is not sent to Garbha. If you request a call, your answers are emailed to our team only to arrange that call, and are never shared with a clinic without your permission. Email info@garbha.ai to have them deleted.",
+    a: "What you enter in the tools stays in this browser on your device and is not sent to Garbha. If you request a call, your answers are emailed to our team only to arrange that call, and are never shared with a clinic without your permission. Email info@garbha.ai to have them deleted.",
   },
   {
     q: "How do I check that a clinic is genuine?",
@@ -311,6 +311,6 @@ export const careFaqs: { q: string; a: string }[] = [
   },
   {
     q: "When can I use it?",
-    a: "The modules work now, on this page. Counsellor calls and bookings start in Hyderabad, in English and Telugu, with Hindi to follow. Request a free call on this page and a counsellor will call you when they begin.",
+    a: "The tools work now, on this page. Counsellor calls and bookings start in Hyderabad, in English and Telugu, with Hindi to follow. Request a free call on this page and a counsellor will call you when they begin.",
   },
 ];

@@ -143,3 +143,37 @@ test("phone shortcut bar: hidden over the hero and the form, shown in between", 
   await expect(page.locator("#call form")).toBeInViewport();
   await expect(bar).not.toBeInViewport();
 });
+
+test("header: a couple-facing button on /care only", async ({ page, isMobile }) => {
+  await page.goto("/care");
+  const header = page.locator("header");
+  if (isMobile) await header.getByRole("button", { name: "Open menu" }).click();
+  const cta = header.getByRole("link", { name: isMobile ? "Free counsellor call" : "Free call" });
+  await expect(cta).toHaveAttribute("href", "/care#request-call");
+  await expect(header.getByRole("link", { name: "Book a demo" })).toHaveCount(0);
+  await cta.click();
+  await expect(page.locator("#call form")).toBeInViewport();
+  if (isMobile) await expect(header.getByRole("button", { name: "Open menu" })).toBeVisible();
+
+  await page.goto("/");
+  if (isMobile) await page.locator("header").getByRole("button", { name: "Open menu" }).click();
+  await expect(page.locator("header").getByRole("link", { name: "Book a demo" })).toBeVisible();
+});
+
+test("desktop header: the /care button never squeezes the logo more than other pages", async ({ page, isMobile }) => {
+  test.skip(isMobile, "desktop header only");
+  const ratio = async (path: string) => {
+    await page.goto(path);
+    return page.locator('header img[alt="Garbha.ai"]').first().evaluate((img: HTMLImageElement) => {
+      const r = img.getBoundingClientRect();
+      return r.width / r.height;
+    });
+  };
+  // Known, site-wide and older than this page: between 1280 and ~1340 px every page squeezes it.
+  for (const width of [1280, 1350, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    expect(await ratio("/care"), `width ${width}`).toBeGreaterThanOrEqual((await ratio("/")) - 0.01);
+  }
+  await page.setViewportSize({ width: 1350, height: 900 });
+  expect(await ratio("/care")).toBeGreaterThan(4.8);
+});

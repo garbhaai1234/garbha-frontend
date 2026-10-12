@@ -7,7 +7,6 @@ import { Field, inputCls } from "@/components/CareUi";
 import { fmt, fmtLong, toInput } from "@/lib/care/dates";
 import { CYCLE_MAX, CYCLE_MIN, currentPlan, ringFromPlan } from "@/lib/care/ovulation";
 import { useStored, useToday } from "@/lib/care/useStored";
-import { clsx } from "@/lib/clsx";
 
 /**
  * The hero's working fertile-day check. It shares the saved cycle with the
@@ -127,17 +126,18 @@ export function CareHeroTracker({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      <div className={clsx("lg:col-span-5", !view && "hidden lg:block")}>
-        <div className="relative mx-auto w-full max-w-[300px] sm:max-w-[340px] lg:ml-auto lg:mr-0">
+      <div className="lg:col-span-5">
+        <div className="relative mx-auto w-full max-w-[260px] sm:max-w-[320px] lg:ml-auto lg:mr-0 lg:max-w-[340px]">
           <div className="pointer-events-none absolute -inset-6 rounded-full bg-teal-400/15 blur-2xl" />
           <div className="relative rounded-[2rem] bg-white/80 p-6 shadow-2xl shadow-brand-500/15 ring-1 ring-white/60 backdrop-blur-md">
             <CareCycleRing
               key={view ? `${view.plan.start.getTime()}-${view.plan.cycle}` : "sample"}
               cycle={view?.ring}
+              showSampleChart={false}
               className="h-auto w-full"
             />
             <p className="mt-2 text-center text-xs text-ink-500">
-              {view ? "Your estimated cycle. Dates are estimates, never contraception." : "An example cycle, with sample data. Enter your date to see yours."}
+              {view ? "Your estimated cycle. Dates are estimates, never contraception." : "An example cycle. Enter your date to see yours."}
             </p>
           </div>
         </div>

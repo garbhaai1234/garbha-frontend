@@ -1,7 +1,7 @@
 # Spec: Garbha Care page polish
 
 - Requirement ID: REQ-CARE-02 (follows REQ-CARE-01, `garbha-care-redesign.md`)
-- Status: Approved (2026-10-12; the user delegated the decisions: "take a call based on best practice")
+- Status: Built on branch `care-polish` (2026-10-12), not merged or deployed. Decisions delegated by the user: "take a call based on best practice"
 - Owner: Garbha.ai team
 
 ## Problem
@@ -37,9 +37,33 @@ happens. One hydration warning was also introduced in REQ-CARE-01.
 
 ## Tasks
 
-- [ ] 1. Ring rounding (hydration).
-- [ ] 2. Tool 1 without a duplicate form.
-- [ ] 3. Phone tool grid + bottom sheet.
-- [ ] 4. Shorter call form (client + server + tests).
-- [ ] 5. Copy and layout: badge, wording, one disclaimer, neutral hero, ring on phones, varied sections, header button.
-- [ ] 6. Tests, screenshots, Lighthouse before/after.
+- [x] 1. Ring rounding (hydration).
+- [x] 2. Tool 1 without a duplicate form.
+- [x] 3. Phone tool grid + bottom sheet.
+- [x] 4. Shorter call form (client + server + tests).
+- [x] 5. Copy and layout: badge, wording, one disclaimer, neutral hero, ring on phones, varied sections, header button.
+- [x] 6. Tests, screenshots, Lighthouse before/after.
+
+## Results (2026-10-12, local production build)
+
+- Tests: 42 unit, 37 browser on phone + desktop (`npm run test:e2e`, one worker).
+- Page length: phone 11.8 → 11.5 screens, desktop 7.1 → 7.0.
+- Lighthouse 12.8 (local, simulated throttling, 2 runs each, lab data only), before = 53c08b1:
+
+| | Performance | Accessibility | Best practices | SEO | LCP | TBT |
+|---|---|---|---|---|---|---|
+| Before, mobile | 64–86 | 97 | 100 | 100 | 3.2–3.9 s | 270–770 ms |
+| After, mobile | 84 | 96 | 100 | 100 | 3.2–3.3 s | 300–330 ms |
+| Before, desktop | 97–99 | 97 | 100 | 100 | 0.7–0.8 s | 0 ms |
+| After, desktop | 97–98 | 97 | 100 | 100 | 0.8 s | 0–30 ms |
+
+- Accessibility 96 on phones is a scoring effect, not a new failure: the desktop tab list is
+  hidden on phones, so three tab-list audits (aria-required-children, aria-required-parent,
+  tabindex) no longer apply. Contrast failures fell from 16 to 5 nodes; the 5 left are shared
+  site components (section eyebrows, cookie banner), unchanged by decision.
+- Found and fixed during the run: the longer header label squeezed the logo at 1350 px (Best
+  practices 96); the desktop label is now "Free call".
+- Found, not fixed (site-wide, older than this page): between 1280 and ~1340 px the header
+  squeezes the Garbha.ai logo on every page (aspect 3.57 instead of 4.92 at 1280 px).
+- Mobile performance varies run to run on this PC (64–93 across today's runs); LCP still above
+  2.5 s for the site-wide reasons in REQ-CARE-01.

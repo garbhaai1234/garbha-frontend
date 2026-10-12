@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { clsx } from "@/lib/clsx";
 
 /**
- * Phones only: "Free modules" and "Free call" stay one tap away once the hero
+ * Phones only: "Free tools" and "Free call" stay one tap away once the hero
  * has scrolled out of view. Hidden while the call form (`callId`) is on screen, so it
  * never covers the form; z-40 sits under the cookie banner (z-50).
  */
@@ -45,7 +45,7 @@ export function CareStickyBar({ heroId, callId }: { heroId: string; callId: stri
             href="#tools"
             className="flex min-h-12 items-center justify-center rounded-full bg-white text-sm font-semibold text-brand-700 ring-1 ring-inset ring-brand-200"
           >
-            Free modules
+            Free tools
           </a>
           <a
             href="#request-call"

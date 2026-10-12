@@ -7,12 +7,14 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("garbha.cookie-consent", "declined"));
 });
 
-test("one date gives the person's fertile days, ring and next steps", async ({ page, isMobile }) => {
+test("one date gives the person's fertile days, ring and next steps", async ({ page }) => {
   await page.goto("/care");
   const hero = page.locator("#care-hero");
   const ring = hero.getByRole("img", { name: /cycle/ });
-  if (isMobile) await expect(ring).toBeHidden();
-  else await expect(ring).toHaveAccessibleName(/^Sample cycle ring/);
+  // A labelled sample until a date is entered, on phones too; no invented temperature chart.
+  await expect(ring).toBeVisible();
+  await expect(ring).toHaveAccessibleName(/^Sample cycle ring/);
+  await expect(ring).not.toHaveAccessibleName(/temperature/);
 
   await hero.getByLabel("First day of your last period").fill("2026-10-01");
   await expect(hero.getByText("You’re in your fertile window")).toBeVisible();

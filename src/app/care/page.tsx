@@ -48,16 +48,23 @@ const reassurance: { label: string; icon: Icon }[] = [
 function SectionShell({
   id,
   tinted,
+  band,
   children,
 }: {
   id?: string;
   tinted?: boolean;
+  /** A soft coral band, for the one section that asks for action. */
+  band?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <section
       id={id}
-      className={clsx("scroll-mt-24 border-t border-ink-100", tinted && "bg-ink-50/60")}
+      className={clsx(
+        "scroll-mt-24",
+        band ? "bg-gradient-to-b from-brand-50/80 via-brand-50/40 to-white" : "border-t border-ink-100",
+        tinted && "bg-ink-50/60",
+      )}
     >
       <Container className="py-10 sm:py-14">{children}</Container>
     </section>
@@ -93,8 +100,8 @@ function Upcoming({
   children: React.ReactNode;
 }) {
   return (
-    <details className="group rounded-2xl border border-ink-100 bg-white shadow-sm open:shadow-md">
-      <summary className="flex cursor-pointer list-none items-start gap-4 p-5 sm:p-6 [&::-webkit-details-marker]:hidden">
+    <details className="group">
+      <summary className="flex cursor-pointer list-none items-start gap-4 px-1 py-5 sm:py-6 [&::-webkit-details-marker]:hidden">
         <IconTile name={icon} />
         <span className="flex-1">
           <span className="flex flex-wrap items-center gap-2">
@@ -108,7 +115,7 @@ function Upcoming({
           className="mt-1 h-5 w-5 shrink-0 text-brand-500 transition-transform duration-300 group-open:rotate-180"
         />
       </summary>
-      <div className="border-t border-ink-100 px-5 pb-6 pt-4 sm:px-6">{children}</div>
+      <div className="pb-6 pl-[3.75rem] pr-1">{children}</div>
     </details>
   );
 }
@@ -128,9 +135,9 @@ export default function GarbhaCarePage() {
 
       {/* Hero: a working fertile-day check */}
       <section id="care-hero" className="relative isolate overflow-hidden border-b border-ink-100">
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-brand-50/70 via-white to-white" />
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-ink-50 via-white to-white" />
         <div className="pointer-events-none absolute inset-0 -z-10 bg-dot-grid opacity-50 [mask-image:radial-gradient(90%_60%_at_50%_0%,black,transparent)]" />
-        <div className="animate-blob pointer-events-none absolute -left-24 -top-24 -z-10 h-80 w-80 rounded-full bg-brand-300/25 blur-3xl" />
+        <div className="animate-blob pointer-events-none absolute -left-24 -top-24 -z-10 h-80 w-80 rounded-full bg-brand-200/20 blur-3xl" />
         <div
           className="animate-blob pointer-events-none absolute -right-24 top-10 -z-10 h-72 w-72 rounded-full bg-teal-300/25 blur-3xl"
           style={{ animationDelay: "-6s" }}
@@ -139,7 +146,7 @@ export default function GarbhaCarePage() {
           <CareHeroTracker>
             <span className="inline-flex items-center gap-2.5 rounded-full border border-brand-200 bg-white/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand-700 backdrop-blur">
               <span className="h-2 w-2 rounded-full bg-brand-500" />
-              Garbha Care · {careStatus.label} in {careStatus.city}
+              Garbha Care · Free tools, available now
             </span>
             <h1 className="mt-6 font-display text-[2.1rem] font-bold leading-[1.08] tracking-tight text-ink-900 sm:text-5xl lg:text-6xl">
               Trying for a baby?
@@ -173,23 +180,25 @@ export default function GarbhaCarePage() {
         </Container>
       </section>
 
-      {/* The eight modules */}
+      {/* The eight tools */}
       <SectionShell id="tools">
         <SectionHeading
-          eyebrow="8 free modules"
-          title="Pick a module. Get your answer now."
-          description="Each module works right here: enter your details and see the result straight away. No account and no forms, and anything you save stays on this device."
+          eyebrow="8 free tools"
+          title="Pick a tool. Get your answer now."
+          description="Each tool works right here: enter your details and see the result straight away. No account, and anything you save stays on this device."
         />
         <CareTools />
-        <p className="mt-8 rounded-xl border border-ink-100 bg-ink-50 px-5 py-4 text-sm text-ink-600">
-          <strong className="font-semibold text-ink-900">These modules inform; they don’t diagnose.</strong>{" "}
-          None of them gives a diagnosis or your chances as a percentage. The tracker shows
-          estimates and must never be used as contraception.
+        {/* The one disclaimer for the page; each result also carries its own short note. */}
+        <p className="mt-8 rounded-xl border border-ink-100 bg-ink-50 px-5 py-4 text-sm leading-6 text-ink-600">
+          <strong className="font-semibold text-ink-900">These tools inform; they don’t diagnose.</strong>{" "}
+          None gives a diagnosis or your chances as a number, and the tracker’s dates are estimates,
+          never contraception. {careDisclaimer} In an emergency, such as heavy bleeding or severe
+          pain, seek urgent medical care.
         </p>
       </SectionShell>
 
       {/* Free counsellor call: the one form on the page */}
-      <SectionShell id="call" tinted>
+      <SectionShell id="call" band>
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-5">
             <SectionHeading
@@ -249,7 +258,7 @@ export default function GarbhaCarePage() {
           </a>
         </div>
 
-        <div className="mt-6 grid gap-4 lg:grid-cols-2">
+        <div className="mt-4 max-w-4xl divide-y divide-ink-100 border-y border-ink-100">
           <Upcoming
             icon="list"
             title="Care plans"
@@ -322,12 +331,14 @@ export default function GarbhaCarePage() {
           eyebrow="Your privacy"
           title="Private by default, honest at every step"
         />
-        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="mt-8 grid gap-x-12 gap-y-7 sm:grid-cols-2">
           {promises.map((p) => (
-            <li key={p.title} className="h-full rounded-2xl border border-ink-100 bg-white p-5 shadow-sm">
+            <li key={p.title} className="flex gap-4">
               <IconTile name={p.icon} />
-              <h3 className="mt-4 font-display text-base font-bold text-ink-900">{p.title}</h3>
-              <p className="mt-1.5 text-sm leading-6 text-ink-600">{p.text}</p>
+              <div>
+                <h3 className="font-display text-base font-bold text-ink-900">{p.title}</h3>
+                <p className="mt-1 text-sm leading-6 text-ink-600">{p.text}</p>
+              </div>
             </li>
           ))}
         </ul>
@@ -346,6 +357,12 @@ export default function GarbhaCarePage() {
           </ul>
         </div>
       </SectionShell>
+
+      {/*
+        Who's behind Garbha Care: add a strip with the counsellors and the clinical advisor
+        here once each person has agreed to be named and pictured (REQ-CARE-02). Never use
+        stock photos or placeholder people.
+      */}
 
       {/* FAQ */}
       <SectionShell>
@@ -395,10 +412,6 @@ export default function GarbhaCarePage() {
               </Link>
             </p>
           </div>
-          <p className="mx-auto mt-8 max-w-3xl text-center text-xs text-ink-500">
-            {careDisclaimer} In an emergency, such as heavy bleeding or severe pain, seek urgent
-            medical care.
-          </p>
         </Container>
       </section>
 

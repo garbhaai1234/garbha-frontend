@@ -62,7 +62,16 @@ const line = (from: number, to: number) =>
 const SX0 = 20;
 const SX1 = 240;
 
-export function CareCycleRing({ className, cycle }: { className?: string; cycle?: RingCycle }) {
+export function CareCycleRing({
+  className,
+  cycle,
+  showSampleChart = true,
+}: {
+  className?: string;
+  cycle?: RingCycle;
+  /** The sample temperature chart; off where a sample would read as a demo. */
+  showSampleChart?: boolean;
+}) {
   const sample = !cycle;
   const c = cycle ?? SAMPLE;
   const DAYS = c.length;
@@ -72,7 +81,8 @@ export function CareCycleRing({ className, cycle }: { className?: string; cycle?
   const today = c.today;
   const SEG = (SX1 - SX0) / DAYS;
   // Without the sample temperature chart, the strip and legend move up.
-  const shift = sample ? 0 : -64;
+  const chart = sample && showSampleChart;
+  const shift = chart ? 0 : -64;
 
   const phaseColour = (day: number) => {
     if (day === ovulation) return "#0F766E";
@@ -109,7 +119,7 @@ export function CareCycleRing({ className, cycle }: { className?: string; cycle?
     { value: `${DAYS} d`, label: "Cycle length", colour: "#64748B" },
   ];
   const label = sample
-    ? `Sample cycle ring: period on days ${period.from} to ${period.to}, estimated fertile window on days ${fertile.from} to ${fertile.to}, estimated ovulation on day ${ovulation}, today is day ${today} (${phaseName(today!).toLowerCase()}). Estimated ovulation in ${daysToOvulation} days, next period in about ${daysToPeriod} days. A sample basal temperature chart shows the rise after ovulation.`
+    ? `Sample cycle ring: period on days ${period.from} to ${period.to}, estimated fertile window on days ${fertile.from} to ${fertile.to}, estimated ovulation on day ${ovulation}, today is day ${today} (${phaseName(today!).toLowerCase()}). Estimated ovulation in ${daysToOvulation} days, next period in about ${daysToPeriod} days. ${chart ? "A sample basal temperature chart shows the rise after ovulation." : ""}`.trim()
     : `Your estimated cycle of ${DAYS} days: period on days 1 to ${period.to}, fertile window on days ${fertile.from} to ${fertile.to}, estimated ovulation on day ${ovulation}${today ? `, today is day ${today} (${phaseName(today).toLowerCase()})` : ""}.`;
 
   return (
@@ -297,7 +307,7 @@ export function CareCycleRing({ className, cycle }: { className?: string; cycle?
         );
       })}
 
-      {sample && (
+      {chart && (
         <>
       {/* ── Sample basal temperature ─────────────────────── */}
       <g className="ccr-fade" style={{ animationDelay: "1.1s" }}>
