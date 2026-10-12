@@ -1346,7 +1346,12 @@ export function CareTools() {
               >
                 <ComplianceIcon name={t.icon} className="h-5 w-5" />
               </span>
-              <span className="whitespace-nowrap lg:whitespace-normal">{t.name}</span>
+              <span className="flex flex-col">
+                <span className={clsx("text-[0.65rem] font-bold uppercase tracking-[0.12em]", on ? "text-brand-600" : "text-ink-400")}>
+                  Module {i + 1}
+                </span>
+                <span className="whitespace-nowrap lg:whitespace-normal">{t.name}</span>
+              </span>
             </button>
           );
         })}
@@ -1359,7 +1364,10 @@ export function CareTools() {
         aria-labelledby={`tab-${active}`}
         className="scroll-mt-24 rounded-[1.75rem] border border-ink-100 bg-white p-5 shadow-sm sm:p-8 lg:col-span-8"
       >
-        <h3 className="font-display text-2xl font-bold text-ink-900">{tool.name}</h3>
+        <p className="text-xs font-bold uppercase tracking-[0.12em] text-brand-600">
+          Module {tools.indexOf(tool) + 1} of {tools.length}
+        </p>
+        <h3 className="mt-1 font-display text-2xl font-bold text-ink-900">{tool.name}</h3>
         <p className="mt-2 text-sm leading-6 text-ink-600">{tool.gets}</p>
         <p className="mt-1 text-xs leading-5 text-ink-500">{tool.basis}</p>
         <div className="mt-6">

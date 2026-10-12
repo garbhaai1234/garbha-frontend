@@ -91,7 +91,6 @@ const toolName = (id: (typeof tools)[number]["id"]) =>
 
 const jumpLinks = [
   { href: "#journey", label: "Where are you?" },
-  { href: "#tools", label: "Free tools" },
   { href: "#call", label: "Free counsellor call" },
   { href: "#care", label: "Care plans" },
   { href: "#trust", label: "Who we list" },
@@ -138,8 +137,8 @@ export default function GarbhaCarePage() {
                 the full price, shown before you pay.
               </p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <CtaLink href="#journey">
-                  Find where you are <ArrowRight className="h-4 w-4" />
+                <CtaLink href="#tools">
+                  Start a free module <ArrowRight className="h-4 w-4" />
                 </CtaLink>
                 <CtaLink href="#call" variant="secondary">
                   Talk to a counsellor, free
@@ -165,6 +164,23 @@ export default function GarbhaCarePage() {
           </div>
         </Container>
       </section>
+
+      {/* Free modules: first, so the page starts with something that works */}
+      <SectionShell id="tools">
+        <SectionHeading
+          eyebrow="8 free modules"
+          title="Pick a module. Get your answer now."
+          description="Each module works right here: enter your details and see the result straight away. No account, no forms, nothing sent to us: anything you save stays on this device."
+        />
+        <CareTools />
+        <p className="mt-8 rounded-xl border border-ink-100 bg-ink-50 px-5 py-4 text-sm text-ink-600">
+          <strong className="font-semibold text-ink-900">
+            These tools inform; they don’t diagnose.
+          </strong>{" "}
+          None of them gives a diagnosis or your chances as a percentage. The
+          tracker shows estimates and must never be used as contraception.
+        </p>
+      </SectionShell>
 
       {/* Reassurance strip */}
       <section className="border-b border-ink-100 bg-ink-50/60">
@@ -283,23 +299,6 @@ export default function GarbhaCarePage() {
             </li>
           ))}
         </ol>
-      </SectionShell>
-
-      {/* Free tools */}
-      <SectionShell id="tools">
-        <SectionHeading
-          eyebrow="Free tools"
-          title="Try them now, free"
-          description="Pick a tool and get your answer in under two minutes. No account and no forms: anything you save stays on this device."
-        />
-        <CareTools />
-        <p className="mt-8 rounded-xl border border-ink-100 bg-ink-50 px-5 py-4 text-sm text-ink-600">
-          <strong className="font-semibold text-ink-900">
-            These tools inform; they don’t diagnose.
-          </strong>{" "}
-          None of them gives a diagnosis or your chances as a percentage. The
-          tracker shows estimates and must never be used as contraception.
-        </p>
       </SectionShell>
 
       {/* Assistant */}

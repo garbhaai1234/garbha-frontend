@@ -130,7 +130,7 @@ export const tools: {
   {
     id: "ovulation",
     name: "Ovulation tracker",
-    gets: "Log your period, see your likely fertile days, and add LH-test results and symptoms. Gentle reminders, nothing more.",
+    gets: "Enter your last period to see your likely fertile days for this cycle and the next three. Add a positive LH test to sharpen the estimate.",
     basis:
       "Your fertile window is the six days ending on ovulation day. Calendar dates alone are often wrong, so we show them as estimates and sharpen them with LH tests.",
     icon: "calendar",
