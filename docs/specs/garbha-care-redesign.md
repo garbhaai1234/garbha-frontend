@@ -1,7 +1,7 @@
 # Spec: Garbha Care page redesign
 
 - Requirement ID: REQ-CARE-01
-- Status: Approved (2026-10-12, "start")
+- Status: Built on branch `care-redesign` (2026-10-12), not merged or deployed
 - Owner: Garbha.ai team
 
 ## Problem
@@ -53,6 +53,7 @@ that looks clickable does something real.
 - Modules affected: `src/app/care/page.tsx`, `src/components/CareTools.tsx`, `src/content/care.ts`,
   new `src/lib/care/`, new `src/app/api/care-call/route.ts`, new form component.
 - New dev dependency: `@playwright/test` 1.63.0 (unit and browser tests; uses the installed Chrome).
+  `vitest` was tried first and dropped: npm 10.9 fails to install it (arborist peer-set bug).
 - Analytics events: none (no analytics on the site).
 
 ## Risks
@@ -63,9 +64,29 @@ that looks clickable does something real.
 
 ## Tasks
 
-- [ ] 1. Module calculations to `src/lib/care/` with unit tests.
-- [ ] 2. `POST /api/care-call` with validation, consent, honeypot, origin check, rate limit; tests.
-- [ ] 3. Call-request form and sticky phone bar.
-- [ ] 4. Hero with the working fertile-day check.
-- [ ] 5. Sections restructured, "coming" labels, cuts.
-- [ ] 6. End-to-end tests (phone and desktop) and Lighthouse before/after.
+- [x] 1. Module calculations to `src/lib/care/` with unit tests.
+- [x] 2. `POST /api/care-call` with validation, consent, honeypot, origin check, rate limit; tests.
+- [x] 3. Call-request form and sticky phone bar.
+- [x] 4. Hero with the working fertile-day check.
+- [x] 5. Sections restructured, "coming" labels, cuts.
+- [x] 6. End-to-end tests (phone and desktop) and Lighthouse before/after.
+
+## Results (2026-10-12, local production build, `npm run build`)
+
+- Tests: 38 unit (`npm test`), 29 browser on phone + desktop (`npm run test:e2e`, server running).
+- Page length: phone 24.6 → 11.8 screens; desktop 12.5 → 7.1.
+- Lighthouse 12.8 (local, simulated throttling, 2 runs each; lab data only, no field data):
+
+| | Performance | Accessibility | Best practices | SEO | LCP | TBT | CLS |
+|---|---|---|---|---|---|---|---|
+| Before, mobile | 89–93 | 97 | 100 | 100 | 3.0–3.1 s | 100–220 ms | 0 |
+| After, mobile | 93–94 | 97 | 100 | 100 | 3.0–3.1 s | 40–80 ms | 0 |
+| Before, desktop | 99–100 | 97 | 100 | 100 | 0.7 s | 0 ms | 0 |
+| After, desktop | 99–100 | 97 | 100 | 100 | 0.7 s | 0 ms | 0 |
+
+- Not met: mobile LCP 3.0 s > 2.5 s budget (same as before). LCP element is the hero subtitle text,
+  held by the site-wide CSS and web fonts; a site-wide change, out of this scope.
+- Accessibility 97: the one failing audit is colour contrast, unchanged (colour changes were
+  declined earlier).
+- Not verified: email delivery on the live host (Resend settings unknown); clinical review of
+  module wording; PageSpeed Insights on the live site (Hostinger blocks headless Lighthouse).
