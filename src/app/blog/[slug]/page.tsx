@@ -44,8 +44,8 @@ export async function generateMetadata({
   const post = getPost(slug);
   if (!post) return {};
   return {
-    title: post.title,
-    description: post.description,
+    title: post.seoTitle ?? post.title,
+    description: post.seoDescription ?? post.description,
     keywords: post.tags,
     authors: [{ name: post.author }],
     alternates: { canonical: `/blog/${post.slug}` },

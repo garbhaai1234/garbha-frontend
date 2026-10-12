@@ -22,7 +22,7 @@ import { breadcrumbSchema, faqSchema } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "ART Act 2021 Guide for IVF Clinics",
   description:
-    "What the ART (Regulation) Act 2021 requires of IVF clinics in India: registration, age limits, consent, donors, PGT, records, grievance and penalties — with sources.",
+    "What the ART (Regulation) Act 2021 requires of IVF clinics in India: registration, age limits, consent, donors, PGT, records and penalties, with sources.",
   alternates: { canonical: "/compliance/art-act" },
 };
 

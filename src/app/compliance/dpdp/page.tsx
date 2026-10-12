@@ -26,7 +26,7 @@ import { breadcrumbSchema, faqSchema } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "DPDP Act & Rules 2025 Guide for IVF Clinics",
   description:
-    "What the DPDP Act 2023 and DPDP Rules 2025 require of IVF clinics, and by when: notice, consent, security, logs, 72-hour breach reporting, rights requests and penalties.",
+    "What the DPDP Act 2023 and Rules 2025 require of IVF clinics, and by when: notice, consent, security, logs, 72-hour breach reporting and penalties.",
   alternates: { canonical: "/compliance/dpdp" },
 };
 

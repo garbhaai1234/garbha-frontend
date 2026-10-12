@@ -31,7 +31,7 @@ import { clsx } from "@/lib/clsx";
 export const metadata: Metadata = {
   title: "Garbha Care — Fertility Support You Can Trust",
   description:
-    "Trying to conceive or going through IVF? Garbha Care gives you free fertility tools, a free call with a counsellor, and care from licence-checked clinics, at the full price shown up front.",
+    "Trying to conceive? Free fertility tools that answer in a minute, and a free call with a fertility counsellor. Garbha Care is opening in Hyderabad.",
   alternates: { canonical: "/care" },
 };
 

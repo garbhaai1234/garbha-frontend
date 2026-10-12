@@ -21,7 +21,7 @@ import { credibilityBadges } from "@/content/technology";
 export const metadata: Metadata = {
   title: "AI for IVF — Embryo Grading & Fertility Solutions",
   description:
-    "Garbha.ai brings explainable, CDSCO-cleared AI to the IVF lab: AI embryo grading (EmbryoScore), sperm & oocyte selection and endometrial receptivity — 93% embryo-selection accuracy, live in 11 clinics.",
+    "Explainable, CDSCO-cleared AI for the IVF lab: AI embryo grading (EmbryoScore), sperm and oocyte selection and endometrial receptivity, live in 11 clinics.",
   alternates: { canonical: "/" },
 };
 

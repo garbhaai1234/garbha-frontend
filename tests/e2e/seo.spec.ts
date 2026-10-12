@@ -61,3 +61,40 @@ test.describe("SEO, every sitemap page", () => {
     }
   });
 });
+
+test.describe("SEO stage 2: index hygiene", () => {
+  test.skip(({ isMobile }) => isMobile, "server HTML is the same for phones");
+
+  test("sitemap: no tag pages, and every URL has a lastmod", async ({ request }) => {
+    const xml = await (await request.get("/sitemap.xml")).text();
+    const entries = [...xml.matchAll(/<url>([\s\S]*?)<\/url>/g)].map((m) => m[1]);
+    expect(entries.length).toBeGreaterThan(15);
+    for (const e of entries) {
+      const loc = e.match(/<loc>([^<]+)<\/loc>/)![1];
+      expect(loc, "tag pages are noindex").not.toContain("/blog/tag/");
+      expect(e, loc).toMatch(/<lastmod>\d{4}-\d{2}-\d{2}/);
+    }
+  });
+
+  test("tag pages stay reachable but are noindex, follow", async ({ request }) => {
+    const html = await (await request.get("/blog/tag/ivf")).text();
+    expect(html).toMatch(/<meta name="robots" content="noindex, follow"/);
+  });
+
+  test("titles ≤ 60, descriptions ≤ 160, a share image on every page", async ({ request }) => {
+    for (const p of await sitemapPages(request)) {
+      const title = p.html.match(/<title>([^<]*)<\/title>/)![1].replace(/&amp;/g, "&").replace(/&#x27;|&#39;/g, "'");
+      const desc = (p.html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? "").replace(/&amp;/g, "&").replace(/&#x27;|&#39;/g, "'");
+      expect(title.length, `${p.path} title: ${title}`).toBeLessThanOrEqual(60);
+      expect(desc.length, `${p.path} description`).toBeGreaterThan(50);
+      expect(desc.length, `${p.path} description: ${desc}`).toBeLessThanOrEqual(160);
+      expect(p.html, `${p.path} og:image`).toMatch(/<meta property="og:image" content="https:\/\/garbha\.ai\/[^"]+"/);
+    }
+  });
+
+  test("product pages: the steps sit under an h2", async ({ request }) => {
+    const html = await (await request.get("/solutions/embryo-scoring")).text();
+    const order = [...html.matchAll(/<h([1-6])[\s>]/g)].map((m) => Number(m[1]));
+    for (let i = 1; i < order.length; i++) expect(order[i] - order[i - 1], `heading ${i}`).toBeLessThanOrEqual(1);
+  });
+});

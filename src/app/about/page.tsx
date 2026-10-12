@@ -17,7 +17,7 @@ import { breadcrumbSchema } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "Garbha AI EmbryoScore™, founded by alumni of the Indian School of Business (ISB), is revolutionizing reproductive healthcare with AI-powered fertility solutions.",
+    "Garbha AI EmbryoScore™, founded by Indian School of Business (ISB) alumni, builds AI-powered fertility solutions for reproductive healthcare.",
   alternates: { canonical: "/about" },
 };
 

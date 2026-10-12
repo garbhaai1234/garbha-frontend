@@ -26,7 +26,7 @@ import {
 export const metadata: Metadata = {
   title: "Technology — AI Embryo Grading & Edge AI for IVF",
   description:
-    "Garbha.ai runs explainable Edge AI directly on time-lapse incubator hardware — 93% embryo-selection accuracy, 36,000+ validated embryo dataset, CDSCO-cleared and ISO 13485. See how AI supports every IVF decision.",
+    "Garbha.ai runs explainable Edge AI directly on time-lapse incubator hardware, CDSCO-cleared and ISO 13485, to support every decision in the IVF lab.",
   keywords: [
     "AI embryo grading",
     "Edge AI IVF",
@@ -41,8 +41,9 @@ export const metadata: Metadata = {
     type: "website",
     title: "Technology — AI Embryo Grading & Edge AI for IVF | Garbha.ai",
     description:
-      "Explainable Edge AI for the IVF lab: 93% embryo-selection accuracy, 36,000+ validated embryos, CDSCO-cleared and ISO 13485.",
+      "Explainable Edge AI for the IVF lab: AI embryo grading on time-lapse incubator hardware, CDSCO-cleared and ISO 13485.",
     url: "/technology",
+    images: ["/opengraph-image"],
   },
 };
 

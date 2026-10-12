@@ -13,6 +13,10 @@ export type PostMeta = {
   tags: string[];
   readingTime: string;
   cover?: string; // path under /public
+  /** Shorter title for search results (≤ 48 chars + " — Garbha.ai"); the page heading stays `title`. */
+  seoTitle?: string;
+  /** Description for search results when `description` is over 160 characters. */
+  seoDescription?: string;
 };
 
 export type Post = PostMeta & {
@@ -38,6 +42,8 @@ function fileToPost(fileName: string): Post {
     tags: data.tags ?? [],
     readingTime: readingTime(content),
     cover: data.cover ?? undefined,
+    seoTitle: data.seoTitle ?? undefined,
+    seoDescription: data.seoDescription ?? undefined,
     content,
   };
 }

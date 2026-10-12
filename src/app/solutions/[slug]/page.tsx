@@ -65,6 +65,7 @@ export async function generateMetadata({
       title: solution.name,
       description: solution.summary,
       url: `/solutions/${solution.slug}`,
+      images: ["/opengraph-image"],
     },
   };
 }
@@ -169,7 +170,7 @@ export default async function SolutionDetailPage({
           </Reveal>
 
           <Reveal delay={120}>
-            <Kicker index="02">How it works</Kicker>
+            <Kicker index="02" as="h2">How it works</Kicker>
             <ol className="mt-10 space-y-10">
               {solution.howItWorks.map((step, i) => (
                 <li key={step.title} className="grid grid-cols-[auto_1fr] gap-6">

@@ -12,7 +12,7 @@ import { breadcrumbSchema } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "Partner with Us",
   description:
-    "Join the Garbha.ai IVF Partner Program. We invite embryologists and IVF clinics to collaborate with us in revolutionizing the IVF landscape through AI-powered insights and cutting-edge solutions.",
+    "Join the Garbha.ai IVF Partner Program: embryologists and IVF clinics working with us to bring AI-powered insights into the IVF lab.",
   alternates: { canonical: "/partnership" },
 };
 

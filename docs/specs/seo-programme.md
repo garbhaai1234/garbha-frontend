@@ -44,3 +44,13 @@ and nothing is measured.
 Evidence for the claims above; named authors and medical reviewers; new `/care` tool URLs
 (need a medical reviewer); product-page facts for stage 3; the `http://www` double redirect
 (host setting, hand-off).
+
+## Progress
+
+| Stage | Status | Evidence |
+|---|---|---|
+| 0 Measurement | Built (fd09753). Waiting for the account owner: Search Console and Bing codes | Tags print only with a code (checked both ways); `tools/seo/crawl.py`; `docs/seo/baseline-2026-10-12.md` |
+| 1 Trust (structured data) | Built (e6432a8) | Organization only; products SoftwareApplication; team bylines = organisation; breadcrumbs on 6 more pages; tests over every sitemap URL |
+| 1 Trust (claims evidence) | Waiting for documents | CDSCO number, ISO 13485 certificate, accuracy source (93 vs 94%), clinic count (11 vs 20), "India's first" |
+| 2 Technical | Built | Sitemap 33 → 23 URLs (tag pages noindex, follow), lastmod on every URL; all titles ≤ 60 and descriptions ≤ 160 (`docs/seo/stage-2-metadata-changes.md`); og:image on Technology and the 5 product pages; product-page heading order (pixel-identical). Lighthouse (local, phone): SEO 100; product accessibility 94 → 96 |
+| 2 Technical, left | Not done | Blog "Key takeaways" h3 before the first h2 (fixing changes how it looks); `/blog` title "Blog — Garbha.ai" is weak (content call); `http://www` double redirect (host setting) |

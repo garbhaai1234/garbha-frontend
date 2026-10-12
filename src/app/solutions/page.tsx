@@ -10,9 +10,9 @@ import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbSchema } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "AI IVF Solutions — Embryo, Sperm & Oocyte Selection",
+  title: "AI IVF Solutions: Embryo, Sperm & Oocyte",
   description:
-    "Explore Garbha.ai's AI-powered IVF solutions: AI embryo grading (EmbryoScore), sperm and oocyte selection, endometrial receptivity analysis and Smart IVF analytics.",
+    "Garbha.ai's AI for the IVF lab: embryo grading (EmbryoScore), sperm and oocyte selection, endometrial receptivity analysis and Smart IVF analytics.",
   alternates: { canonical: "/solutions" },
   keywords: [
     "AI IVF solutions",

@@ -34,6 +34,8 @@ export async function generateMetadata({
     title: `${name} — Blog`,
     description: `Articles tagged “${name}” — insights on AI and precision medicine in IVF from Garbha.ai.`,
     alternates: { canonical: `/blog/tag/${slug}` },
+    // Thin listing pages: kept for visitors, kept out of the index; links still followed (REQ-SEO-01).
+    robots: { index: false, follow: true },
   };
 }
 
