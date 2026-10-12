@@ -11,11 +11,8 @@ import type { IconName } from "@/content/compliance";
  * - every tool is educational only and ends with the free counsellor call;
  * - no diagnosis, no success percentages, no promise of pregnancy;
  * - "verified" always names the licence behind it;
- * - no ratings or success-rate rankings at launch;
- * - every number carries its source.
+ * - no ratings or success-rate rankings at launch.
  */
-
-export type Source = { label: string; href: string };
 
 export const careDisclaimer =
   "Educational information, not medical advice. Tools, assistant answers and care plans are checked by a clinical advisor before they go live.";
@@ -27,52 +24,19 @@ export const careStatus = {
   next: "Hindi",
 };
 
-export const careSources = {
-  registry: {
-    label: "National ART & Surrogacy Registry — registered clinics",
-    href: "https://registry.artsurrogacy.gov.in/clinic/list?type=register-clinic",
-  },
-  asrmNatural: {
-    label: "ASRM — Optimizing natural fertility (2022)",
-    href: "https://www.asrm.org/practice-guidance/practice-committee-documents/optimizing-natural-fertility-a-committee-opinion-2021/",
-  },
-  asrmEvaluation: {
-    label: "ASRM — Fertility evaluation of infertile women (2021)",
-    href: "https://www.asrm.org/practice-guidance/practice-committee-documents/fertility-evaluation-of-infertile-women-a-committee-opinion-2021/",
-  },
-  who: {
-    label: "WHO 6th edition semen reference values (summary)",
-    href: "https://www.fertility-smart.net/knowledge-center/normal-semen-analysis-who-2021/",
-  },
-  cloudnine: {
-    label: "Cloudnine — IVF cost in India",
-    href: "https://www.cloudninefertility.com/blog/ivf-treatment-in-india-how-much-does-it-cost",
-  },
-  indira: {
-    label: "Indira IVF — Egg freezing cost in India",
-    href: "https://www.indiraivf.com/blog/egg-freezing-cost-in-india",
-  },
-  artAct: {
-    label: "ART (Regulation) Act 2021 — full text",
-    href: "https://indiankanoon.org/doc/61852499/",
-  },
-  pcpndt: {
-    label: "PCPNDT Act 1994 — full text",
-    href: "https://indiankanoon.org/doc/13125684/",
-  },
-  telemedicine: {
-    label: "Telemedicine Practice Guidelines 2020",
-    href: "https://nmcn.in/public/assets/pdf/Telemedicine%20Practice%20Guidelines.pdf",
-  },
-  drugsRules: {
-    label: "Drugs Rules 1945 — rule 65",
-    href: "https://cdsco.gov.in/opencms/resources/UploadCDSCOWeb/2022/drug_rules/Drugs%20Rules%201945_2024%2009.pdf",
-  },
-  fssai: {
-    label: "FSSAI — advisory to e-commerce food businesses (3 Dec 2024)",
-    href: "https://www.fssai.gov.in/upload/advisories/2024/12/674efa161d756Adobe%20Scan%203%20Dec%202024.pdf",
-  },
-} satisfies Record<string, Source>;
+/** The government's list of registered ART clinics, used by the clinic checklist. */
+export const artRegistryUrl =
+  "https://registry.artsurrogacy.gov.in/clinic/list?type=register-clinic";
+
+export type CareToolId =
+  | "ovulation"
+  | "specialist"
+  | "semen"
+  | "cost"
+  | "questions"
+  | "reminders"
+  | "eggs"
+  | "ivf";
 
 /** "Where are you right now?" — the six stages, as the person would say them. */
 export const journey: {
@@ -80,6 +44,7 @@ export const journey: {
   feeling: string;
   helpNow: string;
   whenReady: string;
+  tools: CareToolId[];
   icon: IconName;
 }[] = [
   {
@@ -87,6 +52,7 @@ export const journey: {
     feeling: "“When is my fertile window? Is it normal that it hasn’t happened yet?”",
     helpNow: "The ovulation tracker, and a quick check on whether it’s time to see a specialist.",
     whenReady: "A preconception care plan, or a first consult.",
+    tools: ["ovulation", "specialist"],
     icon: "calendar",
   },
   {
@@ -94,6 +60,7 @@ export const journey: {
     feeling: "“What does my AMH or semen report actually mean?”",
     helpNow: "Plain-language report readers, the assistant, and a free call with a counsellor.",
     whenReady: "Scans, tests or a doctor’s consult.",
+    tools: ["semen", "specialist"],
     icon: "doc",
   },
   {
@@ -101,6 +68,7 @@ export const journey: {
     feeling: "“How much will it cost? Which clinic can we trust?”",
     helpNow: "A cost estimator, a finder of government-registered clinics, and a checklist of questions to ask.",
     whenReady: "A consult at a verified IVF centre, or a second opinion.",
+    tools: ["cost", "questions"],
     icon: "building",
   },
   {
@@ -108,6 +76,7 @@ export const journey: {
     feeling: "“What happens next? Where do I get these injections?”",
     helpNow: "A timeline of your cycle and discreet medicine reminders.",
     whenReady: "Medicines delivered home, and a companion plan with counsellor support.",
+    tools: ["ivf", "reminders"],
     icon: "clock",
   },
   {
@@ -115,6 +84,7 @@ export const journey: {
     feeling: "“Why did it fail? Should we change clinics?”",
     helpNow: "A free counselling call to talk it through.",
     whenReady: "A second-opinion consult and repeat tests.",
+    tools: ["questions"],
     icon: "heart",
   },
   {
@@ -122,6 +92,7 @@ export const journey: {
     feeling: "“Should I freeze my eggs? What does it involve?”",
     helpNow: "An egg-freezing guide and cost planner.",
     whenReady: "Egg freezing at a registered clinic.",
+    tools: ["eggs"],
     icon: "cell",
   },
 ];
@@ -150,70 +121,69 @@ export const howItWorks: { title: string; text: string; free: boolean; icon: Ico
 
 /** Free tools — what the person gets, then why they can trust it. */
 export const tools: {
+  id: CareToolId;
   name: string;
   gets: string;
   basis: string;
-  source?: Source;
-  later?: boolean;
   icon: IconName;
 }[] = [
   {
+    id: "ovulation",
     name: "Ovulation tracker",
     gets: "Log your period, see your likely fertile days, and add LH-test results and symptoms. Gentle reminders, nothing more.",
     basis:
       "Your fertile window is the six days ending on ovulation day. Calendar dates alone are often wrong, so we show them as estimates and sharpen them with LH tests.",
-    source: careSources.asrmNatural,
     icon: "calendar",
   },
   {
+    id: "specialist",
     name: "Is it time to see a specialist?",
     gets: "Answer a few questions and get a clear “yes” or “not yet”, with the reasons.",
     basis:
       "Guidance suggests seeing a specialist after 12 months of trying if you are under 35, after 6 months if you are 35 or older, and sooner in some situations, such as irregular periods.",
-    source: careSources.asrmEvaluation,
     icon: "check",
   },
   {
+    id: "semen",
     name: "Semen report reader",
     gets: "Enter the numbers from your report and see, for each one, whether it is within the WHO reference range.",
     basis: "Uses the World Health Organization’s 2021 reference values.",
-    source: careSources.who,
     icon: "doc",
   },
   {
+    id: "cost",
     name: "IVF cost estimator",
     gets: "A likely cost range for your city, and what add-ons such as ICSI or embryo freezing do to it.",
     basis: "Based on published price ranges for Indian cities.",
-    source: careSources.cloudnine,
     icon: "scale",
   },
   {
+    id: "questions",
     name: "Questions to ask your clinic",
     gets: "A checklist to take to your consult, including whether the clinic is registered under the ART Act.",
-    basis: "You can check any clinic’s registration in our clinic finder.",
-    source: careSources.registry,
+    basis: "Tick questions as you get answers, add your own, and download the list to take with you.",
     icon: "list",
   },
   {
+    id: "reminders",
     name: "Medicine and appointment reminders",
     gets: "Discreet reminders for tablets, injections, scans and calls.",
-    basis: "You set them from your own prescription. The app never suggests doses.",
+    basis: "You set them from your own prescription; we never suggest doses. Reminders go into your phone’s own calendar, so nothing is sent to us.",
     icon: "clock",
   },
   {
-    name: "Egg-freezing guide",
-    gets: "What egg freezing involves, what it typically costs, and what to ask.",
+    id: "eggs",
+    name: "Egg-freezing planner",
+    gets: "What egg freezing involves, and what it could cost you over the years you plan to store.",
     basis:
       "Typical costs are ₹1–2.5 lakh per cycle plus yearly storage. Results tend to be better when eggs are frozen younger.",
-    source: careSources.indira,
-    later: true,
     icon: "cell",
   },
   {
+    id: "ivf",
     name: "IVF week-by-week planner",
     gets: "What usually happens in each week of an IVF cycle, so nothing comes as a surprise.",
-    basis: "Written by our clinical advisor.",
-    later: true,
+    basis: "A typical cycle. Your clinic’s protocol decides the real dates, so treat these as a guide to plan work and travel around.",
     icon: "list",
   },
 ];
@@ -311,42 +281,36 @@ export const services: {
   name: string;
   gets: string;
   protection: string;
-  source: Source;
   icon: IconName;
 }[] = [
   {
     name: "Doctor consults",
     gets: "A video call or a clinic visit with a fertility doctor.",
     protection: "You see the doctor’s name, qualification and registration number before you book.",
-    source: careSources.telemedicine,
     icon: "chat",
   },
   {
     name: "Scans and tests",
     gets: "Blood tests with home collection; ultrasound at the centre.",
     protection: "Ultrasound only at centres registered under the PCPNDT Act. No sex determination, ever.",
-    source: careSources.pcpndt,
     icon: "doc",
   },
   {
     name: "IVF, IUI and egg freezing",
     gets: "Consults and treatment packages at the centre.",
     protection: "Only clinics on the government’s national ART registry. Your own eggs only: we never arrange donors.",
-    source: careSources.artAct,
     icon: "building",
   },
   {
     name: "Medicines",
     gets: "Your prescribed fertility medicines, delivered home.",
     protection: "Checked against your prescription by a registered pharmacist, with the pharmacy’s own invoice.",
-    source: careSources.drugsRules,
     icon: "archive",
   },
   {
     name: "Supplements",
     gets: "Nutritional supplements, delivered home.",
     protection: "FSSAI-licensed sellers only, with no claims to treat or cure.",
-    source: careSources.fssai,
     icon: "inbox",
   },
 ];

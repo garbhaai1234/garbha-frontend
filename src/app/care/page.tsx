@@ -4,18 +4,14 @@ import { JsonLd } from "@/components/JsonLd";
 import { Container } from "@/components/Container";
 import { SectionHeading } from "@/components/SectionHeading";
 import { ArrowRight, ChevronDown } from "@/components/Icons";
-import {
-  ComplianceIcon,
-  CtaLink,
-  ExternalLink,
-} from "@/components/ComplianceGuide";
+import { ComplianceIcon, CtaLink } from "@/components/ComplianceGuide";
 import { CareCycleRing } from "@/components/CareCycleRing";
+import { CareTools } from "@/components/CareTools";
 import {
   assistantPromises,
   callSteps,
   careDisclaimer,
   careFaqs,
-  careSources,
   careStatus,
   finderLabels,
   howItWorks,
@@ -31,7 +27,7 @@ import {
 import { breadcrumbSchema, faqSchema } from "@/lib/seo";
 import { clsx } from "@/lib/clsx";
 
-// Server component only: renders fully without JavaScript (FAQ uses <details>).
+// Server component; the free tools are one client component (CareTools).
 
 export const metadata: Metadata = {
   title: "Garbha Care — Fertility Support You Can Trust",
@@ -89,6 +85,9 @@ function IconTile({
     </span>
   );
 }
+
+const toolName = (id: (typeof tools)[number]["id"]) =>
+  tools.find((t) => t.id === id)?.name ?? id;
 
 const jumpLinks = [
   { href: "#journey", label: "Where are you?" },
@@ -228,6 +227,17 @@ export default function GarbhaCarePage() {
                     Free help now
                   </dt>
                   <dd className="mt-1 text-ink-700">{j.helpNow}</dd>
+                  <dd className="mt-3 flex flex-wrap gap-2">
+                    {j.tools.map((id) => (
+                      <a
+                        key={id}
+                        href={`#tool-${id}`}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-800 ring-1 ring-inset ring-teal-200 transition-colors hover:bg-teal-100"
+                      >
+                        Open: {toolName(id)} <ArrowRight className="h-3.5 w-3.5" />
+                      </a>
+                    ))}
+                  </dd>
                 </div>
                 <div>
                   <dt className="text-xs font-bold uppercase tracking-[0.1em] text-brand-700">
@@ -279,36 +289,10 @@ export default function GarbhaCarePage() {
       <SectionShell id="tools">
         <SectionHeading
           eyebrow="Free tools"
-          title="Answers in under two minutes"
-          description="No account needed. Every tool shows your result first, explains what it is based on, and offers a free call with a counsellor if you want to talk it through."
+          title="Try them now, free"
+          description="Pick a tool and get your answer in under two minutes. No account and no forms: anything you save stays on this device."
         />
-        <ul className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {tools.map((t) => (
-            <li
-              key={t.name}
-              className="flex h-full flex-col rounded-2xl border border-ink-100 bg-white p-6 shadow-sm"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <IconTile name={t.icon} />
-                {t.later && (
-                  <span className="rounded-full bg-ink-50 px-2.5 py-1 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-ink-600 ring-1 ring-inset ring-ink-200">
-                    Coming later
-                  </span>
-                )}
-              </div>
-              <h3 className="mt-5 font-display text-lg font-bold text-ink-900">
-                {t.name}
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-ink-700">{t.gets}</p>
-              <p className="mt-3 flex-1 text-sm leading-6 text-ink-500">{t.basis}</p>
-              {t.source && (
-                <p className="mt-5 border-t border-ink-100 pt-4 text-xs text-ink-500">
-                  Source: <ExternalLink source={t.source} />
-                </p>
-              )}
-            </li>
-          ))}
-        </ul>
+        <CareTools />
         <p className="mt-8 rounded-xl border border-ink-100 bg-ink-50 px-5 py-4 text-sm text-ink-600">
           <strong className="font-semibold text-ink-900">
             These tools inform; they don’t diagnose.
@@ -446,9 +430,6 @@ export default function GarbhaCarePage() {
                 <span className="font-semibold">What protects you: </span>
                 {s.protection}
               </div>
-              <p className="mt-4 text-xs text-ink-500">
-                Source: <ExternalLink source={s.source} />
-              </p>
             </li>
           ))}
         </ul>
@@ -509,9 +490,6 @@ export default function GarbhaCarePage() {
               We don’t show star ratings or success-rate rankings: there is no
               reliable public source for clinic success rates, and we won’t
               guess.
-            </p>
-            <p className="mt-3 text-xs text-ink-500">
-              Source: <ExternalLink source={careSources.registry} />.
             </p>
           </div>
         </div>
