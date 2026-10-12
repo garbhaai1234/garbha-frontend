@@ -37,6 +37,11 @@ export const metadata: Metadata = {
       "application/rss+xml": "/rss.xml",
     },
   },
+  // Printed only once a code is set (site.verification).
+  verification: {
+    ...(site.verification.google && { google: site.verification.google }),
+    ...(site.verification.bing && { other: { "msvalidate.01": site.verification.bing } }),
+  },
   robots: {
     index: true,
     follow: true,

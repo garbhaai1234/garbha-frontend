@@ -10,6 +10,15 @@ export const site = {
     /\/$/,
     "",
   ),
+  /**
+   * Search engine ownership checks (Google Search Console "HTML tag" and Bing
+   * Webmaster Tools). Paste the content="…" value here, or set the env vars.
+   * Empty means no tag is printed. See docs/seo/search-console-setup.md.
+   */
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ?? "",
+    bing: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION ?? "",
+  },
   email: "info@garbha.ai",
   phone: "+918977605360",
   address: "H.no: 2-56/2/19, Madhapur, Hyderabad, Telangana, India, 500081.",
