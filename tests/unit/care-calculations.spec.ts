@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { lakh, parseDate, toInput } from "@/lib/care/dates";
-import { cycleDay, cyclePlan, isIrregular } from "@/lib/care/ovulation";
+import { currentCycleStart, cycleDay, cyclePlan, isIrregular, ringFromPlan } from "@/lib/care/ovulation";
 import { specialistAdvice } from "@/lib/care/specialist";
 import { evaluateSemen } from "@/lib/care/semen";
 import { eggFreezingCost, ivfCost } from "@/lib/care/cost";
@@ -143,5 +143,20 @@ test.describe("reminder calendar files", () => {
   test("normal mode escapes commas", () => {
     expect(toIcs([{ ...r, days: 1 }], false, now)).toContain("SUMMARY:Injection: Evening\\, injection");
     expect(toIcs([{ ...r, days: 1 }], false, now)).not.toContain("RRULE");
+  });
+});
+
+test.describe("hero ring", () => {
+  test("an old logged period is rolled forward to the current cycle", () => {
+    const r = currentCycleStart(parseDate("2026-08-10")!, 28, parseDate("2026-10-12")!)!;
+    expect(ymd(r.start)).toBe("2026-10-05");
+    expect(r.cyclesAhead).toBe(2);
+    expect(currentCycleStart(parseDate("2026-10-05")!, 28, parseDate("2026-10-12")!)!.cyclesAhead).toBe(0);
+    expect(currentCycleStart(parseDate("2026-10-20")!, 28, parseDate("2026-10-12")!)).toBeNull();
+  });
+  test("ring days from a plan", () => {
+    const p = cyclePlan({ start: "2026-10-01", cycle: 28, period: 5 })!;
+    expect(ringFromPlan(p, parseDate("2026-10-11")!)).toEqual({ length: 28, periodDays: 5, ovulationDay: 15, today: 11 });
+    expect(ringFromPlan(p, null).today).toBeNull();
   });
 });

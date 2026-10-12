@@ -12,6 +12,7 @@ import {
   type CallField,
 } from "@/lib/care/callRequest";
 import { clsx } from "@/lib/clsx";
+import { useHydrated } from "@/lib/care/useStored";
 import { site } from "@/lib/site";
 
 /**
@@ -119,6 +120,8 @@ export function CareCallForm() {
   const formRef = useRef<HTMLFormElement>(null);
   const stepHeading = useRef<HTMLParagraphElement>(null);
   const honeypot = useRef<HTMLInputElement>(null);
+  // Fields stay disabled until the page is interactive, so nothing typed is lost.
+  const ready = useHydrated();
 
   const set = <K extends keyof Values>(k: K, value: Values[K]) => {
     setV((s) => ({ ...s, [k]: value }));
@@ -268,6 +271,7 @@ export function CareCallForm() {
         </label>
       </div>
 
+      <fieldset disabled={!ready} className="contents">
       {step === 1 ? (
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <Field label="First name" error={errors.firstName}>
@@ -361,6 +365,8 @@ export function CareCallForm() {
         </div>
       )}
 
+      </fieldset>
+
       {problem && (
         <p role="alert" className="mt-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
           {problem}
@@ -375,7 +381,7 @@ export function CareCallForm() {
         ) : (
           <span className="text-xs text-ink-500">Takes about a minute. The call is free.</span>
         )}
-        <button type="submit" disabled={status === "sending"} className={clsx(btnPrimary, "min-h-12 w-full sm:w-auto")}>
+        <button type="submit" disabled={!ready || status === "sending"} className={clsx(btnPrimary, "min-h-12 w-full sm:w-auto")}>
           {step === 1 ? "Next" : status === "sending" ? "Sending…" : "Request my free call"}
           {status !== "sending" && <ArrowRight className="h-4 w-4" />}
         </button>

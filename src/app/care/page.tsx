@@ -5,7 +5,7 @@ import { Container } from "@/components/Container";
 import { SectionHeading } from "@/components/SectionHeading";
 import { ArrowRight, ChevronDown } from "@/components/Icons";
 import { ComplianceIcon, CtaLink } from "@/components/ComplianceGuide";
-import { CareCycleRing } from "@/components/CareCycleRing";
+import { CareHeroTracker } from "@/components/CareHeroTracker";
 import { CareTools } from "@/components/CareTools";
 import { CareCallForm } from "@/components/CareCallForm";
 import { CareStickyBar } from "@/components/CareStickyBar";
@@ -121,49 +121,27 @@ export default function GarbhaCarePage() {
           className="animate-blob pointer-events-none absolute -right-24 top-10 -z-10 h-72 w-72 rounded-full bg-teal-300/25 blur-3xl"
           style={{ animationDelay: "-6s" }}
         />
-        <Container className="pt-8 pb-14 sm:pt-12 sm:pb-20 lg:pt-14 lg:pb-24">
-          <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
-            <div className="lg:col-span-7">
-              <span className="inline-flex items-center gap-2.5 rounded-full border border-brand-200 bg-white/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand-700 backdrop-blur">
-                <span className="h-2 w-2 rounded-full bg-brand-500" />
-                Garbha Care · {careStatus.label} in {careStatus.city}
-              </span>
-              <h1 className="mt-7 font-display text-4xl font-bold leading-[1.05] tracking-tight text-ink-900 sm:text-5xl lg:text-6xl">
-                Trying for a baby?
-                <span className="block text-brand-500">You don’t have to work it out alone.</span>
-              </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-ink-500">
-                Understand your cycle and your reports with free tools. Talk
-                it through with a fertility counsellor, free. And when you need
-                care, book it with clinics whose licences we have checked, at
-                the full price, shown before you pay.
-              </p>
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <CtaLink href="#tools">
-                  Start a free module <ArrowRight className="h-4 w-4" />
-                </CtaLink>
-                <CtaLink href="#call" variant="secondary">
-                  Talk to a counsellor, free
-                </CtaLink>
-              </div>
-              <p className="mt-8 text-sm text-ink-500">
-                In {careStatus.languages.join(" and ")}, with {careStatus.next} to
-                follow. {careDisclaimer}
-              </p>
-            </div>
-            <div className="lg:col-span-5">
-              <div className="relative mx-auto w-full max-w-[300px] sm:max-w-[340px] lg:ml-auto lg:mr-0 animate-float">
-                <div className="pointer-events-none absolute -inset-6 rounded-full bg-teal-400/15 blur-2xl" />
-                <div className="relative rounded-[2rem] bg-white/80 p-6 shadow-2xl shadow-brand-500/15 ring-1 ring-white/60 backdrop-blur-md">
-                  <CareCycleRing className="h-auto w-full" />
-                  <p className="mt-2 text-center text-xs text-ink-500">
-                    An example cycle, with sample data. Dates are estimates,
-                    never contraception.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+        <Container className="pt-8 pb-12 sm:pt-12 sm:pb-16 lg:pt-14 lg:pb-20">
+          <CareHeroTracker>
+            <span className="inline-flex items-center gap-2.5 rounded-full border border-brand-200 bg-white/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand-700 backdrop-blur">
+              <span className="h-2 w-2 rounded-full bg-brand-500" />
+              Garbha Care · {careStatus.label} in {careStatus.city}
+            </span>
+            <h1 className="mt-6 font-display text-[2.1rem] font-bold leading-[1.08] tracking-tight text-ink-900 sm:text-5xl lg:text-6xl">
+              Trying for a baby?
+              <span className="block text-brand-500">You don’t have to work it out alone.</span>
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-ink-500 sm:text-lg sm:leading-8">
+              Free tools that give you an answer in a minute, and a free call with a
+              fertility counsellor when you want to talk it through.
+            </p>
+            <p className="mt-3 text-sm text-ink-500">
+              Prefer to talk first?{" "}
+              <a href="#call" className="font-semibold text-brand-700 underline underline-offset-4 hover:text-brand-800">
+                Request a free counsellor call
+              </a>
+            </p>
+          </CareHeroTracker>
         </Container>
       </section>
 

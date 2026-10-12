@@ -3,34 +3,35 @@
  * fertile window in teal-500, estimated ovulation in teal-700, today as an
  * outlined marker — always with text labels. Below the ring: the countdowns,
  * a sample basal-temperature chart and a 28-day phase strip.
- * Sample cycle, illustration only. All motion is CSS, gated on
- * prefers-reduced-motion, and the static state is the finished drawing.
+ * Without `cycle` it draws a sample cycle (illustration only, with a sample
+ * temperature chart). With `cycle` it draws that person's estimated cycle
+ * and leaves out the temperature chart, which would be invented data.
+ * All motion is CSS, gated on prefers-reduced-motion, and the static state is
+ * the finished drawing.
  */
 
-const DAYS = 28;
+import type { RingCycle } from "@/lib/care/ovulation";
+
 const CX = 130;
 const CY = 120;
 const R = 88;
 const W = 16;
 
-function point(day: number, r = R) {
+function point(day: number, r = R, days = 28) {
   // Day 1 starts at the top; days run clockwise.
-  const a = ((day - 1) / DAYS) * 2 * Math.PI - Math.PI / 2;
+  const a = ((day - 1) / days) * 2 * Math.PI - Math.PI / 2;
   return { x: CX + r * Math.cos(a), y: CY + r * Math.sin(a) };
 }
 
 /** Arc covering whole days `from`..`to` (inclusive), inset slightly so caps don't touch. */
-function arc(from: number, to: number) {
-  const start = point(from + 0.15);
-  const end = point(to + 0.85);
-  const large = to + 1 - from > DAYS / 2 ? 1 : 0;
+function arc(from: number, to: number, days: number) {
+  const start = point(from + 0.15, R, days);
+  const end = point(to + 0.85, R, days);
+  const large = to + 1 - from > days / 2 ? 1 : 0;
   return `M${start.x.toFixed(2)} ${start.y.toFixed(2)} A${R} ${R} 0 ${large} 1 ${end.x.toFixed(2)} ${end.y.toFixed(2)}`;
 }
 
-const period = { from: 1, to: 5 };
-const fertile = { from: 9, to: 14 };
-const ovulation = 14;
-const today = 11;
+const SAMPLE: RingCycle = { length: 28, periodDays: 5, ovulationDay: 14, today: 11 };
 const dayLabels = [1, 7, 14, 21];
 
 /** Sample basal body temperature (°C): low before ovulation, a small dip, then the luteal rise. */
@@ -46,7 +47,7 @@ const TY0 = 314;
 const TY1 = 356;
 const T_MIN = 36.1;
 const T_MAX = 36.9;
-const tx = (day: number) => TX0 + ((day - 1) / (DAYS - 1)) * (TX1 - TX0);
+const tx = (day: number) => TX0 + ((day - 1) / (SAMPLE.length - 1)) * (TX1 - TX0);
 const ty = (t: number) => TY1 - ((t - T_MIN) / (T_MAX - T_MIN)) * (TY1 - TY0);
 const line = (from: number, to: number) =>
   bbt
@@ -57,40 +58,63 @@ const line = (from: number, to: number) =>
 // Phase strip
 const SX0 = 20;
 const SX1 = 240;
-const SEG = (SX1 - SX0) / DAYS;
 
-function phaseColour(day: number) {
-  if (day === ovulation) return "#0F766E";
-  if (day >= period.from && day <= period.to) return "#EF6164";
-  if (day >= fertile.from && day <= fertile.to) return "#17A090";
-  return "#E2E8F0";
-}
+export function CareCycleRing({ className, cycle }: { className?: string; cycle?: RingCycle }) {
+  const sample = !cycle;
+  const c = cycle ?? SAMPLE;
+  const DAYS = c.length;
+  const period = { from: 1, to: c.periodDays };
+  const ovulation = c.ovulationDay;
+  const fertile = { from: Math.max(1, ovulation - 5), to: ovulation };
+  const today = c.today;
+  const SEG = (SX1 - SX0) / DAYS;
+  // Without the sample temperature chart, the strip and legend move up.
+  const shift = sample ? 0 : -64;
 
-function phaseName(day: number) {
-  if (day >= period.from && day <= period.to) return "Period";
-  if (day < ovulation) return "Follicular phase";
-  if (day === ovulation) return "Ovulation";
-  return "Luteal phase";
-}
+  const phaseColour = (day: number) => {
+    if (day === ovulation) return "#0F766E";
+    if (day >= period.from && day <= period.to) return "#EF6164";
+    if (day >= fertile.from && day <= fertile.to) return "#17A090";
+    return "#E2E8F0";
+  };
+  const phaseName = (day: number) => {
+    if (day >= period.from && day <= period.to) return "Period";
+    if (day < ovulation) return "Follicular phase";
+    if (day === ovulation) return "Ovulation";
+    return "Luteal phase";
+  };
 
-export function CareCycleRing({ className }: { className?: string }) {
-  const ov = point(ovulation + 0.5);
-  const td = point(today + 0.5);
-  const daysToOvulation = ovulation - today;
-  const daysToPeriod = DAYS - today + 1;
+  const ov = point(ovulation + 0.5, R, DAYS);
+  const td = today ? point(today + 0.5, R, DAYS) : null;
+  const daysToOvulation = today ? ovulation - today : null;
+  const daysToPeriod = today ? DAYS - today + 1 : null;
 
   const stats = [
-    { value: `~${daysToOvulation} d`, label: "Est. ovulation", colour: "#0F766E" },
-    { value: `~${daysToPeriod} d`, label: "Next period", colour: "#EF6164" },
+    {
+      value:
+        daysToOvulation === null
+          ? "—"
+          : daysToOvulation === 0
+            ? "Today"
+            : daysToOvulation < 0
+              ? "Passed"
+              : `~${daysToOvulation} d`,
+      label: "Est. ovulation",
+      colour: "#0F766E",
+    },
+    { value: daysToPeriod === null ? "—" : `~${daysToPeriod} d`, label: "Next period", colour: "#EF6164" },
     { value: `${DAYS} d`, label: "Cycle length", colour: "#64748B" },
   ];
+  const label = sample
+    ? `Sample cycle ring: period on days ${period.from} to ${period.to}, estimated fertile window on days ${fertile.from} to ${fertile.to}, estimated ovulation on day ${ovulation}, today is day ${today} (${phaseName(today!).toLowerCase()}). Estimated ovulation in ${daysToOvulation} days, next period in about ${daysToPeriod} days. A sample basal temperature chart shows the rise after ovulation.`
+    : `Your estimated cycle of ${DAYS} days: period on days 1 to ${period.to}, fertile window on days ${fertile.from} to ${fertile.to}, estimated ovulation on day ${ovulation}${today ? `, today is day ${today} (${phaseName(today).toLowerCase()})` : ""}.`;
 
   return (
     <svg
-      viewBox="0 0 260 420"
+      viewBox={`0 0 260 ${420 + shift}`}
       className={className}
       role="img"
-      aria-label={`Sample cycle ring: period on days ${period.from} to ${period.to}, estimated fertile window on days ${fertile.from} to ${fertile.to}, estimated ovulation on day ${ovulation}, today is day ${today} (${phaseName(today).toLowerCase()}). Estimated ovulation in ${daysToOvulation} days, next period in about ${daysToPeriod} days. A sample basal temperature chart shows the rise after ovulation.`}
+      aria-label={label}
     >
       <defs>
         <linearGradient id="ccr-period" x1="0" y1="0" x2="1" y2="1">
@@ -153,7 +177,7 @@ export function CareCycleRing({ className }: { className?: string }) {
       {/* One small dot per day, coloured by phase */}
       {Array.from({ length: DAYS }, (_, i) => {
         const d = i + 1;
-        const p = point(d + 0.5, R - W / 2 - 8);
+        const p = point(d + 0.5, R - W / 2 - 8, DAYS);
         return (
           <circle
             key={d}
@@ -172,7 +196,7 @@ export function CareCycleRing({ className }: { className?: string }) {
       <path
         className="ccr-draw"
         pathLength={1}
-        d={arc(period.from, period.to)}
+        d={arc(period.from, period.to, DAYS)}
         fill="none"
         stroke="url(#ccr-period)"
         strokeWidth={W}
@@ -182,7 +206,7 @@ export function CareCycleRing({ className }: { className?: string }) {
         className="ccr-draw"
         style={{ animationDelay: "0.35s" }}
         pathLength={1}
-        d={arc(fertile.from, fertile.to)}
+        d={arc(fertile.from, fertile.to, DAYS)}
         fill="none"
         stroke="url(#ccr-fertile)"
         strokeWidth={W}
@@ -192,7 +216,7 @@ export function CareCycleRing({ className }: { className?: string }) {
       <path
         className="ccr-shimmer"
         pathLength={1}
-        d={arc(fertile.from, fertile.to)}
+        d={arc(fertile.from, fertile.to, DAYS)}
         fill="none"
         stroke="#fff"
         strokeOpacity="0.55"
@@ -202,8 +226,8 @@ export function CareCycleRing({ className }: { className?: string }) {
 
       {/* Day numbers outside the ring */}
       <g className="ccr-fade" style={{ animationDelay: "0.6s" }} fontSize="10" fontWeight="600" fill="#94A3B8" textAnchor="middle">
-        {dayLabels.map((d) => {
-          const p = point(d + 0.5, R + W / 2 + 10);
+        {dayLabels.filter((d) => d <= DAYS).map((d) => {
+          const p = point(d + 0.5, R + W / 2 + 10, DAYS);
           return (
             <text key={d} x={p.x} y={p.y + 3.5}>
               {d}
@@ -216,19 +240,23 @@ export function CareCycleRing({ className }: { className?: string }) {
       <circle cx={CX} cy={CY} r={R - W / 2 - 16} fill="url(#ccr-core)" />
       <g className="ccr-rise" style={{ animationDelay: "0.3s" }}>
         <text x={CX} y={CY - 27} textAnchor="middle" fontSize="10.5" letterSpacing="1.2" fill="#64748B" fontWeight="700">
-          CYCLE DAY
+          {today ? "CYCLE DAY" : "OVULATION · EST."}
         </text>
         <text x={CX} y={CY + 9} textAnchor="middle" fontSize="42" fill="#0F172A" fontWeight="800">
-          {today}
+          {today ?? `Day ${ovulation}`}
         </text>
         <text x={CX} y={CY + 24} textAnchor="middle" fontSize="10" fill="#64748B" fontWeight="600">
-          {phaseName(today)} · of {DAYS}
+          {today ? `${phaseName(today)} · of ${DAYS}` : `of ${DAYS}`}
         </text>
-        <rect x={CX - 48} y={CY + 31} width="96" height="18" rx="9" fill="#CCFBF1" />
-        <circle cx={CX - 39} cy={CY + 40} r="2.5" fill="#17A090" />
-        <text x={CX - 33} y={CY + 43.5} fontSize="9" fill="#0F766E" fontWeight="700">
-          Fertile window · est.
-        </text>
+        {today !== null && today >= fertile.from && today <= fertile.to && (
+          <>
+            <rect x={CX - 48} y={CY + 31} width="96" height="18" rx="9" fill="#CCFBF1" />
+            <circle cx={CX - 39} cy={CY + 40} r="2.5" fill="#17A090" />
+            <text x={CX - 33} y={CY + 43.5} fontSize="9" fill="#0F766E" fontWeight="700">
+              Fertile window · est.
+            </text>
+          </>
+        )}
       </g>
 
       {/* Estimated ovulation, with a soft breathing halo */}
@@ -239,11 +267,15 @@ export function CareCycleRing({ className }: { className?: string }) {
       </g>
 
       {/* Today */}
-      <circle className="ccr-pulse" cx={td.x} cy={td.y} r="12" fill="#1E293B" opacity="0" />
-      <g className="ccr-pop" style={{ animationDelay: "1.25s" }}>
-        <circle cx={td.x} cy={td.y} r="12" fill="#fff" stroke="#1E293B" strokeWidth="3" filter="url(#ccr-soft)" />
-        <circle cx={td.x} cy={td.y} r="4" fill="#1E293B" />
-      </g>
+      {td && (
+        <>
+          <circle className="ccr-pulse" cx={td.x} cy={td.y} r="12" fill="#1E293B" opacity="0" />
+          <g className="ccr-pop" style={{ animationDelay: "1.25s" }}>
+            <circle cx={td.x} cy={td.y} r="12" fill="#fff" stroke="#1E293B" strokeWidth="3" filter="url(#ccr-soft)" />
+            <circle cx={td.x} cy={td.y} r="4" fill="#1E293B" />
+          </g>
+        </>
+      )}
 
       {/* ── Countdowns ───────────────────────────────────── */}
       {stats.map((s, i) => {
@@ -262,6 +294,8 @@ export function CareCycleRing({ className }: { className?: string }) {
         );
       })}
 
+      {sample && (
+        <>
       {/* ── Sample basal temperature ─────────────────────── */}
       <g className="ccr-fade" style={{ animationDelay: "1.1s" }}>
         <text x="20" y="305" fontSize="9" fill="#475569" fontWeight="700" letterSpacing="0.4">
@@ -282,9 +316,9 @@ export function CareCycleRing({ className }: { className?: string }) {
           </g>
         ))}
         {/* Today */}
-        <line x1={tx(today)} x2={tx(today)} y1={TY0 - 4} y2={TY1 + 2} stroke="#1E293B" strokeOpacity="0.35" strokeDasharray="2 2" />
+        <line x1={tx(SAMPLE.today!)} x2={tx(SAMPLE.today!)} y1={TY0 - 4} y2={TY1 + 2} stroke="#1E293B" strokeOpacity="0.35" strokeDasharray="2 2" />
         {/* Expected after today */}
-        <path d={line(today, DAYS)} fill="none" stroke="#94A3B8" strokeWidth="1.5" strokeDasharray="3 3" strokeLinecap="round" />
+        <path d={line(SAMPLE.today!, SAMPLE.length)} fill="none" stroke="#94A3B8" strokeWidth="1.5" strokeDasharray="3 3" strokeLinecap="round" />
         <text x={tx(19)} y={ty(36.82)} textAnchor="middle" fontSize="7.5" fill="#0F766E" fontWeight="700">
           rise after ovulation
         </text>
@@ -294,28 +328,31 @@ export function CareCycleRing({ className }: { className?: string }) {
         className="ccr-draw"
         style={{ animationDelay: "1.3s" }}
         pathLength={1}
-        d={line(1, today)}
+        d={line(1, SAMPLE.today!)}
         fill="none"
         stroke="url(#ccr-temp)"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {bbt.slice(0, today).map((t, i) => (
+      {bbt.slice(0, SAMPLE.today!).map((t, i) => (
         <circle
           key={i}
           className="ccr-pop"
           style={{ animationDelay: `${1.4 + i * 0.07}s` }}
           cx={tx(i + 1)}
           cy={ty(t)}
-          r={i + 1 === today ? 2.8 : 1.6}
-          fill={i + 1 === today ? "#1E293B" : "#fff"}
-          stroke={i + 1 === today ? "#fff" : "#17A090"}
+          r={i + 1 === SAMPLE.today ? 2.8 : 1.6}
+          fill={i + 1 === SAMPLE.today ? "#1E293B" : "#fff"}
+          stroke={i + 1 === SAMPLE.today ? "#fff" : "#17A090"}
           strokeWidth="1.2"
         />
       ))}
 
-      {/* ── 28-day phase strip ───────────────────────────── */}
+        </>
+      )}
+
+      {/* ── Phase strip, one segment per day ───────────── */}
       {Array.from({ length: DAYS }, (_, i) => {
         const d = i + 1;
         return (
@@ -324,7 +361,7 @@ export function CareCycleRing({ className }: { className?: string }) {
             className="ccr-grow"
             style={{ animationDelay: `${1.5 + i * 0.02}s` }}
             x={SX0 + i * SEG + 0.6}
-            y={d === today ? 364 : 366}
+            y={(d === today ? 364 : 366) + shift}
             width={SEG - 1.2}
             height={d === today ? 12 : 8}
             rx="2"
@@ -335,13 +372,13 @@ export function CareCycleRing({ className }: { className?: string }) {
         );
       })}
       <g fontSize="8" fill="#94A3B8" fontWeight="600" textAnchor="middle">
-        <text x={SX0 + SEG / 2} y="387">1</text>
-        <text x={SX0 + (ovulation - 0.5) * SEG} y="387">14</text>
-        <text x={SX1 - SEG / 2} y="387">28</text>
+        <text x={SX0 + SEG / 2} y={387 + shift}>1</text>
+        <text x={SX0 + (ovulation - 0.5) * SEG} y={387 + shift}>{ovulation}</text>
+        <text x={SX1 - SEG / 2} y={387 + shift}>{DAYS}</text>
       </g>
 
       {/* Legend: colour plus text, never colour alone */}
-      <g fontSize="9.5" fill="#334155" fontWeight="500">
+      <g fontSize="9.5" fill="#334155" fontWeight="500" transform={`translate(0 ${shift})`}>
         <rect x="14" y="400" width="12" height="7" rx="3.5" fill="#EF6164" />
         <text x="30" y="407">Period</text>
         <rect x="70" y="400" width="12" height="7" rx="3.5" fill="#17A090" />

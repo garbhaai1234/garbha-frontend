@@ -76,3 +76,31 @@ export function cycleDay(plan: CyclePlan, today: Date): number | null {
   const d = daysBetween(plan.start, today);
   return d >= 0 && d < plan.cycle ? d + 1 : null;
 }
+
+/**
+ * The cycle `today` falls in, estimated by stepping whole cycles forward from
+ * the logged period. `cyclesAhead` > 0 means the dates are projected, not logged.
+ */
+export function currentCycleStart(
+  start: Date,
+  cycle: number,
+  today: Date,
+): { start: Date; cyclesAhead: number } | null {
+  const len = clampCycle(cycle);
+  const d = daysBetween(start, today);
+  if (d < 0) return null;
+  const k = Math.floor(d / len);
+  return { start: addDays(start, k * len), cyclesAhead: k };
+}
+
+/** What the cycle ring draws: 1-based day numbers within one cycle. */
+export type RingCycle = { length: number; periodDays: number; ovulationDay: number; today: number | null };
+
+export function ringFromPlan(plan: CyclePlan, today: Date | null): RingCycle {
+  return {
+    length: plan.cycle,
+    periodDays: plan.days.filter((d) => d.kind === "period").length,
+    ovulationDay: daysBetween(plan.start, plan.ovulation) + 1,
+    today: today ? cycleDay(plan, today) : null,
+  };
+}

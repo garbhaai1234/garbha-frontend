@@ -68,9 +68,13 @@ export function useStored<T>(key: string, initial: T) {
 
 const noSubscribe = () => () => {};
 
+/** False during server render and hydration, true once the page is interactive. */
+export function useHydrated(): boolean {
+  return useSyncExternalStore(noSubscribe, () => true, () => false);
+}
+
 /** Today's date on the client; null during server render and hydration. */
 export function useToday(): Date | null {
-  const hydrated = useSyncExternalStore(noSubscribe, () => true, () => false);
-  return hydrated ? startOfToday() : null;
+  return useHydrated() ? startOfToday() : null;
 }
 
