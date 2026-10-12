@@ -20,7 +20,10 @@ const W = 16;
 function point(day: number, r = R, days = 28) {
   // Day 1 starts at the top; days run clockwise.
   const a = ((day - 1) / days) * 2 * Math.PI - Math.PI / 2;
-  return { x: CX + r * Math.cos(a), y: CY + r * Math.sin(a) };
+  // Rounded: Node and browsers may differ in the last digit of cos/sin, and
+  // the ring is hydrated, so server and client must print the same numbers.
+  const round = (v: number) => Math.round(v * 100) / 100;
+  return { x: round(CX + r * Math.cos(a)), y: round(CY + r * Math.sin(a)) };
 }
 
 /** Arc covering whole days `from`..`to` (inclusive), inset slightly so caps don't touch. */
