@@ -8,6 +8,8 @@ export type Author = {
   role: string;
   bio: string;
   url?: string;
+  /** A team byline: the organisation is the author in structured data, not a Person. */
+  isTeam?: boolean;
 };
 
 const AUTHORS: Record<string, Author> = {
@@ -16,6 +18,7 @@ const AUTHORS: Record<string, Author> = {
     role: "AI & Embryology Research",
     bio: "The Garbha.ai team builds explainable AI for the IVF lab — from embryo grading to personalised treatment — working alongside embryologists and fertility clinicians.",
     url: "/about",
+    isTeam: true,
   },
   "Bharani Kumar Depuru": {
     name: "Bharani Kumar Depuru",

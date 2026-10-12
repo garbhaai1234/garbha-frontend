@@ -9,6 +9,8 @@ import { PostCard } from "@/components/PostCard";
 import { BlogHeroArt } from "@/components/BlogHeroArt";
 import { ArrowRight } from "@/components/Icons";
 import { getAllPosts, getAllTags } from "@/lib/blog";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbSchema } from "@/lib/seo";
 
 // Picks up scheduled posts once their publish time passes.
 export const revalidate = 3600;
@@ -26,6 +28,12 @@ export default function BlogPage() {
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Blog", path: "/blog" },
+        ])}
+      />
       <BlogHero />
 
       {posts.length === 0 ? (

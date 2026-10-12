@@ -178,7 +178,10 @@ export default function TechnologyPage() {
     "@context": "https://schema.org",
     "@type": "TechArticle",
     headline: "Garbha.ai Technology — AI Embryo Grading & Edge AI for IVF",
-    description: metadata.description,
+    // Neutral on purpose: no accuracy, dataset or certification figures in structured data
+    // until they are documented on the page (REQ-SEO-01).
+    description:
+      "How Garbha.ai's explainable AI analyses embryo, sperm and oocyte images on the IVF lab's own hardware to support embryologists' decisions.",
     image: absoluteUrl("/brand/hero-bg.jpg"),
     author: { "@id": `${site.url}/#organization` },
     publisher: { "@id": `${site.url}/#organization` },

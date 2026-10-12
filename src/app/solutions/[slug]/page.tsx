@@ -11,8 +11,7 @@ import { Accordion } from "@/components/Accordion";
 import { JsonLd } from "@/components/JsonLd";
 import { solutions, getSolution } from "@/content/solutions";
 import { TmName } from "@/components/TmName";
-import { breadcrumbSchema, faqSchema, absoluteUrl } from "@/lib/seo";
-import { site } from "@/lib/site";
+import { breadcrumbSchema, faqSchema, softwareSchema } from "@/lib/seo";
 
 export function generateStaticParams() {
   return solutions.map((s) => ({ slug: s.slug }));
@@ -81,15 +80,12 @@ export default async function SolutionDetailPage({
 
   const others = solutions.filter((s) => s.slug !== solution.slug);
 
-  const serviceSchema = {
-    "@context": "https://schema.org",
-    "@type": "MedicalTest",
+  const serviceSchema = softwareSchema({
     name: solution.name,
-    description: solution.summary,
-    url: absoluteUrl(`/solutions/${solution.slug}`),
-    image: absoluteUrl(solution.image),
-    provider: { "@id": `${site.url}/#organization` },
-  };
+    description: solution.schemaDescription,
+    path: `/solutions/${solution.slug}`,
+    image: solution.image,
+  });
 
   return (
     <>

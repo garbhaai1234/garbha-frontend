@@ -6,6 +6,8 @@ import { Reveal } from "@/components/Reveal";
 import { Button } from "@/components/Button";
 import { Callout } from "@/components/Callout";
 import { ArrowRight, Check } from "@/components/Icons";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbSchema } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Partner with Us",
@@ -241,6 +243,12 @@ function PartnerIcon({
 export default function PartnershipPage() {
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Partner with Us", path: "/partnership" },
+        ])}
+      />
       <PartnershipHero />
 
       {/* Partner logos */}

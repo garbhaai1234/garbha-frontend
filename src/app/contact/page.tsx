@@ -6,6 +6,8 @@ import { ContactForm } from "@/components/ContactForm";
 import { Button } from "@/components/Button";
 import { ArrowRight, Check } from "@/components/Icons";
 import { site } from "@/lib/site";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbSchema } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -47,6 +49,12 @@ const methods = [
 export default function ContactPage() {
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Contact", path: "/contact" },
+        ])}
+      />
       <ContactHero />
 
       <section className="py-14 sm:py-20">

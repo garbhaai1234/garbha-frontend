@@ -11,6 +11,8 @@ import { TmName } from "@/components/TmName";
 import { CountUp } from "@/components/CountUp";
 import { ArrowRight, Check } from "@/components/Icons";
 import { credibilityBadges, credibilityPoints } from "@/content/technology";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbSchema } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -125,6 +127,12 @@ const orderedTeam = [
 export default function AboutPage() {
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "About Us", path: "/about" },
+        ])}
+      />
       <AboutHero />
 
       {/* Values */}

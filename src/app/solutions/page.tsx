@@ -6,6 +6,8 @@ import { Reveal } from "@/components/Reveal";
 import { ArrowRight } from "@/components/Icons";
 import { solutions } from "@/content/solutions";
 import { TmName } from "@/components/TmName";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbSchema } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "AI IVF Solutions — Embryo, Sperm & Oocyte Selection",
@@ -24,6 +26,12 @@ export const metadata: Metadata = {
 export default function SolutionsPage() {
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Solutions", path: "/solutions" },
+        ])}
+      />
       <section>
         <Container className="py-16 sm:py-24">
           <Reveal>

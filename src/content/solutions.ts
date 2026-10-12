@@ -4,6 +4,8 @@ export type Solution = {
   shortName: string; // compact label used in nav + footer (matches live site)
   tagline: string;
   summary: string;
+  /** Plain description of what the software does, for structured data: no outcome or "first" claims. */
+  schemaDescription: string;
   image: string; // path under /public
   overview: string;
   benefits: string[];
@@ -16,6 +18,8 @@ export type Solution = {
 export const solutions: Solution[] = [
   {
     slug: "embryo-scoring",
+    schemaDescription:
+      "AI software that grades embryo images to support embryologists in choosing which embryo to transfer during IVF.",
     name: "Garbha AI – EmbryoScore™",
     shortName: "Garbha AI – EmbryoScore™",
     tagline: "Smarter embryo selection",
@@ -38,6 +42,8 @@ export const solutions: Solution[] = [
   },
   {
     slug: "sperm-selection",
+    schemaDescription:
+      "AI software that analyses sperm movement and shape to support embryologists in selecting sperm for ICSI.",
     name: "Garbha AI – Sperm Quality & Selection",
     shortName: "Garbha AI – Sperm",
     tagline: "Identify the most viable sperm",
@@ -82,6 +88,8 @@ export const solutions: Solution[] = [
   },
   {
     slug: "oocyte-selection",
+    schemaDescription:
+      "AI software that assesses oocyte (egg) images to support embryologists' evaluation during IVF.",
     name: "Garbha AI – Oocyte Quality & Selection",
     shortName: "Garbha AI – Oocyte",
     tagline: "Quality insight before fertilisation",
@@ -104,6 +112,8 @@ export const solutions: Solution[] = [
   },
   {
     slug: "endometrial-receptivity",
+    schemaDescription:
+      "Software that uses gene-expression data and AI to estimate the endometrial receptivity window for embryo transfer.",
     name: "Garbha AI – ERA",
     shortName: "Garbha AI – ERA",
     tagline: "Precision implantation timing",
@@ -126,6 +136,8 @@ export const solutions: Solution[] = [
   },
   {
     slug: "smart-ivf",
+    schemaDescription:
+      "Software that brings IVF treatment data and patient communication together to help clinics coordinate treatment.",
     name: "Garbha AI – Smart IVF",
     shortName: "Garbha AI – Smart IVF",
     tagline: "Real-time IVF analytics",

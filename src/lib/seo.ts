@@ -18,14 +18,15 @@ export function shareImageUrl(path: string): string {
 }
 
 /**
- * Organization / MedicalBusiness schema — describes the company itself so
- * search engines can build a knowledge-panel entity (logo, contact, socials).
- * Rendered once, sitewide, in the root layout.
+ * Organization schema — describes the company itself so search engines can
+ * build a knowledge-panel entity (logo, contact, socials). Rendered once,
+ * sitewide, in the root layout. Garbha.ai makes software for IVF clinics; it
+ * does not provide care, so it is not typed MedicalBusiness (REQ-SEO-01).
  */
 export function organizationSchema() {
   return {
     "@context": "https://schema.org",
-    "@type": ["Organization", "MedicalBusiness"],
+    "@type": "Organization",
     "@id": `${site.url}/#organization`,
     name: site.name,
     legalName: site.poweredBy,
@@ -50,6 +51,31 @@ export function organizationSchema() {
       telephone: site.phone,
     },
     sameAs: [site.socials.facebook, site.socials.instagram, site.socials.linkedin],
+    knowsAbout: [
+      "In vitro fertilisation (IVF)",
+      "Embryo grading",
+      "Artificial intelligence in embryology",
+      "Sperm selection for ICSI",
+      "Oocyte assessment",
+      "Endometrial receptivity",
+    ],
+  };
+}
+
+/**
+ * A product page: what the software does, in plain terms. Takes a neutral
+ * description, never outcome or "first/best" claims (REQ-SEO-01).
+ */
+export function softwareSchema(p: { name: string; description: string; path: string; image: string }) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: p.name,
+    description: p.description,
+    applicationCategory: "MedicalApplication",
+    url: absoluteUrl(p.path),
+    image: absoluteUrl(p.image),
+    publisher: { "@id": `${site.url}/#organization` },
   };
 }
 
@@ -103,9 +129,11 @@ export function articleSchema(
     author: string;
     cover?: string;
   },
-  author?: { name: string; role: string; bio: string; url?: string },
+  author?: { name: string; role: string; bio: string; url?: string; isTeam?: boolean },
 ) {
-  const authorNode = author
+  const authorNode = author?.isTeam
+    ? { "@id": `${site.url}/#organization` }
+    : author
     ? {
         "@type": "Person",
         name: author.name,
